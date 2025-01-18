@@ -1,4 +1,4 @@
-package backend.src.main.java.project.backend.DTO;
+package project.backend.DTO;
 
 public class Expenditures {
 }
