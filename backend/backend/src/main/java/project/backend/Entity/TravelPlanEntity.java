@@ -1,4 +1,7 @@
 package project.backend.Entity;
 
-public class TravelPlanEntity {
+
+public class TravelPlanEntity
+{
+
 }
