@@ -1,4 +1,4 @@
-package backend.src.main.java.project.backend.Controller;
+package project.backend.Controller;
 
 public class UserController {
 }

@@ -1,4 +1,4 @@
-package backend.src.main.java.project.backend.Security;
+package project.backend.Security;
 
 public class TokenProvider {
 }

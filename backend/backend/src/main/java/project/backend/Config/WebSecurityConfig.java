@@ -1,4 +1,4 @@
-package backend.src.main.java.project.backend.Config;
+package project.backend.Config;
 
 public class WebSecurityConfig {
 }
