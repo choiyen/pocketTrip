@@ -24,4 +24,9 @@ public class ExpenditureEntity
     private String method;
     private boolean isPublic;
     private String payer;
+    private LocalDateTime date;
+    private int KRW;
+    private int amount;
+    private String currency;
+    private String description;
 }
