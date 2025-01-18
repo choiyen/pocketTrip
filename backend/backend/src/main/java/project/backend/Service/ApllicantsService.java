@@ -1,4 +1,4 @@
-package src.main.java.project.backend.Service;
+package project.backend.Service;
 
 public class ApllicantsService {
 }

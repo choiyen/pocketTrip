@@ -1,4 +1,4 @@
-package backend.src.main.java.project.backend.Entity;
+package project.backend.Entity;
 
 public class userEntity {
 }
