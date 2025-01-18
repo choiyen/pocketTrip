@@ -1,4 +1,4 @@
-package backend.src.main.java.project.backend.Repository;
+package project.backend.Repository;
 
 public interface ExpendituresRepository {
 }
