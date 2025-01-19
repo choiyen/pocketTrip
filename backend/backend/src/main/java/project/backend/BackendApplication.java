@@ -2,14 +2,14 @@ package project.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 @SpringBootApplication
-@EnableMongoRepositories
+@EnableReactiveMongoRepositories(basePackages = "project.backend.Repository")
 public class BackendApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
