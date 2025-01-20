@@ -21,7 +21,7 @@ public class UserService {
 
         String userid = userEntity.getUserid();
 
-        if(userRepository.existsById(userid)) {
+        if(userRepository.existsByUserid(userid)) {
             log.warn("User with id {} already exists", userid);
             throw new RuntimeException("User with id " + userid + " already exists");
         }
