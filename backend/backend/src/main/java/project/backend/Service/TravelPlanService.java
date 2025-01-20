@@ -6,6 +6,8 @@ import project.backend.Entity.TravelPlanEntity;
 import project.backend.Repository.TravelPlanRepository;
 import reactor.core.publisher.Mono;
 
+
+
 @Service
 public class TravelPlanService
 {
@@ -27,15 +29,14 @@ public class TravelPlanService
        return travelPlanRepository.save(travelPlan);
     }
 
-    public void TravelPlanDelete(String id)
+    public Mono<Void> TravelPlanDelete(String TravelCode)
     {
-        travelPlanRepository.deleteById(id);
+       return travelPlanRepository.deleteByTravelCode(TravelCode);
     }
 
-    public TravelPlanEntity TravelPlanSelect(String travelCode)
+    public Mono<TravelPlanEntity> TravelPlanSelect(String travelCode)
     {
-       return travelPlanRepository.findByTravelCode(travelCode);
-    }
+       return travelPlanRepository.findByTravelCode(travelCode);   }
 
     public boolean SelectTravelCode(String travelCode)
     {

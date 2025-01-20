@@ -1,8 +1,10 @@
 package project.backend.Repository;
 
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import project.backend.Entity.TravelPlanEntity;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface TravelPlanRepository extends ReactiveMongoRepository<TravelPlanEntity, String>
@@ -11,6 +13,9 @@ public interface TravelPlanRepository extends ReactiveMongoRepository<TravelPlan
     Boolean existsByTravelCode(String travelCode);
 
     // 주어진 travelCode로 여행정보를 찾아 반환
-    TravelPlanEntity findByTravelCode(String travelCode);
+
+    Mono<TravelPlanEntity> findByTravelCode(String travelCode);
+
+    Mono<Void> deleteByTravelCode(String travelCode);
 
 }
