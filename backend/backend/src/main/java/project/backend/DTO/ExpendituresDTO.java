@@ -1,12 +1,13 @@
 package project.backend.DTO;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
+@Builder
 public class ExpendituresDTO {
     private String id;
     private String method;
