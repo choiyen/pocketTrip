@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,10 +12,11 @@ import java.util.List;
 @Setter
 @Builder
 public class TravelPlanDTO {
+    private String id;
     private String travelcode;
     private String location;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private int expense;
     private String founder;
     private List<String> participants;
