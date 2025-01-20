@@ -10,7 +10,6 @@ import java.util.List;
 public class ResponseDTO<T> {
     private String error; // error message - fail
     private List<T> data; // response data - success
-
 }
 
 // HTTP Response 할 때 사용할 DTO
