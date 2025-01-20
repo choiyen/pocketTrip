@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@Setter
 public class ApplicantsDTO {
     private String id;
     private String travelcode;

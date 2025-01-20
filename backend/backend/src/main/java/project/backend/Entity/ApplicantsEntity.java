@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-
 @Document(collection = "Applicants")
 @Getter
 @Builder
@@ -18,4 +17,5 @@ public class ApplicantsEntity
     private String id;
     private String travelCode;
     private List<String> userList;
+
 }
