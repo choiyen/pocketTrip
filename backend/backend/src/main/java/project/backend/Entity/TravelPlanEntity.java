@@ -15,8 +15,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TravelPlanEntity
 {
-    @Id
-    private String Id;
     private String travelCode;
     private String location;
     private LocalDateTime startDate;
