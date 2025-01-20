@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 public class TravelPlanDTO {
-    private String id;
     private String travelcode;
     private String location;
     private LocalDateTime startDate;

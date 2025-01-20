@@ -18,5 +18,4 @@ public class ApplicantsEntity
     private String id;
     private String travelCode;
     private List<String> userList;
-
 }
