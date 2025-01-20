@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ApplicantsDTO {
+    private String id;
     private String travelcode;
     private List<String> userList;
 }
