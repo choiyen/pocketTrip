@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ExpendituresDTO {
+    private String id;
     private String method;
     private boolean isPublic;
     private String payer;
