@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Set;
+
 @Document(collection = "Applicants")
 @Getter
 @Builder
@@ -22,5 +24,5 @@ public class ApplicantsEntity
     @Indexed(unique = true)
     private String travelCode;
     @NonNull
-    private List<String> userList;
+    private Set<String> userList;
 }
