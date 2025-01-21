@@ -1,5 +1,6 @@
 package project.backend.Entity;
 
+import com.mongodb.lang.NonNull;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,9 +16,13 @@ public class UserEntity
 {
     @Id
     private String id;
+    @NonNull
     private String userid;
+    @NonNull
     private String password;
+    @NonNull
     private String name;
     private String email;
     private String phone;
 }
+//email이랑 phone은 아이디랑 비밀번호 찾기 용도, 둘 중 하나는 의무로 받아야 함.
