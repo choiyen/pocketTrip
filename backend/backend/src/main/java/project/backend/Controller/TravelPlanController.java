@@ -52,10 +52,22 @@ public class TravelPlanController
     {
         try
         {
-            TravelPlanEntity travelPlan = ConvertTo(id, travelPlanDTO);
-            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
-            TravelPlanDTO travelPlanDTO1 = ConvertTo(travelPlan1);
-            return ResponseEntity.ok().body(travelPlanDTO1);
+            if(travelPlanService.SelectTravelCode(id) == true)
+            {
+                TravelPlanEntity Oldtravelplan = travelPlanService.TravelPlanSelect(id).block();
+                TravelPlanEntity travelPlan = ConvertTo(id, travelPlanDTO, Oldtravelplan.getId());
+                TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
+                TravelPlanDTO travelPlanDTO1 = ConvertTo(travelPlan1);
+                return ResponseEntity.ok().body(travelPlanDTO1);
+            }
+            else
+            {
+                ResponseDTO<Object> responseDTO = ResponseDTO.builder()
+                        .error("해당 여행 코드의 기록을 찾을 수 없습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(responseDTO);
+            }
+
         }
         catch (Exception e)
         {
@@ -92,13 +104,21 @@ public class TravelPlanController
     {
         try
         {
-            travelPlanService.TravelPlanDelete(travelCode);
-            if(appllicantsService.ApplicantExistance(travelCode) == true)
-                //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
+            if(travelPlanService.SelectTravelCode(travelCode) == true)
             {
-                appllicantsService.TravelPlanAllDelete(travelCode);
+                travelPlanService.TravelPlanDelete(travelCode);
+                if(appllicantsService.ApplicantExistance(travelCode).block() == true)
+                //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
+                {
+                    appllicantsService.TravelPlanAllDelete(travelCode);
+                }
+                return ResponseEntity.ok().body("정상적으로 데이터 제거가 완료되었습니다.");
             }
-            return ResponseEntity.ok().body("정상적으로 데이터 제거가 완료되었습니다.");
+            else
+            {
+                throw  new RuntimeException("해당 여행 코드를 가진 데이터를 찾을 수 없습니다. 다시 확인해주세요...");
+            }
+
         }
         catch (Exception e)
         {
@@ -127,10 +147,10 @@ public class TravelPlanController
         return travelPlan;
     }
 
-    public TravelPlanEntity ConvertTo(String id, TravelPlanDTO travelPlanDTO)
+    public TravelPlanEntity ConvertTo(String travelCode, TravelPlanDTO travelPlanDTO, String id)
     {
         TravelPlanEntity travelPlan = TravelPlanEntity.builder()
-                .travelCode(travelPlanDTO.getTravelcode())
+                .travelCode(travelCode)
                 .location(travelPlanDTO.getLocation())
                 .startDate(travelPlanDTO.getStartDate())
                 .endDate(travelPlanDTO.getEndDate())
