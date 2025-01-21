@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
           <p style={{ fontSize: "9px" }}>
             이메일 또는 비밀번호를 잊어버리셨나요?
           </p>
-          <a className="lostEp" href="/login/find">
+          <a className="lostEp1" href="/login/find">
             이메일 & 비밀번호 찾기
           </a>
         </div>
@@ -68,8 +68,12 @@ const LoginPage: React.FC = () => {
         </button>
       </form>
       {/* 회원가입 페이지 만들면 경로 바꾸기! */}
-      <a className="lostEp" href="/login/register">
+      <a className="lostEp2" href="/login/register">
         회원가입
+      </a>
+      {/* 경로 바꾸기! */}
+      <a className="lostEp2" href="/login/register">
+        로그인없이 구경하기
       </a>
     </div>
   );

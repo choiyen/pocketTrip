@@ -25,14 +25,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 input {
   background-color: #ebebeb;
   border-width: 0;
-  width: 283px;
-  height: 40px;
+  width: 250px;
+  height: 35px;
   border-radius: 5px;
   box-sizing: border-box;
   padding-left: 25px;
@@ -52,24 +52,24 @@ input::placeholder {
   background-color: #0077cc;
   border-width: 0;
   width: 150px;
-  height: 40px;
+  height: 35px;
   margin-top: 2%;
   border-radius: 5px;
   font-weight: 900;
   color: #ffffff;
   text-align: center;
-  font-size: large;
+  font-size: medium;
 }
 
 .lostE {
   display: flex;
   align-items: center;
   height: 40px;
-  margin-top: 3%;
+  margin-bottom: 3%;
   white-space: nowrap;
 }
 
-.lostEp {
+.lostEp1 {
   color: black;
   text-decoration: none;
   font-weight: 900;
@@ -77,60 +77,12 @@ input::placeholder {
   font-size: 9px;
 }
 
-.newUser {
-  display: flex;
-  width: 150px;
-  margin: 0 auto;
-}
-
-.error-text {
-  color: red;
-  font-size: 12px;
-  display: none; /*기본적으로 숨김처리 */
-}
-
-.error-text.show {
-  display: block; /* 오류 발생 시 표시 */
-}
-
-/* 모달 스타일 */
-.modal {
-  display: none; /* 기본적으로 숨겨짐 */
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* 배경 흐림 */
-  justify-content: center;
-  align-items: center;
-}
-
-.modal.show {
-  display: flex; /* 'show' 클래스가 추가되면 표시 */
-}
-
-.modal-content {
-  background-color: #fff;
-  padding: 40px;
-  border-radius: 5px;
+.lostEp2 {
+  display: block;
   text-align: center;
-  max-width: 400px;
-  margin: auto;
-}
-
-.modal-message {
-  margin-bottom: 15px;
-}
-
-.close-btn {
-  background-color: #da2337;
-  border-width: 0;
-  width: 131px;
-  height: 40px;
-  border-radius: 30px;
+  color: black;
+  text-decoration: none;
   font-weight: 900;
-  color: #fff;
-  text-align: center;
+  font-size: 9px;
+  margin-top: 10px; /* 적절한 간격을 추가 */
 }
