@@ -22,8 +22,6 @@ public class ExpenditureEntity
     @NonNull
     private String purpose;
     @NonNull
-    private String type;
-    @NonNull
     private String method;
     @NonNull
     private boolean isPublic;

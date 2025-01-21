@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.TravelPlanDTO;
@@ -28,7 +29,7 @@ public class TravelPlanController
 
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
-    public ResponseEntity<?> TravelInsert(@RequestBody TravelPlanDTO travelPlanDTO)
+    public ResponseEntity<?> TravelInsert(@AuthenticationPrincipal String userId,  @RequestBody TravelPlanDTO travelPlanDTO)
     {
         try
         {
@@ -113,7 +114,7 @@ public class TravelPlanController
     public TravelPlanEntity ConvertTo(TravelPlanDTO travelPlanDTO)
     {
         TravelPlanEntity travelPlan = TravelPlanEntity.builder()
-                .travelCode(travelPlanDTO.getTravelcode())
+                .travelCode(travelPlanDTO.getTravelCode())
                 .location(travelPlanDTO.getLocation())
                 .startDate(travelPlanDTO.getStartDate())
                 .endDate(travelPlanDTO.getEndDate())
@@ -130,7 +131,7 @@ public class TravelPlanController
     public TravelPlanEntity ConvertTo(String id, TravelPlanDTO travelPlanDTO)
     {
         TravelPlanEntity travelPlan = TravelPlanEntity.builder()
-                .travelCode(travelPlanDTO.getTravelcode())
+                .travelCode(travelPlanDTO.getTravelCode())
                 .location(travelPlanDTO.getLocation())
                 .startDate(travelPlanDTO.getStartDate())
                 .endDate(travelPlanDTO.getEndDate())
@@ -148,7 +149,7 @@ public class TravelPlanController
     public TravelPlanDTO ConvertTo(TravelPlanEntity travelPlanEntity)
     {
         TravelPlanDTO travelPlan = TravelPlanDTO.builder()
-                .travelcode(travelPlanEntity.getTravelCode())
+                .travelCode(travelPlanEntity.getTravelCode())
                 .location(travelPlanEntity.getLocation())
                 .startDate(travelPlanEntity.getStartDate())
                 .endDate(travelPlanEntity.getEndDate())

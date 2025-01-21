@@ -18,4 +18,5 @@ public interface TravelPlanRepository extends ReactiveMongoRepository<TravelPlan
 
     Mono<Void> deleteByTravelCode(String travelCode);
 
+    TravelPlanEntity findById(Long id);
 }
