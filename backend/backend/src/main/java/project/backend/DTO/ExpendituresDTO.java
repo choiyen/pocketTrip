@@ -4,17 +4,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Builder
 public class ExpendituresDTO {
     private String id;
+    private String travelCode;
+    private String purpose;
     private String method;
     private boolean isPublic;
     private String payer;
-    private LocalDateTime date;
+    private LocalDate date;
     private int KRW;
-    private String category;
-    private String purpose;
+    private int amount;
+    private String currency;
+    private String description;
 }

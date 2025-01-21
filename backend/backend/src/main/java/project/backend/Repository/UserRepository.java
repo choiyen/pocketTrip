@@ -1,8 +1,12 @@
 package project.backend.Repository;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import project.backend.Entity.UserEntity;
+
+import java.util.Optional;
 
 @Repository("mongoUserRepository")  // MongoDB 용 빈 이름 명시적으로 설정
 public interface UserRepository extends MongoRepository<UserEntity, String> {
