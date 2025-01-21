@@ -41,12 +41,9 @@ public class TravelPlanController
             return ResponseEntity.badRequest().body(responseDTO);
         }
 
-
-
     }
-
     @PostMapping("/update")
-    public ResponseEntity<?> TravelUpdate(@RequestBody TravelPlanDTO travelPlanDTO, @RequestBody String id)
+    public ResponseEntity<?> TravelUpdate( @RequestBody String id, @RequestBody TravelPlanDTO travelPlanDTO)
     {
         try
         {
@@ -88,7 +85,7 @@ public class TravelPlanController
     {
         try
         {
-            travelPlanService.TravelPlanDelete(travelCode).block();
+            travelPlanService.TravelPlanDelete(travelCode);
             return ResponseEntity.ok().body("정상적으로 데이터 제거가 완료되었습니다.");
         }
         catch (Exception e)
@@ -133,4 +130,6 @@ public class TravelPlanController
 
         return travelPlan;
     }
+
+    //마지막 과제 : 여행 날짜 위주로 데이터 정렬 후 불러오기
 }
