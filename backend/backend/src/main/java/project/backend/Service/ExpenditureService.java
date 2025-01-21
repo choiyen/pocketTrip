@@ -34,11 +34,11 @@ public class ExpenditureService {
             throw new RuntimeException("Entity cannot be null");
         }
 
-        TravelPlanEntity travelPlan = travelPlanRepository.findByTravelCode(expenditureEntity.getTravelCode());
+        //TravelPlanEntity travelPlan = travelPlanRepository.findByTravelCode(expenditureEntity.getTravelCode());
 
-        if(!travelPlan.getParticipants().contains(expenditureEntity.getPayer())){
-            log.warn("Unknown user");
-            throw new RuntimeException("Unknown user");
-        }
+//        if(!travelPlan.getParticipants().contains(expenditureEntity.getPayer())){
+//            log.warn("Unknown user");
+//            throw new RuntimeException("Unknown user");
+//        }
     }
 }
