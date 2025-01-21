@@ -38,4 +38,21 @@ public class UserService {
         }
         return null;
     }
+
+    // 수정하기
+    public UserEntity updateUser(String userId, UserEntity userEntity) {
+
+        UserEntity originalUser = userRepository.findByUserid(userId);
+        if(originalUser == null) {
+            log.warn("User with id {} does not exist", userId);
+        }
+
+        originalUser.setPassword(userEntity.getPassword());
+        originalUser.setEmail(userEntity.getEmail());
+        originalUser.setName(userEntity.getName());
+        originalUser.setPhone(userEntity.getPhone());
+        UserEntity updatedUser = userRepository.save(originalUser);
+
+        return updatedUser;
+    }
 }
