@@ -4,18 +4,19 @@ package project.backend.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ExpendituresDTO;
 import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.UserDTO;
 import project.backend.Entity.ExpenditureEntity;
+import project.backend.Entity.UserEntity;
 import project.backend.Service.ExpenditureService;
 import project.backend.Service.UserService;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /*
 MongoDB에서는 컬렉션이 데이터가 실제로 삽입될 때 자동으로 생성됩니다.
@@ -32,32 +33,31 @@ public class ExpendituresController {
     @PostMapping
     public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String userId, @RequestBody ExpendituresDTO expendituresDTO){
         try {
+            ExpenditureEntity expenditure = ExpenditureEntity.builder()
+                    .travelCode(expendituresDTO.getTravelCode())
+                    .purpose(expendituresDTO.getPurpose())
+                    .method(expendituresDTO.getMethod())
+                    .isPublic(expendituresDTO.isPublic())
+                    .payer(userId)
+                    .date(expendituresDTO.getDate())
+                    .KRW(expendituresDTO.getKRW())
+                    .amount(expendituresDTO.getAmount())
+                    .currency(expendituresDTO.getCurrency())
+                    .description(expendituresDTO.getDescription())
+                    .build();
 
-            ExpenditureEntity expenditureEntity = ExpenditureEntity
-                    .of(expendituresDTO.getPurpose(),
-                            expendituresDTO.getTravelCode(),
-                            expendituresDTO.getMethod(),
-                            expendituresDTO.isPublic(),
-                            userId,
-                            expendituresDTO.getDate(),
-                            expendituresDTO.getKRW(),
-                            expendituresDTO.getAmount(),
-                            expendituresDTO.getCurrency(),
-                            expendituresDTO.getDescription());
-
-            ExpenditureEntity createdEntity = expenditureService.create(expenditureEntity);
-
+            ExpenditureEntity createExpenditure = expenditureService.create(expenditure);
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
-                    .travelCode(createdEntity.getTravelCode())
-                    .purpose(createdEntity.getPurpose())
-                    .method(createdEntity.getMethod())
-                    .isPublic(createdEntity.isPublic())
-                    .payer(createdEntity.getPayer())
-                    .date(createdEntity.getDate())
-                    .KRW(createdEntity.getKRW())
-                    .amount(createdEntity.getAmount())
-                    .currency(createdEntity.getCurrency())
-                    .description(createdEntity.getDescription())
+                    .travelCode(createExpenditure.getTravelCode())
+                    .purpose(createExpenditure.getPurpose())
+                    .method(createExpenditure.getMethod())
+                    .isPublic(createExpenditure.isPublic())
+                    .payer(createExpenditure.getPayer())
+                    .date(createExpenditure.getDate())
+                    .KRW(createExpenditure.getKRW())
+                    .amount(createExpenditure.getAmount())
+                    .currency(createExpenditure.getCurrency())
+                    .description(createExpenditure.getDescription())
                     .build();
 
             return ResponseEntity.ok().body(responsedDTO);
@@ -67,11 +67,21 @@ public class ExpendituresController {
         }
     }
 
+    // 지출 목록
+    @GetMapping("/{travelCode}")
+    public Mono<ResponseEntity<Flux<ExpenditureEntity>>> findAllExpenditures(@AuthenticationPrincipal String userId, @PathVariable String travelCode) {
+        Flux<ExpenditureEntity> expenditure = expenditureService.findAllByTravelCode(travelCode);
+
+        // ResponseEntity에 Flux를 래핑해서 반환
+        return Mono.just(ResponseEntity.ok().body(expenditure));
+    }
+
+
     // 지출 수정
+
 
     // 지출 삭제
 
-    // 지출 목록
 }
 
 

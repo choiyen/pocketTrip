@@ -7,7 +7,10 @@ import project.backend.Entity.ExpenditureEntity;
 import project.backend.Entity.TravelPlanEntity;
 import project.backend.Repository.ExpendituresRepository;
 import project.backend.Repository.TravelPlanRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -21,11 +24,11 @@ public class ExpenditureService {
     public ExpenditureEntity create(ExpenditureEntity expenditureEntity) {
         validate(expenditureEntity);
 
-        expendituresRepository.save(expenditureEntity);
+        return expendituresRepository.save(expenditureEntity).block();
+    }
 
-        log.info("Entity Id: {} is saved", expenditureEntity.getId());
-
-        return expenditureEntity;
+    public Flux<ExpenditureEntity> findAllByTravelCode(String travelCode) {
+        return expendituresRepository.findAllByTravelCode(travelCode);
     }
 
     private Mono<Void> validate(ExpenditureEntity expenditureEntity) {

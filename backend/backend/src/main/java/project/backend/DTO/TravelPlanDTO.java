@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class TravelPlanDTO {
     private String id;
-    private String travelcode;
+    private String travelCode;
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
