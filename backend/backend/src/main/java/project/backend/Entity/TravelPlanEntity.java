@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 
 @Document(collection = "TravelPlan")
@@ -34,7 +35,7 @@ public class TravelPlanEntity
     @NonNull
     private String founder;
 
-    private List<String> participants;
+    private Set<String> participants;
     @NonNull
     private boolean isCalculate;
 

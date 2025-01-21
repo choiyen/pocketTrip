@@ -32,9 +32,10 @@ public class ApplicantsController
     {
         try
         {
+
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                ApplicantsEntity applicantsEntity = appllicantsService.ApllicantsInsert(Travelcode, userid).block();
+                ApplicantsEntity applicantsEntity = appllicantsService.AppllicantsInsert(Travelcode, userid).block();
                 ApplicantsDTO travelPlanDTO1 = ConvertTo(applicantsEntity);
                 return ResponseEntity.ok().body(travelPlanDTO1);
             }
@@ -88,6 +89,7 @@ public class ApplicantsController
         ApplicantsEntity Applicantsed = ApplicantsEntity.builder()
                 .travelCode(Applicants.getTravelcode())
                 .userList(Applicants.getUserList())
+                .id(Applicants.getId())
                 .build();
 
         return  Applicantsed;
@@ -97,6 +99,7 @@ public class ApplicantsController
         ApplicantsDTO applicantsDTO = ApplicantsDTO.builder()
                 .travelcode(applicants.getTravelCode())
                 .userList(applicants.getUserList())
+                .id(applicants.getId())
                 .build();
 
         return  applicantsDTO;
