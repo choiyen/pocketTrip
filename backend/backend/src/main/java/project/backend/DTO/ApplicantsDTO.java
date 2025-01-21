@@ -5,11 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
 public class ApplicantsDTO {
     private String id;
     private String travelcode;
-    private List<String> userList;
+    private Set<String> userList;
 }
