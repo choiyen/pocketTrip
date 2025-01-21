@@ -44,7 +44,6 @@ public class ApplicantsController
                 throw new IllegalArgumentException("Travelcode 값이 없는데 넣는 것은 불가능");
                 //The data for that travel code is not present in the travel document.
             }
-
         }
         catch (Exception e)
         {
