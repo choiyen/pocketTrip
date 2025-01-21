@@ -29,9 +29,9 @@ public class TravelPlanService
        return travelPlanRepository.save(travelPlan);
     }
 
-    public Mono<Void> TravelPlanDelete(String TravelCode)
+    public void TravelPlanDelete(String TravelCode)
     {
-       return travelPlanRepository.deleteByTravelCode(TravelCode);
+       travelPlanRepository.deleteByTravelCode(TravelCode).block();
     }
 
     public Mono<TravelPlanEntity> TravelPlanSelect(String travelCode)
