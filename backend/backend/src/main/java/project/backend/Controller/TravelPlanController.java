@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.TravelPlanDTO;
 import project.backend.Entity.TravelPlanEntity;
+import project.backend.Service.AppllicantsService;
 import project.backend.Service.TravelPlanService;
 import reactor.core.publisher.Mono;
 
@@ -21,6 +22,9 @@ public class TravelPlanController
 {
     @Autowired
     private TravelPlanService travelPlanService;
+
+    @Autowired
+    private AppllicantsService appllicantsService;
 
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
@@ -42,16 +46,16 @@ public class TravelPlanController
         }
 
     }
-    @PostMapping("/update")
-    public ResponseEntity<?> TravelUpdate( @RequestBody String id, @RequestBody TravelPlanDTO travelPlanDTO)
+    //유출되도 상관 없을 것 같은 데이터(기능 동작 확인)
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> TravelUpdate( @PathVariable(value = "id") String id, @RequestBody TravelPlanDTO travelPlanDTO)
     {
         try
         {
-            TravelPlanEntity travelPlan = ConvertTo(travelPlanDTO);
-            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlanDTO)).block();
+            TravelPlanEntity travelPlan = ConvertTo(id, travelPlanDTO);
+            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
             TravelPlanDTO travelPlanDTO1 = ConvertTo(travelPlan1);
             return ResponseEntity.ok().body(travelPlanDTO1);
-
         }
         catch (Exception e)
         {
@@ -62,8 +66,10 @@ public class TravelPlanController
         }
 
     }
-    @PostMapping("/select")
-    public ResponseEntity<?> TravelSelect(@RequestBody String travelCode)
+
+    //travelcode에 따라 데이터 출력 확인
+    @PostMapping("/select/{travelCode}")
+    public ResponseEntity<?> TravelSelect(@PathVariable(value = "travelCode") String travelCode)
     {
         try
         {
@@ -79,13 +85,19 @@ public class TravelPlanController
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
-    @PostMapping("/delete")
-    @Async
-    public ResponseEntity<?> TravelDelete(@RequestBody String travelCode)
+
+    //데이터베이스에서 데이터 정상 제거 확인
+    @PostMapping("/delete/{travelCode}")
+    public ResponseEntity<?> TravelDelete(@PathVariable(value = "travelCode") String travelCode)
     {
         try
         {
             travelPlanService.TravelPlanDelete(travelCode);
+            if(appllicantsService.ApplicantExistance(travelCode) == true)
+                //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
+            {
+                appllicantsService.TravelPlanAllDelete(travelCode);
+            }
             return ResponseEntity.ok().body("정상적으로 데이터 제거가 완료되었습니다.");
         }
         catch (Exception e)
@@ -114,6 +126,25 @@ public class TravelPlanController
 
         return travelPlan;
     }
+
+    public TravelPlanEntity ConvertTo(String id, TravelPlanDTO travelPlanDTO)
+    {
+        TravelPlanEntity travelPlan = TravelPlanEntity.builder()
+                .travelCode(travelPlanDTO.getTravelcode())
+                .location(travelPlanDTO.getLocation())
+                .startDate(travelPlanDTO.getStartDate())
+                .endDate(travelPlanDTO.getEndDate())
+                .expense(travelPlanDTO.getExpense())
+                .founder(travelPlanDTO.getFounder())
+                .participants(travelPlanDTO.getParticipants())
+                .isCalculate(travelPlanDTO.isCalculate())
+                .id(id)
+                .build();
+
+        return travelPlan;
+    }
+
+
     public TravelPlanDTO ConvertTo(TravelPlanEntity travelPlanEntity)
     {
         TravelPlanDTO travelPlan = TravelPlanDTO.builder()
