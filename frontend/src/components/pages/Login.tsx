@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
   const [emailAddr, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
   const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
 
-  // 로그인 함수
+  // 로그인 함수다.아
   const loginUser = (): void => {
     axios
       .post<LoginResponse>("/login", { emailAddr, password }) // 응답의 타입을 LoginResponse로 지정
