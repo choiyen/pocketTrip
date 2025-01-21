@@ -1,5 +1,6 @@
 import React from "react";
-import "./App.css";
+import "./styles/reset.css";
+import "./styles/global.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "./components/pages/MainPage";
 import MyPage from "./components/pages/MyPage";
