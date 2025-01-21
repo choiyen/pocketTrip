@@ -1,22 +1,22 @@
 import React from "react";
 import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import MainPage from "./components/pages/MainPage";
+import MyPage from "./components/pages/MyPage";
+import { Provider } from "react-redux";
+import store from "./store";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+          </Routes>
+        </BrowserRouter>
+      </Provider>
     </div>
   );
 }
