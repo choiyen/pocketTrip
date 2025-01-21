@@ -1,13 +1,16 @@
 package project.backend.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.TravelPlanEntity;
 import project.backend.Repository.TravelPlanRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
 
+@Slf4j
 @Service
 public class TravelPlanService
 {
@@ -16,11 +19,6 @@ public class TravelPlanService
 
     public Mono<TravelPlanEntity> TravelPlanInsert(TravelPlanEntity travelPlan)
     {
-        // 유효성 검사 1) userEntity 혹은 email 이 null 인 경우 예외 던짐
-        if (travelPlan == null) {
-            throw new RuntimeException("Invalid arguments");
-        }
-
        return travelPlanRepository.save(travelPlan);
     }
 
@@ -36,11 +34,22 @@ public class TravelPlanService
 
     public Mono<TravelPlanEntity> TravelPlanSelect(String travelCode)
     {
-       return travelPlanRepository.findByTravelCode(travelCode);   }
+        Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanRepository.findByTravelCode(travelCode);
+        if(travelPlanEntityMono.block() == null)
+        {
+            log.warn("travelPlan with Travel Code {} is not find", travelCode);
+            throw new RuntimeException("해당 여행 코드를 가진 여행 기록을 찾을 수 없습니다.");
+        }
+        else
+        {
+            return travelPlanRepository.findByTravelCode(travelCode);
+
+        }
+    }
 
     public boolean SelectTravelCode(String travelCode)
     {
-        Boolean bool = travelPlanRepository.existsByTravelCode(travelCode);
+        Boolean bool = travelPlanRepository.existsByTravelCode(travelCode).block();
         return  bool;
     }
 
