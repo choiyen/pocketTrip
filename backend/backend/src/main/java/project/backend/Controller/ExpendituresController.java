@@ -7,3 +7,7 @@ MongoDB에서는 컬렉션이 데이터가 실제로 삽입될 때 자동으로 
  */
 public class ExpendituresController {
 }
+
+
+
+//마지막 과제 : 카드 별, 현금 별로 데이터 뽑아오는 함수 추가
