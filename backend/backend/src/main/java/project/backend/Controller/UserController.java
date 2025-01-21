@@ -3,11 +3,9 @@ package project.backend.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.UserDTO;
 import project.backend.Entity.UserEntity;
@@ -84,6 +82,35 @@ public class UserController {
                         .build();
                 return ResponseEntity.ok().body(responseDTO);
             }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // 수정
+    @PutMapping("/edit/{userId}")
+    public ResponseEntity<?> editUser(@PathVariable @AuthenticationPrincipal String userId, @RequestBody UserDTO userDTO){
+        try {
+            UserEntity user = UserEntity.builder()
+                    .name(userDTO.getName())
+                    .userid(userId)
+                    .password(passwordEncoder.encode(userDTO.getPassword()))
+                    .phone(userDTO.getPhone())
+                    .email(userDTO.getEmail())
+                    .build();
+
+            UserEntity editUser = userService.updateUser(userId, user);
+
+            UserDTO responsedUserDTO = UserDTO.builder()
+                    .name(editUser.getName())
+                    .userid(editUser.getUserid())
+                    .password(editUser.getPassword())
+                    .phone(editUser.getPhone())
+                    .email(editUser.getEmail())
+                    .build();
+
+            return ResponseEntity.ok().body(responsedUserDTO);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
