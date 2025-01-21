@@ -7,6 +7,7 @@ import project.backend.Entity.ExpenditureEntity;
 import project.backend.Entity.TravelPlanEntity;
 import project.backend.Repository.ExpendituresRepository;
 import project.backend.Repository.TravelPlanRepository;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -27,18 +28,26 @@ public class ExpenditureService {
         return expenditureEntity;
     }
 
-    // 유효성 검사
-    private void validate(ExpenditureEntity expenditureEntity){
-        if(expenditureEntity == null){
+    private Mono<Void> validate(ExpenditureEntity expenditureEntity) {
+        if (expenditureEntity == null) {
             log.warn("Entity cannot be null");
-            throw new RuntimeException("Entity cannot be null");
+            return Mono.error(new RuntimeException("Entity cannot be null"));
         }
 
-        TravelPlanEntity travelPlan = travelPlanRepository.findByTravelCode(expenditureEntity.getTravelCode());
+        return travelPlanRepository.findByTravelCode(expenditureEntity.getTravelCode())
+                .flatMap(travelPlan -> {
+                    if (travelPlan == null) {
+                        log.warn("Travel code {} is not found", expenditureEntity.getTravelCode());
+                        return Mono.error(new RuntimeException("Travel code not found"));
+                    }
 
-        if(!travelPlan.getParticipants().contains(expenditureEntity.getPayer())){
-            log.warn("Unknown user");
-            throw new RuntimeException("Unknown user");
-        }
+                    if (!travelPlan.getParticipants().contains(expenditureEntity.getPayer())) {
+                        log.warn("Unknown user");
+                        return Mono.error(new RuntimeException("Unknown user"));
+                    }
+
+                    return Mono.empty(); // Validation passed
+                });
     }
+
 }
