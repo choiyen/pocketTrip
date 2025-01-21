@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>(""); // errorMessage의 타입을 string으로 지정
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // isModalVisible의 타입을 boolean으로 지정
 
-  // 로그인 함수
+  // 로그인 함수다.
   const loginUser = (): void => {
     axios
       .post<LoginResponse>("/login", { emailAddr, password }) // 응답의 타입을 LoginResponse로 지정
