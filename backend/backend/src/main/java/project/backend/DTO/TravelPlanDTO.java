@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,6 +20,6 @@ public class TravelPlanDTO {
     private LocalDate endDate;
     private int expense;
     private String founder;
-    private List<String> participants;
+    private Set<String> participants;
     private boolean isCalculate;
 }
