@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="login-page">
       <div className="logoSz">
-        <a href="/">
+        <a href="/login">
           <img
             style={{ width: "100%", height: "100%" }}
             src="/airplane.png"
