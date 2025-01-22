@@ -44,6 +44,7 @@ public class UserController {
                     .password(registerUser.getPassword())
                     .phone(registerUser.getPhone())
                     .email(registerUser.getEmail())
+                    .id(registerUser.getId())
                     .build();
 
             return ResponseEntity.ok().body(responsedUserDTO);
@@ -63,8 +64,9 @@ public class UserController {
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
         try{
             UserEntity user = userService.getByCredentials(userDTO.getUserid(), userDTO.getPassword(), passwordEncoder);
-
-            if(user != null){
+            System.out.println(user.getUserid());
+            if(user != null)
+            {
                 String token = tokenProvider.createToken(user);
                 UserDTO responseUserDTO = UserDTO.builder()
                         .name(user.getName())
@@ -89,8 +91,8 @@ public class UserController {
     }
 
     // 수정
-    @PutMapping("/edit/{userId}")
-    public ResponseEntity<?> editUser(@PathVariable @AuthenticationPrincipal String userId, @RequestBody UserDTO userDTO){
+    @PutMapping("/edit")
+    public ResponseEntity<?> editUser(@AuthenticationPrincipal String userId, @RequestBody UserDTO userDTO){
         try {
             UserEntity user = UserEntity.builder()
                     .name(userDTO.getName())

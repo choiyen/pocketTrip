@@ -19,7 +19,8 @@ public class TokenProvider {
     private JwtProperties jwtProperties;
 
     // JWT 토큰 생성
-    public String createToken(UserEntity userEntity){
+    public String createToken(UserEntity userEntity)
+    {
         String secretKey = jwtProperties.getSecretKey();
         System.out.println("JWT Secret: " + secretKey);
 
@@ -30,7 +31,7 @@ public class TokenProvider {
 
         // 생성
         return Jwts.builder().signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
-                .setSubject(String.valueOf(userEntity.getUserid()))
+                .setSubject(userEntity.getUserid())
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)

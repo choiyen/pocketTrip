@@ -34,7 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("JwtAuthenticationFilter is running...");
 
             // token 검사
-            if(token != null && !token.equalsIgnoreCase("null")) {
+            if(token != null && !token.equalsIgnoreCase("null"))
+            {
                 String userId = tokenProvider.validateAndGetUserId(token);
                 log.info("Authenticated userId: {}", userId);
 
@@ -45,7 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 securityContext.setAuthentication(authentication);
                 SecurityContextHolder.setContext(securityContext);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             log.error("Could not set user authentication");
         }
 
