@@ -13,10 +13,13 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
+@Setter
 public class ExpenditureEntity
 {
     @Id
     private String id;
+    @NonNull
+    private String expenditureId;
     @NonNull
     private String travelCode;
     @NonNull
