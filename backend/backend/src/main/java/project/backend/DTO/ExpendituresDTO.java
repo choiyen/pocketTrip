@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Builder
 public class ExpendituresDTO {
     private String id;
+    private String expenditureId;
     private String travelCode;
     private String purpose;
     private String method;
