@@ -13,6 +13,11 @@ import project.backend.Entity.ApplicantsEntity;
 import project.backend.Entity.TravelPlanEntity;
 import project.backend.Service.AppllicantsService;
 import project.backend.Service.TravelPlanService;
+import reactor.core.publisher.Mono;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 
 @Slf4j
 @RestController
@@ -25,7 +30,6 @@ public class ApplicantsController
     @Autowired
     private AppllicantsService appllicantsService;
 
-
     //Travel에 데이터가 있을 때만 DB에서 insert 되게 설정
     @PostMapping("/insert/{Travelcode}")
     public ResponseEntity<?> ApplicantsInsert(@PathVariable(value = "Travelcode") String Travelcode, @RequestBody String userid)
@@ -35,8 +39,8 @@ public class ApplicantsController
 
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                ApplicantsEntity applicantsEntity = appllicantsService.AppllicantsInsert(Travelcode, userid).block();
-                ApplicantsDTO travelPlanDTO1 = ConvertTo(applicantsEntity);
+                Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(Travelcode, userid);
+                Mono<ApplicantsDTO> travelPlanDTO1 = ConvertTo(applicantsEntity);
                 return ResponseEntity.ok().body(travelPlanDTO1);
             }
             else
@@ -62,8 +66,8 @@ public class ApplicantsController
 
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                ApplicantsEntity applicantsEntity = (ApplicantsEntity) appllicantsService.AppllicantsDelete(Travelcode, userid).block();
-                ApplicantsDTO travelPlanDTO1 = ConvertTo(applicantsEntity);
+                Mono<ApplicantsEntity> applicantsEntity = (Mono<ApplicantsEntity>) appllicantsService.AppllicantsDelete(Travelcode, userid);
+                Mono<ApplicantsDTO> travelPlanDTO1 = ConvertTo(applicantsEntity);
                 return ResponseEntity.ok().body(travelPlanDTO1);
             }
             else
@@ -84,7 +88,7 @@ public class ApplicantsController
 
 
 
-    public ApplicantsEntity ConvertTo(ApplicantsDTO Applicants)
+    public Mono<ApplicantsEntity> ConvertTo(ApplicantsDTO Applicants)
     {
         ApplicantsEntity Applicantsed = ApplicantsEntity.builder()
                 .travelCode(Applicants.getTravelcode())
@@ -92,16 +96,18 @@ public class ApplicantsController
                 .id(Applicants.getId())
                 .build();
 
-        return  Applicantsed;
+        return  Mono.just(Applicantsed);
     }
-    public ApplicantsDTO ConvertTo(ApplicantsEntity applicants)
+    public Mono<ApplicantsDTO> ConvertTo(Mono<ApplicantsEntity> applicants)
     {
         ApplicantsDTO applicantsDTO = ApplicantsDTO.builder()
-                .travelcode(applicants.getTravelCode())
-                .userList(applicants.getUserList())
-                .id(applicants.getId())
+                .travelcode(applicants.block().getTravelCode())
+                .userList(applicants.block().getUserList())
+                .id(applicants.block().getId())
                 .build();
 
-        return  applicantsDTO;
+        return  Mono.just(applicantsDTO);
     }
+
+
 }
