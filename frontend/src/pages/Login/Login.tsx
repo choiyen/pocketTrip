@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
   const [emailAddr, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
   const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
 
-  // 로그인 함수다.아
+  // 로그인 함수
   const loginUser = (): void => {
     axios
       .post<LoginResponse>("/login", { emailAddr, password }) // 응답의 타입을 LoginResponse로 지정
@@ -28,14 +28,14 @@ const LoginPage: React.FC = () => {
         <a href="/">
           <img
             style={{ width: "100%", height: "100%" }}
-            src="../public/logo192.png"
+            src="/airplane.png"
             alt="로고위치"
           />
         </a>
       </div>
 
       <form className="loginForm">
-        아이디
+        <label className="formLabel">아이디</label>
         <input
           type="text"
           className="emailAddr"
@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
           value={emailAddr}
           onChange={(e) => setEmailAddr(e.target.value)}
         />
-        비밀번호
+        <label className="formLabel">비밀번호</label>
         <input
           type="password"
           className="password"
@@ -67,12 +67,13 @@ const LoginPage: React.FC = () => {
           로그인
         </button>
       </form>
+
       {/* 회원가입 페이지 만들면 경로 바꾸기! */}
       <a className="lostEp2" href="/login/register">
         회원가입
       </a>
       {/* 경로 바꾸기! */}
-      <a className="lostEp2" href="/login/register">
+      <a className="noLogin" href="/">
         로그인없이 구경하기
       </a>
     </div>
