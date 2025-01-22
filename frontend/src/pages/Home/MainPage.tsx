@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { incrementByAmount, minus, plus } from "../../slices/counterSlice";
-import Header from "../templates/Header";
+import Header from "../../components/Common/Header";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 
 export default function MainPage() {
