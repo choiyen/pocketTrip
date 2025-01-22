@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import NavButton from "../atoms/NavButton";
+import NavButton from "./NavButton";
 
 const Navbar = styled.div`
   max-width: 768px;
