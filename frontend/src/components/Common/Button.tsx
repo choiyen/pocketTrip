@@ -5,17 +5,17 @@ import styled from "styled-components";
 interface ButtonState {
   size: "L" | "M" | "S"; // 크기 설정
   name: string; // 버튼 이름
-  $bgColor?: "green" | "red" | "blue"; // 버튼 색
+  $bgColor?: "green" | "red" | "blue" | "transparent"; // 버튼 색
   onClick?: () => void; // 클릭 메서드
 }
 
-const CutomButton = styled.button`
-  letter-spacing: 2px;
+const CutomButton = styled.button<{ $bgColor: string }>`
+  letter-spacing: 1px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   background-color: #0077cc;
-  color: white;
+  color: ${(props) => (props.$bgColor === "transparent" ? "#121212" : "white")};
   border: none;
   font-family: GmarketSansMedium, Arial, Helvetica, sans-serif;
   font-weight: bold;
@@ -33,6 +33,8 @@ const LargeButton = styled(CutomButton)<{ $bgColor: string }>`
       ? "#4CAF50"
       : props.$bgColor === "red"
       ? "#CC0003"
+      : props.$bgColor === "transparent"
+      ? "transparent"
       : "#0077cc"};
 `;
 const MediumButton = styled(CutomButton)<{ $bgColor: string }>`

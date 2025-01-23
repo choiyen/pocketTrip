@@ -7,23 +7,27 @@ import MyPage from "./pages/Mypage/MyPage";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Where from "./pages/Where/Where";
-import { Provider } from "react-redux";
-import store from "./store";
+import { useSelector } from "react-redux";
+import { RootState } from "./store";
+import AlertBox from "./components/Common/AlertBox";
 
 function App() {
+  const alertState = useSelector(
+    (state: RootState) => state.AlertControl.alertState
+  );
   return (
     <div className="App">
-      <Provider store={store}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/Login" element={<Login />} />
-            <Route path="/Login/Register" element={<Register />} />
-            <Route path="/" element={<MainPage />} />
-            <Route path="/mypage" element={<MyPage />} />
-            <Route path="/Where" element={<Where />} />
-          </Routes>
-        </BrowserRouter>
-      </Provider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Login/Register" element={<Register />} />
+          <Route path="/" element={<MainPage />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/Where" element={<Where />} />
+        </Routes>
+      </BrowserRouter>
+
+      {alertState && <AlertBox />}
     </div>
   );
 }
