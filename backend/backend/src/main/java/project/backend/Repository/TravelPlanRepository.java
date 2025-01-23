@@ -1,6 +1,6 @@
 package project.backend.Repository;
 
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import project.backend.Entity.TravelPlanEntity;
@@ -17,10 +17,11 @@ public interface TravelPlanRepository extends ReactiveMongoRepository<TravelPlan
 
     Mono<TravelPlanEntity> findByTravelCode(String travelCode);
 
-    Mono<TravelPlanEntity> findByFounder(String Founder);
+    Flux<TravelPlanEntity> findByFounder(String Founder, Sort startDate);
 
 
     Mono<Void> deleteByTravelCode(String travelCode);
+
 
 
     TravelPlanEntity findById(Long id);

@@ -99,4 +99,9 @@ public class AppllicantsService
         applicantsRepository.deleteByTravelCode(TravelCode).block();
     }
 
+    public Mono<ApplicantsEntity> applicantsSelect(String TravelCode)
+    {
+       return applicantsRepository.findByTravelCode(TravelCode);
+    }
+
 }

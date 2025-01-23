@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ApplicantsDTO;
 import project.backend.DTO.ResponseDTO;
@@ -17,13 +18,18 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/Applicants")
 public class ApplicantsController
 {
+    ResponseDTO responseDTO;
+
     @Autowired
     private TravelPlanService travelPlanService;
 
@@ -32,16 +38,17 @@ public class ApplicantsController
 
     //Travel에 데이터가 있을 때만 DB에서 insert 되게 설정
     @PostMapping("/insert/{Travelcode}")
-    public ResponseEntity<?> ApplicantsInsert(@PathVariable(value = "Travelcode") String Travelcode, @RequestBody String userid)
+    public ResponseEntity<?> ApplicantsInsert(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode)
     {
         try
         {
 
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(Travelcode, userid);
+                Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(Travelcode, userId);
                 Mono<ApplicantsDTO> travelPlanDTO1 = ConvertTo(applicantsEntity);
-                return ResponseEntity.ok().body(travelPlanDTO1);
+                List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntity)));
+                return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
             }
             else
             {
@@ -52,24 +59,20 @@ public class ApplicantsController
         }
         catch (Exception e)
         {
-            ResponseDTO<Object> responseDTO = ResponseDTO.builder()
-                    .error(e.getMessage())
-                    .build();
-            return ResponseEntity.badRequest().body(responseDTO);
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
         }
     }
     @PostMapping("/Delete/{Travelcode}")
-    public ResponseEntity<?> ApplicantsDelete(@PathVariable(value = "Travelcode") String Travelcode, @RequestBody String userid)
+    public ResponseEntity<?> ApplicantsDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode)
     {
         try
         {
 
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                Mono<ApplicantsEntity> applicantsEntity = (Mono<ApplicantsEntity>) appllicantsService.AppllicantsDelete(Travelcode, userid);
-                Mono<ApplicantsDTO> travelPlanDTO1 = ConvertTo(applicantsEntity);
-                return ResponseEntity.ok().body(travelPlanDTO1);
-            }
+                Mono<ApplicantsEntity> applicantsEntity = (Mono<ApplicantsEntity>) appllicantsService.AppllicantsDelete(Travelcode, userId);
+                List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntity)));
+                return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));            }
             else
             {
                 log.warn("The data with Travelcode {} is not present in the travel document", Travelcode);
@@ -79,10 +82,8 @@ public class ApplicantsController
         }
         catch (Exception e)
         {
-            ResponseDTO<Object> responseDTO = ResponseDTO.builder()
-                    .error(e.getMessage())
-                    .build();
-            return ResponseEntity.badRequest().body(responseDTO);
+            ResponseDTO<Mono<ApplicantsDTO>> responseDTO1 = responseDTO.Response("error", e.getMessage(), null);
+            return ResponseEntity.badRequest().body(responseDTO1);
         }
     }
 
