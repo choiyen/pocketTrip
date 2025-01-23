@@ -10,7 +10,7 @@ interface ButtonState {
 }
 
 const CutomButton = styled.button`
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -23,10 +23,10 @@ const CutomButton = styled.button`
 `;
 
 const LargeButton = styled(CutomButton)<{ $bgColor: string }>`
-  font-size: 18px;
+  font-size: 15px;
   padding: 0 20px;
-  height: 56px;
-  border-radius: 15px;
+  height: 40px;
+  border-radius: 10px;
   width: clamp(150px, 50vw, 250px);
   background-color: ${(props) =>
     props.$bgColor === "green"

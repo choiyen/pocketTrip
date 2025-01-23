@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./LoginPage.css";
+import Button from "../../components/Common/Button";
 
 interface LoginResponse {
   success: boolean;
@@ -63,9 +64,7 @@ const LoginPage: React.FC = () => {
             이메일 & 비밀번호 찾기
           </a>
         </div>
-        <button type="button" className="loginBt" onClick={loginUser}>
-          로그인
-        </button>
+        <Button size="L" name="로그인" $bgColor="blue" onClick={loginUser} />
       </form>
 
       {/* 회원가입 페이지 만들면 경로 바꾸기! */}
