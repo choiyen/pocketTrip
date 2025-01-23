@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("/Applicants")
 public class ApplicantsController
 {
-    ResponseDTO responseDTO;
+    private ResponseDTO responseDTO = new ResponseDTO();
 
     @Autowired
     private TravelPlanService travelPlanService;
@@ -59,7 +59,7 @@ public class ApplicantsController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
     @PostMapping("/Delete/{Travelcode}")
@@ -82,7 +82,7 @@ public class ApplicantsController
         }
         catch (Exception e)
         {
-            ResponseDTO<Mono<ApplicantsDTO>> responseDTO1 = responseDTO.Response("error", e.getMessage(), null);
+            ResponseDTO<Mono<ApplicantsDTO>> responseDTO1 = responseDTO.Response("error", e.getMessage());
             return ResponseEntity.badRequest().body(responseDTO1);
         }
     }
