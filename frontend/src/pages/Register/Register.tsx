@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Register.css";
+import Button from "../../components/Common/Button";
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -24,15 +25,15 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validation and API submission logic here
-    console.log("Form submitted", formData);
+    console.log("Form 전송", formData);
   };
 
   return (
-    <div className="login-page">
+    <div className="Register-page">
       <div className="logoSz">
         <a href="/login">
           <img
-            style={{ width: "30%", height: "30%" }}
+            style={{ width: "100%", height: "100%" }}
             src="/airplane.png"
             alt="로고위치"
           />
@@ -46,6 +47,7 @@ const RegisterPage: React.FC = () => {
         onSubmit={handleSubmit}
       >
         <div className="inD">
+          <label className="formLabel">이름</label>
           <input
             type="text"
             className="username"
@@ -58,6 +60,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="inD">
+          <label className="formLabel">아이디</label>
           <input
             type="text"
             className="emailAddr"
@@ -75,6 +78,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="inD">
+          <label className="formLabel">비밀번호</label>
           <input
             type="password"
             className="password"
@@ -87,6 +91,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="inD">
+          <label className="formLabel">비밀번호확인</label>
           <input
             type="password"
             className="password_confirm"
@@ -104,6 +109,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="inD">
+          <label className="formLabel">전화번호</label>
           <input
             type="number"
             className="phoneNumber"
@@ -121,9 +127,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="inD">
-          <button className="loginBt" type="submit">
-            회원가입
-          </button>
+          <Button size="L" name="회원가입" $bgColor="blue" />
         </div>
       </form>
 
