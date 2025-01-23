@@ -5,7 +5,6 @@ import { incrementByAmount, minus, plus } from "../../slices/counterSlice";
 import Header from "../../components/Common/Header";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import Alert from "../../components/Common/Alert";
-import Button from "../../components/Common/Button";
 
 export default function MainPage() {
   // 글로벌 상태값을 변경하려면 필요한 함수 usedispatch();
@@ -54,7 +53,6 @@ export default function MainPage() {
       )}
       MainPage
       <p>Current Value: {value}</p>
-      <Button size={"L"} name={"확인"} />
       <button onClick={() => dispatch(plus())}>plus</button>
       <button onClick={() => dispatch(minus())}>minus</button>
       <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
