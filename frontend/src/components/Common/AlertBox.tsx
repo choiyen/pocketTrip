@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FcFullTrash } from "react-icons/fc";
 import Button from "./Button";
+import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { ChangeAlertState } from "../../slices/AlertControlSlice";
 
 const BoxWrap = styled.div`
   position: fixed;
@@ -25,18 +29,32 @@ const BoxWrap = styled.div`
   }
 
   p {
-    margin: 10px 0;
+    margin: 10px 0 20px 0;
     color: #a5a5a5;
+  }
+
+  button {
+    margin-bottom: 10px;
   }
 `;
 
 export default function AlertBox() {
+  const dispatch: AppDispatch = useDispatch();
+  const CloseAlert = () => {
+    dispatch(ChangeAlertState());
+  };
   return (
     <BoxWrap>
       <FcFullTrash size={"80px"} />
       <h2>삭제</h2>
       <p>정말 삭제하시겠습니까?</p>
-      <Button size="M" name="지우기" $bgColor="red" />
+      <Button size="L" name="지우기" $bgColor="red" />
+      <Button
+        size="L"
+        name="취소"
+        $bgColor="transparent"
+        onClick={() => CloseAlert()}
+      />
     </BoxWrap>
   );
 }

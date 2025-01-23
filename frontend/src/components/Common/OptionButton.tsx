@@ -9,6 +9,7 @@ import {
   ChangeModalState,
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
+import { ChangeAlertState } from "../../slices/AlertControlSlice";
 
 const OptionWrap = styled.div`
   position: absolute;
@@ -83,6 +84,11 @@ export default function OptionButton() {
     setVisibleOption(false);
   };
 
+  const showAlert = () => {
+    dispatch(ChangeAlertState());
+    setVisibleOption(false);
+  };
+
   return (
     <OptionWrap>
       <Button onClick={() => setVisibleOption((prev) => !prev)}>
@@ -96,7 +102,7 @@ export default function OptionButton() {
             </MenuButton>
           </li>
           <li>
-            <DeleteButton>
+            <DeleteButton onClick={() => showAlert()}>
               <FaTrash />
               삭제
             </DeleteButton>
