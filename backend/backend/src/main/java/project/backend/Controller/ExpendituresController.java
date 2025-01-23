@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -29,6 +30,9 @@ public class ExpendituresController {
 
     @Autowired
     private ExpenditureService expenditureService;
+
+
+    private ResponseDTO responseDTO;
 
     // 지출 추가
     @PostMapping("/{travelCode}")
@@ -67,6 +71,7 @@ public class ExpendituresController {
                     .build();
 
             ExpenditureEntity createExpenditure = expenditureService.create(expenditure);
+
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
                     .travelCode(createExpenditure.getTravelCode())
                     .expenditureId(createExpenditure.getExpenditureId())
@@ -81,20 +86,36 @@ public class ExpendituresController {
                     .description(createExpenditure.getDescription())
                     .build();
 
-            return ResponseEntity.ok().body(responsedDTO);
+            List<Object> list = new ArrayList<>();
+            list.add(responsedDTO);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "정상적으로 지출 추가가 완료되었습니다.", list));
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
         }
     }
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    public Mono<ResponseEntity<Flux<ExpenditureEntity>>> findAllExpenditures(@AuthenticationPrincipal String userId, @PathVariable String travelCode) {
-        Flux<ExpenditureEntity> expenditure = expenditureService.findAllByTravelCode(travelCode);
+    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String userId, @PathVariable String travelCode) {
 
-        // ResponseEntity에 Flux를 래핑해서 반환
-        return Mono.just(ResponseEntity.ok().body(expenditure));
+        try
+        {
+            Flux<ExpenditureEntity> expenditure = expenditureService.findAllByTravelCode(travelCode);
+            // ResponseEntity에 Flux를 래핑해서 반환
+            List<Object> list = new ArrayList<>();
+            list.add(expenditure);
+            return ResponseEntity.ok().body(responseDTO.Response("info", "지출 목록 전송 완료!!", list));
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+
+        }
+
+
     }
 
 
@@ -133,10 +154,12 @@ public class ExpendituresController {
                     .description(updateExpenditure.getDescription())
                     .build();
 
-            return ResponseEntity.ok().body(responsedDTO);
+            List<Object> list = new ArrayList<>();
+            list.add(responsedDTO);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "지출 목록을 수정합니다.", list));
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
         }
     }
 

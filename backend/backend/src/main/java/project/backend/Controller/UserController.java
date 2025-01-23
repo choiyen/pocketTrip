@@ -12,6 +12,10 @@ import project.backend.Entity.UserEntity;
 import project.backend.Security.TokenProvider;
 import project.backend.Service.UserService;
 
+import javax.naming.AuthenticationException;
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 public class UserController {
@@ -25,10 +29,13 @@ public class UserController {
     @Autowired
     private TokenProvider tokenProvider;
 
+    private ResponseDTO responseDTO;
+
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<?> registeredUser(@RequestBody UserDTO userDTO){
-        try {
+        try
+        {
             UserEntity user = UserEntity.builder()
                     .name(userDTO.getName())
                     .userid(userDTO.getUserid())
@@ -38,6 +45,7 @@ public class UserController {
                     .build();
 
             UserEntity registerUser = userService.createUser(user);
+
             UserDTO responsedUserDTO = UserDTO.builder()
                     .name(registerUser.getName())
                     .userid(registerUser.getUserid())
@@ -47,14 +55,14 @@ public class UserController {
                     .id(registerUser.getId())
                     .build();
 
-            return ResponseEntity.ok().body(responsedUserDTO);
-        } catch (Exception e) {
-            ResponseDTO responseDTO = ResponseDTO.builder()
-                    .error(e.getMessage())
-                    .build();
-//            throw new RuntimeException(e);
+            List<Object> list = new ArrayList<>();
+            list.add(responsedUserDTO);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "우리 앱을 이용해주셔서 감사합니다. 여러분의 기입을 환영합니다.", list));
 
-            return ResponseEntity.ok().body(responseDTO);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
         }
     }
 
@@ -77,23 +85,26 @@ public class UserController {
                         .id(user.getId())
                         .token(token)
                         .build();
-                return ResponseEntity.ok().body(responseUserDTO);
-            } else {
-                ResponseDTO responseDTO = ResponseDTO.builder()
-                        .error("Login Failed")
-                        .build();
-                return ResponseEntity.ok().body(responseDTO);
+                List<Object> list = new ArrayList<>();
+                list.add(responseUserDTO);
+                return ResponseEntity.ok().body(responseDTO.Response("success", "오늘도 저희 서비스에 방문해주셔서 감사드려요!!!", list));
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            else
+            {
+               throw new AuthenticationException("회원정보가 존재하지 않습니다. 비밀번호나 아이디를 다시 입력해주세요.");
+            }
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
         }
     }
 
     // 수정
     @PutMapping("/edit")
     public ResponseEntity<?> editUser(@AuthenticationPrincipal String userId, @RequestBody UserDTO userDTO){
-        try {
+        try
+        {
             UserEntity user = UserEntity.builder()
                     .name(userDTO.getName())
                     .userid(userId)
@@ -112,10 +123,14 @@ public class UserController {
                     .email(editUser.getEmail())
                     .build();
 
-            return ResponseEntity.ok().body(responsedUserDTO);
+            List<Object> list = new ArrayList<>();
+            list.add(responsedUserDTO);
+            return ResponseEntity.ok().body(responseDTO.Response("info", "회원정보 수정 완료!", list));
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
         }
     }
 }

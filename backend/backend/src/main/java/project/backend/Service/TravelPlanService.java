@@ -73,7 +73,7 @@ public class TravelPlanService
 
     public Flux<TravelPlanEntity> travelPlanEntityAll(String userId)
     {
-        return travelPlanRepository.findAll(Sort.by(Sort.Order.asc("startDate")));
+        return travelPlanRepository.findByFounder(userId,Sort.by(Sort.Order.asc("startDate")));
     }
 
 
