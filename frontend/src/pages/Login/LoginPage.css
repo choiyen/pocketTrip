@@ -13,12 +13,18 @@ body {
   background-color: #ffffff;
 }
 
-.logoSz {
-  width: 150px;
-  height: 150px;
-  margin-top: 5%;
-  margin-left: 50%;
-  transform: translateX(-20%);
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 화면 전체 높이 사용 */
+}
+
+.login-page .logoSz {
+  width: 130px;
+  height: 130px;
+  margin-bottom: 5%;
 }
 
 .loginForm {
@@ -28,6 +34,14 @@ body {
   margin-top: 30px;
 }
 
+.formLabel {
+  width: 250px;
+  text-align: left;
+  margin-bottom: 5px;
+  font-size: 12px;
+  color: #051e31;
+}
+
 input {
   background-color: #ebebeb;
   border-width: 0;
@@ -35,7 +49,6 @@ input {
   height: 35px;
   border-radius: 5px;
   box-sizing: border-box;
-  padding-left: 25px;
   margin-bottom: 20px;
 }
 
@@ -43,8 +56,8 @@ input::placeholder {
   opacity: 0.7;
   font-weight: 400;
   color: #b2b2b2;
-  padding-left: 30px;
-  background-position: center left 3px;
+  padding-left: 5px;
+  background-position: left 3px center;
   background-repeat: no-repeat;
 }
 
@@ -54,6 +67,7 @@ input::placeholder {
   width: 150px;
   height: 35px;
   margin-top: 2%;
+  margin-bottom: 10%;
   border-radius: 5px;
   font-weight: 900;
   color: #ffffff;
@@ -64,8 +78,8 @@ input::placeholder {
 .lostE {
   display: flex;
   align-items: center;
-  height: 40px;
-  margin-bottom: 3%;
+  /* height: 40px; */
+  margin-bottom: 13%;
   white-space: nowrap;
 }
 
@@ -84,5 +98,15 @@ input::placeholder {
   text-decoration: none;
   font-weight: 900;
   font-size: 9px;
-  margin-top: 10px; /* 적절한 간격을 추가 */
+  margin-top: 30px;
+}
+
+.noLogin {
+  display: block;
+  text-align: center;
+  color: black;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 9px;
+  margin-top: 10px;
 }
