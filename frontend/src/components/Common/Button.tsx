@@ -40,7 +40,7 @@ const MediumButton = styled(CutomButton)<{ $bgColor: string }>`
   padding: 0 16px;
   height: 50px;
   border-radius: 10px;
-  width: clamp(120px, 30vw, 180px);
+  width: clamp(120px, 50vw, 180px);
   background-color: ${(props) =>
     props.$bgColor === "green"
       ? "#4CAF50"
