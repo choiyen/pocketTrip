@@ -31,8 +31,7 @@ public class ExpendituresController {
     @Autowired
     private ExpenditureService expenditureService;
 
-
-    private ResponseDTO responseDTO;
+    private ResponseDTO responseDTO = new ResponseDTO<>();
 
     // 지출 추가
     @PostMapping("/{travelCode}")
@@ -93,7 +92,7 @@ public class ExpendituresController {
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 
@@ -111,7 +110,7 @@ public class ExpendituresController {
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
 
         }
 
@@ -159,7 +158,7 @@ public class ExpendituresController {
             return ResponseEntity.ok().body(responseDTO.Response("success", "지출 목록을 수정합니다.", list));
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 

@@ -42,7 +42,7 @@ public class TravelPlanController
 
     private final String key = "1234567890123456";
 
-    private  ResponseDTO responseDTO;
+    private  ResponseDTO responseDTO = new ResponseDTO<>();
 
     //시작 날짜를 기준으로 데이터 정렬하여 프론트엔드로 전송
     @PostMapping("/find")
@@ -74,7 +74,7 @@ public class TravelPlanController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
 
     }
@@ -114,7 +114,7 @@ public class TravelPlanController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
 
     }
@@ -174,7 +174,7 @@ public class TravelPlanController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
     //여행 신청 정보에 대해 개별 승인
@@ -208,7 +208,7 @@ public class TravelPlanController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 
@@ -239,7 +239,7 @@ public class TravelPlanController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 
@@ -280,7 +280,7 @@ public class TravelPlanController
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
 
     }
