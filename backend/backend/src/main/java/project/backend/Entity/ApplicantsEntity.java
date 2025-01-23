@@ -26,3 +26,4 @@ public class ApplicantsEntity
     @NonNull
     private Set<String> userList;
 }
+//여행가기로 한 사람.
