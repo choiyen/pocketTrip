@@ -29,7 +29,7 @@ public class UserController {
     @Autowired
     private TokenProvider tokenProvider;
 
-    private ResponseDTO responseDTO;
+    private ResponseDTO responseDTO = new ResponseDTO<>();
 
     // 회원가입
     @PostMapping("/signup")
@@ -62,7 +62,7 @@ public class UserController {
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 
@@ -96,7 +96,7 @@ public class UserController {
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 
@@ -130,7 +130,7 @@ public class UserController {
         }
         catch (Exception e)
         {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage(), null));
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
 }
