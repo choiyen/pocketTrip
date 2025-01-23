@@ -1,70 +1,84 @@
 import React from "react";
 import styled from "styled-components";
 
-// 백그라운드 속성 스트링에서 블루 레드 그린으로 바꾸기, 미들과 스몰 버튼에도 스타일 변경
-
+// 사용방법
 interface ButtonState {
-  size: "L" | "M" | "S";
-  name: string;
-  $width?: string;
-  $bgColor?: string;
+  size: "L" | "M" | "S"; // 크기 설정
+  name: string; // 버튼 이름
+  $bgColor?: "green" | "red" | "blue"; // 버튼 색
+  onClick?: () => void; // 클릭 메서드
 }
 
 const CutomButton = styled.button`
+  letter-spacing: 1px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
   background-color: #0077cc;
   color: white;
   border: none;
   font-family: GmarketSansMedium, Arial, Helvetica, sans-serif;
+  font-weight: bold;
   box-sizing: border-box;
 `;
 
-const LargeButton = styled(CutomButton)<{ $width: string; $bgColor: string }>`
+const LargeButton = styled(CutomButton)<{ $bgColor: string }>`
   font-size: 18px;
   padding: 0 20px;
   height: 56px;
   border-radius: 15px;
-  width: ${(props) => props.$width};
+  width: clamp(150px, 50vw, 250px);
   background-color: ${(props) =>
-    props.$bgColor === "blue"
-      ? "#0077cc"
+    props.$bgColor === "green"
+      ? "#4CAF50"
       : props.$bgColor === "red"
       ? "#CC0003"
-      : "#4CAF50"};
+      : "#0077cc"};
 `;
-const MediumButton = styled(CutomButton)<{ $width: string; $bgColor: string }>`
+const MediumButton = styled(CutomButton)<{ $bgColor: string }>`
   font-size: 16px;
   padding: 0 16px;
-  height: 40px;
+  height: 50px;
   border-radius: 10px;
-  width: ${(props) => props.$width};
-  background-color: ${(props) => props.$bgColor};
+  width: clamp(120px, 30vw, 180px);
+  background-color: ${(props) =>
+    props.$bgColor === "green"
+      ? "#4CAF50"
+      : props.$bgColor === "red"
+      ? "#CC0003"
+      : "#0077cc"};
 `;
-const SmallButton = styled(CutomButton)<{ $width: string; $bgColor: string }>`
+const SmallButton = styled(CutomButton)<{ $bgColor: string }>`
   font-size: 14px;
   padding: 0 12px;
-  height: 36px;
-  border-radius: 5px;
-  width: ${(props) => props.$width};
-  background-color: ${(props) => props.$bgColor};
+  height: 40px;
+  border-radius: 10px;
+  width: clamp(80px, 25vw, 150px);
+  background-color: ${(props) =>
+    props.$bgColor === "green"
+      ? "#4CAF50"
+      : props.$bgColor === "red"
+      ? "#CC0003"
+      : "#0077cc"};
 `;
 export default function Button({
   size,
   name,
-  $width = "auto",
-  $bgColor = "#0077cc",
+  $bgColor = "blue",
+  onClick,
 }: ButtonState) {
   return (
     <>
       {size === "L" ? (
-        <LargeButton $width={$width} $bgColor={$bgColor}>
+        <LargeButton $bgColor={$bgColor} onClick={onClick}>
           {name}
         </LargeButton>
       ) : size === "M" ? (
-        <MediumButton $width={$width} $bgColor={$bgColor}>
+        <MediumButton $bgColor={$bgColor} onClick={onClick}>
           {name}
         </MediumButton>
       ) : (
-        <SmallButton $width={$width} $bgColor={$bgColor}>
+        <SmallButton $bgColor={$bgColor} onClick={onClick}>
           {name}
         </SmallButton>
       )}
