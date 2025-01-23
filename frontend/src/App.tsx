@@ -6,6 +6,7 @@ import MainPage from "./pages/Home/MainPage";
 import MyPage from "./pages/Mypage/MyPage";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import Where from "./pages/Where/Where";
 import { Provider } from "react-redux";
 import store from "./store";
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/Login/Register" element={<Register />} />
             <Route path="/" element={<MainPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/Where" element={<Where />} />
           </Routes>
         </BrowserRouter>
       </Provider>
