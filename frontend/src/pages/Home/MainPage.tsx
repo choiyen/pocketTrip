@@ -5,6 +5,8 @@ import { incrementByAmount, minus, plus } from "../../slices/counterSlice";
 import Header from "../../components/Common/Header";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import Alert from "../../components/Common/Alert";
+import OptionButton from "../../components/Common/OptionButton";
+import AlertBox from "../../components/Common/AlertBox";
 
 export default function MainPage() {
   // 글로벌 상태값을 변경하려면 필요한 함수 usedispatch();
@@ -43,6 +45,8 @@ export default function MainPage() {
   return (
     <div>
       <Header />
+      <AlertBox />
+      <OptionButton />
       {/* isAlertVisible 상태값에 따라서 알림창 표시 */}
       {isAlertVisible && (
         <Alert
