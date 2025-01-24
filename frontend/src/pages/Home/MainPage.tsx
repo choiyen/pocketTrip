@@ -5,6 +5,8 @@ import { incrementByAmount, minus, plus } from "../../slices/counterSlice";
 import Header from "../../components/Common/Header";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import Alert from "../../components/Common/Alert";
+import OptionButton from "../../components/Common/OptionButton";
+import TourCard from "./TourCard";
 
 export default function MainPage() {
   // 글로벌 상태값을 변경하려면 필요한 함수 usedispatch();
@@ -43,6 +45,7 @@ export default function MainPage() {
   return (
     <div>
       <Header />
+      <TourCard />
       {/* isAlertVisible 상태값에 따라서 알림창 표시 */}
       {isAlertVisible && (
         <Alert
@@ -51,12 +54,6 @@ export default function MainPage() {
           setIsAlertVisible={setIsAlertVisible}
         />
       )}
-      MainPage
-      <p>Current Value: {value}</p>
-      <button onClick={() => dispatch(plus())}>plus</button>
-      <button onClick={() => dispatch(minus())}>minus</button>
-      <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
-      <button onClick={() => handleAction()}>알림창</button>
     </div>
   );
 }
