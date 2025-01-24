@@ -15,13 +15,13 @@ public class UserService {
 
     // 회원가입
     public UserEntity createUser(UserEntity userEntity) {
-        if(userEntity == null || userEntity.getUserid() == null) {
+        if(userEntity == null || userEntity.getEmail() == null) {
             throw new RuntimeException("Invalid arguments");
         }
 
-        String userid = userEntity.getUserid();
+        String userid = userEntity.getEmail();
 
-        if(userRepository.existsByUserid(userid)) {
+        if(userRepository.existsByEmail(userid)) {
             log.warn("User with id {} already exists", userid);
             throw new RuntimeException("User with id " + userid + " already exists");
         }
@@ -32,7 +32,7 @@ public class UserService {
 
     // 로그인
     public UserEntity getByCredentials(String userid, String password, PasswordEncoder passwordEncoder) {
-        UserEntity originalUser = userRepository.findByUserid(userid);
+        UserEntity originalUser = userRepository.findByEmail(userid);
         if(originalUser != null && passwordEncoder.matches(password, originalUser.getPassword())) {
             return originalUser;
         }
@@ -42,7 +42,7 @@ public class UserService {
     // 수정하기
     public UserEntity updateUser(String userId, UserEntity userEntity) {
 
-        UserEntity originalUser = userRepository.findByUserid(userId);
+        UserEntity originalUser = userRepository.findByEmail(userId);
         if(originalUser == null) {
             log.warn("User with id {} does not exist", userId);
         }
@@ -55,4 +55,13 @@ public class UserService {
 
         return updatedUser;
     }
+
+    public UserEntity findUser(String userId)
+    {
+        UserEntity user = userRepository.findByEmail(userId);
+        return user;
+    }
+
+
+
 }

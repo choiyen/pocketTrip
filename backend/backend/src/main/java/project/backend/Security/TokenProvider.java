@@ -31,7 +31,7 @@ public class TokenProvider {
 
         // 생성
         return Jwts.builder().signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
-                .setSubject(userEntity.getUserid())
+                .setSubject(userEntity.getEmail())
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
