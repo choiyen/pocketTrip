@@ -1,6 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import { IoAirplane } from "react-icons/io5";
+interface DateUiState {
+  $precent: string;
+  startOfDay: string;
+  endOfDay: string;
+}
+
 const DateWrap = styled.div`
   display: flex;
   font-family: inherit;
@@ -37,8 +43,9 @@ const Graph = styled.div`
   }
 `;
 
-const MovingGraph = styled.div`
-  width: 30%; // 움직이는 속성
+const MovingGraph = styled.div<{ $precent: string }>`
+  width: ${(props) => props.$precent};
+  transition-duration: 500ms;
   position: absolute;
   top: 50%;
   left: 0%;
@@ -54,15 +61,30 @@ const MovingGraph = styled.div`
     right: 0;
   }
 `;
-export default function TourDateUi() {
+export default function TourDateUi({
+  $precent,
+  startOfDay,
+  endOfDay,
+}: DateUiState) {
+  // "2025-01-18" >>> ['25.01', '18'] 로 변환
+  // 출발일
+  const startOfArr = startOfDay.split("-");
+  startOfArr[1] = startOfArr[0].slice(2) + "." + startOfArr[1];
+  startOfArr.shift();
+
+  // 도착일
+  const endOfArr = endOfDay.split("-");
+  endOfArr[1] = endOfArr[0].slice(2) + "." + endOfArr[1];
+  endOfArr.shift();
+
   return (
     <DateWrap>
       <StartDate>
-        <span>18</span> <br />
-        25.01
+        <span>{startOfArr[1]}</span> <br />
+        {startOfArr[0]}
       </StartDate>
       <Graph>
-        <MovingGraph>
+        <MovingGraph $precent={$precent}>
           <IoAirplane
             size="30px"
             color="black"
@@ -72,8 +94,8 @@ export default function TourDateUi() {
         </MovingGraph>
       </Graph>
       <EndDate>
-        <span>25</span> <br />
-        25.01
+        <span>{endOfArr[1]}</span> <br />
+        {endOfArr[0]}
       </EndDate>
     </DateWrap>
   );
