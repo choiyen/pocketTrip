@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page" style={{ backgroundColor: "#ffffff" }}>
       <div className="logoSz">
         <a href="/login">
           <img
