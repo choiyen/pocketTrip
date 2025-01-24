@@ -9,6 +9,7 @@ export default function Where3() {
   // 초기값을 null로 설정하고 타입을 Date | null로 지정
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const isButtonDisabled = !startDate || !endDate;
 
   const navigate = useNavigate();
 
@@ -17,12 +18,7 @@ export default function Where3() {
   };
 
   const goToWhere4 = () => {
-    // 날짜가 모두 선택되었는지 체크하고, 선택되지 않았다면 경고 처리할 수도 있음
-    if (!startDate || !endDate) {
-      alert("여행 기간을 모두 선택해주세요.");
-      return;
-    }
-    navigate("/where4"); // Where4 페이지로 이동
+    navigate("/where4");
   };
 
   return (
@@ -37,7 +33,7 @@ export default function Where3() {
         onClick={goToWhere2}
       >
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
         />
       </svg>
@@ -73,7 +69,13 @@ export default function Where3() {
 
       {/* 확인 버튼 */}
       <div className="button-container">
-        <Button size="S" name="확인" $bgColor="blue" onClick={goToWhere4} />
+        <Button
+          size="S"
+          name="확인"
+          $bgColor="blue"
+          onClick={goToWhere4}
+          disabled={isButtonDisabled}
+        />
       </div>
     </div>
   );
