@@ -12,12 +12,14 @@ const ModalBox = styled.div<{ $isActive: boolean }>`
   background-color: white;
   height: 100%;
   width: 100%;
+  max-width: 768px;
   border-radius: 20px 20px 0 0;
   box-shadow: 0px -1px 3px 3px rgba(0, 0, 0, 0.2);
   position: absolute;
+  left: 50%;
   z-index: 80;
   transform: ${({ $isActive }) =>
-    $isActive ? "translateY(0vh)" : "translateY(100vh)"};
+    $isActive ? "translate(-50%, 0vh)" : "translate(-50%, 100vh)"};
   transition-duration: 500ms;
   padding: 20px;
   box-sizing: border-box;
