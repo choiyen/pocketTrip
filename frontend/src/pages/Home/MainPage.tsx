@@ -42,10 +42,28 @@ export default function MainPage() {
     setIsAlertVisible(true);
   };
 
+  const data = {
+    name: "일본", // 여행지 이름
+    cost: "2,000,000 ₩", // 현재 누적 금액
+    ImgArr: [
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+    ], // 참여인원들 프로필 이미지 주소
+    startOfDay: "2025-01-18", // 여행 시작일
+    endOfDay: "2025-01-30", // 여행 종료일
+    bgImg: "./japan.jpg",
+  };
+
   return (
     <div>
       <Header />
-      <TourCard />
+
+      <TourCard Tourdata={data} />
       {/* isAlertVisible 상태값에 따라서 알림창 표시 */}
       {isAlertVisible && (
         <Alert
