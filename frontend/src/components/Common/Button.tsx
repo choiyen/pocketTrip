@@ -7,22 +7,32 @@ interface ButtonState {
   name: string; // 버튼 이름
   $bgColor?: "green" | "red" | "blue" | "transparent"; // 버튼 색
   onClick?: () => void; // 클릭 메서드
+  disabled?: boolean; // 추가된 disabled prop
 }
 
-const CutomButton = styled.button<{ $bgColor: string }>`
+const CutomButton = styled.button<{ $bgColor: string; disabled: boolean }>`
   letter-spacing: 1px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  background-color: #0077cc;
+  background-color: ${(props) =>
+    props.disabled
+      ? "#d3d3d3"
+      : props.$bgColor === "transparent"
+      ? "transparent"
+      : "#0077cc"};
   color: ${(props) => (props.$bgColor === "transparent" ? "#121212" : "white")};
   border: none;
   font-family: GmarketSansMedium, Arial, Helvetica, sans-serif;
   font-weight: bold;
   box-sizing: border-box;
+  opacity: ${(props) => (props.disabled ? 0.4 : 1)};
 `;
 
-const LargeButton = styled(CutomButton)<{ $bgColor: string }>`
+const LargeButton = styled(CutomButton)<{
+  $bgColor: string;
+  disabled: boolean;
+}>`
   font-size: 15px;
   padding: 0 20px;
   height: 40px;
@@ -37,7 +47,11 @@ const LargeButton = styled(CutomButton)<{ $bgColor: string }>`
       ? "transparent"
       : "#0077cc"};
 `;
-const MediumButton = styled(CutomButton)<{ $bgColor: string }>`
+
+const MediumButton = styled(CutomButton)<{
+  $bgColor: string;
+  disabled: boolean;
+}>`
   font-size: 16px;
   padding: 0 16px;
   height: 50px;
@@ -50,7 +64,11 @@ const MediumButton = styled(CutomButton)<{ $bgColor: string }>`
       ? "#CC0003"
       : "#0077cc"};
 `;
-const SmallButton = styled(CutomButton)<{ $bgColor: string }>`
+
+const SmallButton = styled(CutomButton)<{
+  $bgColor: string;
+  disabled: boolean;
+}>`
   font-size: 14px;
   padding: 0 12px;
   height: 40px;
@@ -63,24 +81,26 @@ const SmallButton = styled(CutomButton)<{ $bgColor: string }>`
       ? "#CC0003"
       : "#0077cc"};
 `;
+
 export default function Button({
   size,
   name,
   $bgColor = "blue",
   onClick,
-}: ButtonState) {
+  disabled = false,
+}: ButtonState & { disabled?: boolean }) {
   return (
     <>
       {size === "L" ? (
-        <LargeButton $bgColor={$bgColor} onClick={onClick}>
+        <LargeButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
           {name}
         </LargeButton>
       ) : size === "M" ? (
-        <MediumButton $bgColor={$bgColor} onClick={onClick}>
+        <MediumButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
           {name}
         </MediumButton>
       ) : (
-        <SmallButton $bgColor={$bgColor} onClick={onClick}>
+        <SmallButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
           {name}
         </SmallButton>
       )}
