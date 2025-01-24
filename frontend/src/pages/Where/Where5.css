@@ -1,4 +1,4 @@
-.where-container4 {
+.where-container5 {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -7,7 +7,7 @@
   text-align: center;
 }
 
-.where-title4 {
+.where-title5 {
   font-size: 24px;
   margin-bottom: 20%;
   font-weight: bold;
@@ -21,4 +21,17 @@
   /* border: 1px solid #ccc; */
   outline: none;
   width: 80%;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  align-items: center;
+}
+
+.chaGok {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #c2bfbf;
 }
