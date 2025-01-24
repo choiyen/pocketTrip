@@ -13,8 +13,7 @@ import project.backend.Security.TokenProvider;
 import project.backend.Service.UserService;
 
 import javax.naming.AuthenticationException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,6 +24,10 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private final Map<String, String> codeStorage = new HashMap<>(); // 전화번호와 인증 코드 저장
+    private final Map<String, Long> expiryStorage = new HashMap<>(); // 코드 만료 시간 저장
+
 
     @Autowired
     private TokenProvider tokenProvider;
@@ -38,20 +41,18 @@ public class UserController {
         {
             UserEntity user = UserEntity.builder()
                     .name(userDTO.getName())
-                    .userid(userDTO.getUserid())
+                    .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .phone(userDTO.getPhone())
-                    .email(userDTO.getEmail())
                     .build();
 
             UserEntity registerUser = userService.createUser(user);
 
             UserDTO responsedUserDTO = UserDTO.builder()
                     .name(registerUser.getName())
-                    .userid(registerUser.getUserid())
+                    .email(registerUser.getEmail())
                     .password(registerUser.getPassword())
                     .phone(registerUser.getPhone())
-                    .email(registerUser.getEmail())
                     .id(registerUser.getId())
                     .build();
 
@@ -71,17 +72,16 @@ public class UserController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
         try{
-            UserEntity user = userService.getByCredentials(userDTO.getUserid(), userDTO.getPassword(), passwordEncoder);
-            System.out.println(user.getUserid());
+            UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), passwordEncoder);
+            System.out.println(user.getEmail());
             if(user != null)
             {
                 String token = tokenProvider.createToken(user);
                 UserDTO responseUserDTO = UserDTO.builder()
                         .name(user.getName())
-                        .userid(user.getUserid())
+                        .email(user.getEmail())
                         .password(user.getPassword())
                         .phone(user.getPhone())
-                        .email(user.getEmail())
                         .id(user.getId())
                         .token(token)
                         .build();
@@ -107,20 +107,18 @@ public class UserController {
         {
             UserEntity user = UserEntity.builder()
                     .name(userDTO.getName())
-                    .userid(userId)
+                    .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .phone(userDTO.getPhone())
-                    .email(userDTO.getEmail())
                     .build();
 
             UserEntity editUser = userService.updateUser(userId, user);
 
             UserDTO responsedUserDTO = UserDTO.builder()
                     .name(editUser.getName())
-                    .userid(editUser.getUserid())
+                    .email(editUser.getEmail())
                     .password(editUser.getPassword())
                     .phone(editUser.getPhone())
-                    .email(editUser.getEmail())
                     .build();
 
             List<Object> list = new ArrayList<>();
