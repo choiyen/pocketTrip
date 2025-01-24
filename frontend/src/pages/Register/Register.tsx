@@ -29,7 +29,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="Register-page">
+    <div className="Register-page" style={{ backgroundColor: "#ffffff" }}>
       <div className="logoSz">
         <a href="/login">
           <img

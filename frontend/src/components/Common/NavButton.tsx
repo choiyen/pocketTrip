@@ -42,7 +42,7 @@ export default function NavButton({ where }: NavButtonProps) {
           <Span>홈화면</Span>
         </Linked>
       ) : (
-        <Linked to="mypage" $isSelected={value === "mypage" ? true : false}>
+        <Linked to="/mypage" $isSelected={value === "mypage" ? true : false}>
           <IoPersonCircleSharp />
           <Span>내 정보</Span>
         </Linked>
