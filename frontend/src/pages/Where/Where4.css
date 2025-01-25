@@ -11,14 +11,15 @@
   font-size: 24px;
   margin-bottom: 20%;
   font-weight: bold;
+  line-height: 1.5;
 }
 
 .input {
-  margin-bottom: 20%;
+  margin-bottom: 24px;
   padding: 10px;
   font-size: 16px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   outline: none;
   width: 80%;
 }
