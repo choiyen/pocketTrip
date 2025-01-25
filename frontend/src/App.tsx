@@ -14,6 +14,9 @@ import Where2 from "./pages/Where/Where2";
 import Where3 from "./pages/Where/Where3";
 import Where4 from "./pages/Where/Where4";
 import Where5 from "./pages/Where/Where5";
+import Tour from "./pages/Tour/Tour";
+import TourMembers from "./pages/TourMembers/TourMembers";
+import MoneyChart from "./pages/MoneyChart/MoneyChart";
 
 function App() {
   const alertState = useSelector(
@@ -32,6 +35,9 @@ function App() {
           <Route path="/Where3" element={<Where3 />} />
           <Route path="/Where4" element={<Where4 />} />
           <Route path="/Where5" element={<Where5 />} />
+          <Route path="/Tour" element={<Tour />} />
+          <Route path="/TourMembers" element={<TourMembers />} />
+          <Route path="/MoneyChart" element={<MoneyChart />} />
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
