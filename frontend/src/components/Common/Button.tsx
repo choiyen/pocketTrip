@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 // 사용방법
 interface ButtonState {
-  size: "L" | "M" | "S"; // 크기 설정
+  size: "XL" | "L" | "M" | "S"; // 크기 설정
   name: string; // 버튼 이름
   $bgColor?: "green" | "red" | "blue" | "transparent"; // 버튼 색
   onClick?: () => void; // 클릭 메서드
@@ -27,6 +27,25 @@ const CutomButton = styled.button<{ $bgColor: string; disabled: boolean }>`
   font-weight: bold;
   box-sizing: border-box;
   opacity: ${(props) => (props.disabled ? 0.4 : 1)};
+`;
+
+const XLButton = styled(CutomButton)<{
+  $bgColor: string;
+  disabled: boolean;
+}>`
+  font-size: 15px;
+  padding: 0 24px;
+  height: 40px;
+  border-radius: 12px;
+  /* width: clamp(200px, 60vw, 300px); */
+  background-color: ${(props) =>
+    props.$bgColor === "green"
+      ? "#4CAF50"
+      : props.$bgColor === "red"
+      ? "#CC0003"
+      : props.$bgColor === "transparent"
+      ? "transparent"
+      : "#0077cc"};
 `;
 
 const LargeButton = styled(CutomButton)<{
@@ -91,7 +110,11 @@ export default function Button({
 }: ButtonState & { disabled?: boolean }) {
   return (
     <>
-      {size === "L" ? (
+      {size === "XL" ? (
+        <XLButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
+          {name}
+        </XLButton>
+      ) : size === "L" ? (
         <LargeButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
           {name}
         </LargeButton>

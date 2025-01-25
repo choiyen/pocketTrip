@@ -67,7 +67,10 @@ export default function Where2() {
         />
       </svg>
 
-      <div className="where-title2">어느 나라로 떠날 계획인가요?</div>
+      <div className="where-title2">
+        어느 나라로 <br />
+        떠날 계획인가요?
+      </div>
 
       {/* 나라 선택 드롭다운 */}
       <div className="where-option2" onClick={() => setIsEditing(!isEditing)}>
