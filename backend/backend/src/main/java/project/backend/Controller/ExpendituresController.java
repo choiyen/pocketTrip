@@ -1,6 +1,7 @@
 package project.backend.Controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -98,29 +99,25 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String userId, @PathVariable String travelCode) {
+    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
 
         try
         {
-            Flux<ExpenditureEntity> expenditure = expenditureService.findAllByTravelCode(travelCode);
-            // ResponseEntity에 Flux를 래핑해서 반환
-            List<Object> list = new ArrayList<>();
-            list.add(expenditure);
-            return ResponseEntity.ok().body(responseDTO.Response("info", "지출 목록 전송 완료!!", list));
+            List<ExpenditureEntity> expenditures = expenditureService.findAllByTravelCode(travelCode).collectList().block();
+
+            return ResponseEntity.ok().body(responseDTO.Response("info", "지출 목록 전송 완료!!", expenditures));
         }
         catch (Exception e)
         {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
 
         }
-
-
     }
 
 
     // 지출 수정
     @PutMapping("/{travelCode}/{expenditureId}")
-    public ResponseEntity<?> updateExpenditure(@AuthenticationPrincipal String userId, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode, @PathVariable String expenditureId) {
+    public ResponseEntity<?> updateExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode, @PathVariable String expenditureId) {
         try {
             ExpenditureEntity expenditure = ExpenditureEntity.builder()
                     .travelCode(travelCode)
@@ -136,7 +133,7 @@ public class ExpendituresController {
                     .description(expendituresDTO.getDescription())
                     .build();
 
-            ExpenditureEntity updateExpenditure = expenditureService.updateExpenditure(expenditureId, expenditure);
+            ExpenditureEntity updateExpenditure = expenditureService.updateExpenditure(email, expenditureId, expenditure).block();
 
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
                     .id(updateExpenditure.getId())
@@ -164,6 +161,17 @@ public class ExpendituresController {
 
 
     // 지출 삭제
+    @DeleteMapping("/{travelCode}/{expenditureId}")
+    public ResponseEntity<?> deleteExpenditure(@AuthenticationPrincipal String email, @PathVariable String travelCode,@PathVariable String expenditureId) {
+        try {
+            List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email, travelCode, expenditureId).collectList().block();
+
+            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", deletedExpenditure));
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 //마지막 과제 : 카드 별, 현금 별로 데이터 뽑아오는 함수 추가

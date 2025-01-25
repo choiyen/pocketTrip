@@ -102,7 +102,7 @@ public class UserController {
 
     // 수정
     @PutMapping("/edit")
-    public ResponseEntity<?> editUser(@AuthenticationPrincipal String userId, @RequestBody UserDTO userDTO){
+    public ResponseEntity<?> editUser(@AuthenticationPrincipal String email, @RequestBody UserDTO userDTO){
         try
         {
             UserEntity user = UserEntity.builder()
@@ -112,7 +112,7 @@ public class UserController {
                     .phone(userDTO.getPhone())
                     .build();
 
-            UserEntity editUser = userService.updateUser(userId, user);
+            UserEntity editUser = userService.updateUser(email, user);
 
             UserDTO responsedUserDTO = UserDTO.builder()
                     .name(editUser.getName())
