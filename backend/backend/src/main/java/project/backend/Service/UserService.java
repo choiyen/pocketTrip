@@ -31,8 +31,8 @@ public class UserService {
 
 
     // 로그인
-    public UserEntity getByCredentials(String userid, String password, PasswordEncoder passwordEncoder) {
-        UserEntity originalUser = userRepository.findByEmail(userid);
+    public UserEntity getByCredentials(String email, String password, PasswordEncoder passwordEncoder) {
+        UserEntity originalUser = userRepository.findByEmail(email);
         if(originalUser != null && passwordEncoder.matches(password, originalUser.getPassword())) {
             return originalUser;
         }
@@ -40,11 +40,11 @@ public class UserService {
     }
 
     // 수정하기
-    public UserEntity updateUser(String userId, UserEntity userEntity) {
+    public UserEntity updateUser(String email, UserEntity userEntity) {
 
-        UserEntity originalUser = userRepository.findByEmail(userId);
+        UserEntity originalUser = userRepository.findByEmail(email);
         if(originalUser == null) {
-            log.warn("User with id {} does not exist", userId);
+            log.warn("User with email {} does not exist", email);
         }
 
         originalUser.setPassword(userEntity.getPassword());
@@ -55,13 +55,4 @@ public class UserService {
 
         return updatedUser;
     }
-
-    public UserEntity findUser(String userId)
-    {
-        UserEntity user = userRepository.findByEmail(userId);
-        return user;
-    }
-
-
-
 }
