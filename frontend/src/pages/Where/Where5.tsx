@@ -41,8 +41,26 @@ export default function Where5() {
         type="text"
         className="input"
         value={name}
-        onChange={(e) => setName(e.target.value)} // 이름 입력 추적
+        placeholder="숫자만 입력해주세요."
+        onChange={(e) => {
+          const rawValue = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 추출
+          if (rawValue === "") {
+            setName(""); // 빈 문자열로 설정
+          } else {
+            const formattedValue = new Intl.NumberFormat().format(
+              Number(rawValue)
+            ); // 쉼표 추가
+            setName(formattedValue); // 상태 업데이트
+          }
+        }}
+        onBlur={() => {
+          if (name) setName((prev) => `${prev}₩`); // 포커스가 벗어날 때 ₩ 추가
+        }}
+        onFocus={() => {
+          setName((prev) => prev.replace(/₩/g, "")); // 포커스가 돌아오면 ₩ 제거
+        }}
       />
+
       <div className="button-container">
         <Button
           size="S"
