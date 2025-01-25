@@ -52,7 +52,7 @@ export default function Where5() {
           disabled={isButtonDisabled}
         />
         <Button
-          size="L"
+          size="XL"
           name="예산 설정 없이 기록 시작"
           $bgColor="red"
           onClick={goToWhere6}
