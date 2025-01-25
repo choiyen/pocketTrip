@@ -34,8 +34,8 @@ public class TravelPlanEntity
     private int expense;
     @NonNull
     private String founder;//총무
-
     private Set<String> participants;//여행에서 데이터를 수정, 삭제할 권한
+
     @NonNull
     private boolean isCalculate;
 
