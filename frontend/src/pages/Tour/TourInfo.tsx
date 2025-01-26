@@ -45,7 +45,7 @@ const TourWrap = styled.div`
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
     border-bottom: 20px solid transparent;
-    filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.1));
   }
 `;
 export default function TourInfo({ Tourdata }: TourCardProps) {
