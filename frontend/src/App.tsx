@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./styles/reset.css";
 import "./styles/global.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -23,6 +23,22 @@ function App() {
   const alertState = useSelector(
     (state: RootState) => state.AlertControl.alertState
   );
+
+  // travelData 상태 정의
+  const [travelData, setTravelData] = useState({
+    // isDomestic: true, // 국내/해외 여부
+    selectedCountry: "", // 선택한 나라
+    startDate: null, // 여행 시작 날짜
+    endDate: null, // 여행 종료 날짜
+    name: "", // 여행지갑 이름
+    budget: 0, // 예산
+  });
+
+  // 상태를 업데이트하는 함수
+  const updateTravelData = (data: any) => {
+    setTravelData((prevData) => ({ ...prevData, ...data }));
+  };
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -31,12 +47,55 @@ function App() {
           <Route path="/Login/Register" element={<Register />} />
           <Route path="/" element={<MainPage />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/Where1" element={<Where1 />} />
-          <Route path="/Where2" element={<Where2 />} />
-          <Route path="/Where3" element={<Where3 />} />
-          <Route path="/Where4" element={<Where4 />} />
-          <Route path="/Where5" element={<Where5 />} />
+
+          {/* Where1에서 travelData와 updateTravelData를 props로 전달 */}
+          <Route
+            path="/Where1"
+            element={<Where1 updateTravelData={updateTravelData} />}
+          />
+
+          {/* Where2에서 travelData와 updateTravelData를 props로 전달 */}
+          <Route
+            path="/Where2"
+            element={
+              <Where2
+                travelData={travelData}
+                updateTravelData={updateTravelData}
+              />
+            }
+          />
+
+          {/* Where3에서 travelData와 updateTravelData를 props로 전달 */}
+          <Route
+            path="/Where3"
+            element={
+              <Where3
+                travelData={travelData}
+                updateTravelData={updateTravelData}
+              />
+            }
+          />
+
+          <Route
+            path="/Where4"
+            element={
+              <Where4
+                travelData={travelData}
+                updateTravelData={updateTravelData}
+              />
+            }
+          />
+          <Route
+            path="/Where5"
+            element={
+              <Where5
+                travelData={travelData}
+                updateTravelData={updateTravelData}
+              />
+            }
+          />
           <Route path="/Where6" element={<Where6 />} />
+
           <Route path="/Tour" element={<Tour />} />
           <Route path="/TourMembers" element={<TourMembers />} />
           <Route path="/MoneyChart" element={<MoneyChart />} />
