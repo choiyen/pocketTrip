@@ -7,6 +7,7 @@ import {
   ChangeModalState,
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
+import Calculator from "./Calculator";
 
 const ModalBox = styled.div<{ $isActive: boolean }>`
   background-color: white;
@@ -61,7 +62,7 @@ export default function Modal() {
       <CloseButton onClick={() => ChangeState()}>
         <IoIosArrowDown />
       </CloseButton>
-      childrenss
+      <Calculator />
     </ModalBox>
   );
 }

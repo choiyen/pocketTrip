@@ -55,7 +55,7 @@ export default function MainPage() {
       "./ProfileImage.png",
     ], // 참여인원들 프로필 이미지 주소
     startOfDay: "2025-01-18", // 여행 시작일
-    endOfDay: "2025-01-30", // 여행 종료일
+    endOfDay: "2025-02-20", // 여행 종료일
     bgImg: "./japan.jpg",
   };
 
