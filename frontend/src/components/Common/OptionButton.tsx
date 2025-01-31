@@ -11,7 +11,7 @@ import {
 } from "../../slices/ModalControlSlice";
 import { ChangeAlertState } from "../../slices/AlertControlSlice";
 
-const OptionWrap = styled.div`
+export const OptionWrap = styled.div`
   position: absolute;
   top: 10px;
   right: 10px;
@@ -26,6 +26,7 @@ const Button = styled.button`
 const OptionMenu = styled.ul`
   background-color: white;
   position: absolute;
+  z-index: 1;
   top: 100%;
   right: 100%;
   width: max-content;
@@ -58,7 +59,7 @@ const DeleteButton = styled(MenuButton)`
   color: #cc0003;
 `;
 
-export default function OptionButton() {
+export default function OptionButton({ className }: { className?: string }) {
   const [visibleOption, setVisibleOption] = useState(false);
 
   const dispatch: AppDispatch = useDispatch();
@@ -90,7 +91,7 @@ export default function OptionButton() {
   };
 
   return (
-    <OptionWrap>
+    <OptionWrap className={className}>
       <Button onClick={() => setVisibleOption((prev) => !prev)}>
         <SlOptionsVertical />
       </Button>
