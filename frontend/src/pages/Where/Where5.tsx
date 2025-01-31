@@ -5,7 +5,7 @@ import "./Where5.css";
 
 interface Where5Props {
   travelData: {
-    isDomestic: boolean;
+    // isDomestic: boolean;
     selectedCountry: string;
     startDate: string | null;
     endDate: string | null;

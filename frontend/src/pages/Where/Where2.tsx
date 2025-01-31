@@ -8,7 +8,7 @@ import styled from "styled-components";
 
 interface Where2Props {
   travelData: {
-    isDomestic: boolean;
+    // isDomestic: boolean;
     selectedCountry: string;
     startDate: string | null;
     endDate: string | null;

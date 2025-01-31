@@ -7,7 +7,7 @@ import "./Where3.css";
 
 interface Where3Props {
   travelData: {
-    isDomestic: boolean;
+    // isDomestic: boolean;
     selectedCountry: string;
     startDate: string | null;
     endDate: string | null;
