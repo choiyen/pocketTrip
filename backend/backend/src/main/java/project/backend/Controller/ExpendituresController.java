@@ -1,22 +1,15 @@
 package project.backend.Controller;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ExpendituresDTO;
 import project.backend.DTO.ResponseDTO;
-import project.backend.DTO.UserDTO;
 import project.backend.Entity.ExpenditureEntity;
-import project.backend.Entity.UserEntity;
 import project.backend.Service.ExpenditureService;
-import project.backend.Service.UserService;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,7 +29,7 @@ public class ExpendituresController {
 
     // 지출 추가
     @PostMapping("/{travelCode}")
-    public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String userId, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode) {
+    public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode) {
         try {
             int leftLimit = 48; // numeral '0'
             int rightLimit = 122; // letter 'z'
@@ -70,7 +63,7 @@ public class ExpendituresController {
                     .description(expendituresDTO.getDescription())
                     .build();
 
-            ExpenditureEntity createExpenditure = expenditureService.create(expenditure);
+            ExpenditureEntity createExpenditure = expenditureService.create(email, expenditure).block();
 
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
                     .travelCode(createExpenditure.getTravelCode())
@@ -89,10 +82,8 @@ public class ExpendituresController {
             List<Object> list = new ArrayList<>();
             list.add(responsedDTO);
             return ResponseEntity.ok().body(responseDTO.Response("success", "정상적으로 지출 추가가 완료되었습니다.", list));
-
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
