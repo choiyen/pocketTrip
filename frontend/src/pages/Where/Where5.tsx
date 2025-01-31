@@ -3,8 +3,20 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Common/Button";
 import "./Where5.css";
 
-export default function Where5() {
-  const [name, setName] = useState<string>("");
+interface Where5Props {
+  travelData: {
+    isDomestic: boolean;
+    selectedCountry: string;
+    startDate: string | null;
+    endDate: string | null;
+    name: string;
+    budget: number;
+  };
+  updateTravelData: (data: any) => void;
+}
+
+const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
+  const [budget, setBudget] = useState<number>(travelData.budget); // 예산 상태
   const navigate = useNavigate();
 
   const goToWhere4 = () => {
@@ -12,10 +24,22 @@ export default function Where5() {
   };
 
   const goToWhere6 = () => {
-    navigate("/where6");
+    // 예산(budget)을 travelData에 추가하여 업데이트
+    updateTravelData({
+      budget: budget, // 예산 값 업데이트
+    });
+
+    // 업데이트된 travelData 로그 출력
+    console.log("업데이트된 travelData:", {
+      ...travelData,
+      budget: budget, // 예산 업데이트
+    });
+
+    // Where6 페이지로 이동
+    navigate("/Where6");
   };
 
-  const isButtonDisabled = name.trim() === ""; // 이름이 없으면 버튼 비활성화
+  const isButtonDisabled = budget <= 0; // 예산이 0 이하이면 버튼 비활성화
 
   return (
     <div className="where-container5">
@@ -40,34 +64,20 @@ export default function Where5() {
       <input
         type="text"
         className="input"
-        value={name}
+        value={budget.toLocaleString()} // 숫자 포맷으로 표시
         placeholder="숫자만 입력해주세요."
         onChange={(e) => {
           const rawValue = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 추출
-          if (rawValue === "") {
-            setName(""); // 빈 문자열로 설정
-          } else {
-            const formattedValue = new Intl.NumberFormat().format(
-              Number(rawValue)
-            ); // 쉼표 추가
-            setName(formattedValue); // 상태 업데이트
-          }
-        }}
-        onBlur={() => {
-          if (name) setName((prev) => `${prev}₩`); // 포커스가 벗어날 때 ₩ 추가
-        }}
-        onFocus={() => {
-          setName((prev) => prev.replace(/₩/g, "")); // 포커스가 돌아오면 ₩ 제거
+          setBudget(rawValue === "" ? 0 : Number(rawValue)); // 예산 상태 업데이트
         }}
       />
-
       <div className="button-container">
         <Button
           size="S"
           name="확인"
           $bgColor="blue"
           onClick={goToWhere6}
-          disabled={isButtonDisabled}
+          disabled={isButtonDisabled} // 예산이 0이면 버튼 비활성화
         />
         <Button
           size="XL"
@@ -79,4 +89,6 @@ export default function Where5() {
       <div className="chaGok">0부터 차곡차곡</div>
     </div>
   );
-}
+};
+
+export default Where5;
