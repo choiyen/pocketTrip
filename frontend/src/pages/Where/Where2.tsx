@@ -6,6 +6,18 @@ import "./Where2.css";
 import { countryNamesInKorean } from "../Data/countryNames";
 import styled from "styled-components";
 
+interface Where2Props {
+  travelData: {
+    // isDomestic: boolean;
+    selectedCountry: string;
+    startDate: string | null;
+    endDate: string | null;
+    name: string;
+    budget: number;
+  };
+  updateTravelData: (data: any) => void;
+}
+
 const Buttons = styled(Button)`
   font-size: 16px;
   font-weight: bold;
@@ -22,7 +34,7 @@ const Buttons = styled(Button)`
   }
 `;
 
-export default function Where2() {
+const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
   const navigate = useNavigate();
   const [countries, setCountries] = useState<string[]>([]); // 나라 목록
   const [search, setSearch] = useState<string>(""); // 검색어
@@ -35,7 +47,18 @@ export default function Where2() {
     navigate("/where1");
   };
   const goToWhere3 = () => {
-    navigate("/where3");
+    // 나라가 선택되면 travelData 업데이트
+    updateTravelData({
+      selectedCountry: selectedCountry,
+    });
+
+    // 업데이트된 travelData 로그 출력
+    console.log("업데이트된 travelData:", {
+      ...travelData,
+      selectedCountry: selectedCountry,
+    });
+
+    navigate("/Where3");
   };
 
   // API 호출로 나라 목록 불러오기
@@ -171,4 +194,6 @@ export default function Where2() {
       </div>
     </div>
   );
-}
+};
+
+export default Where2;

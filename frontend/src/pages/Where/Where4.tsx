@@ -3,7 +3,19 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Common/Button";
 import "./Where4.css";
 
-export default function Where4() {
+interface Where4Props {
+  travelData: {
+    // isDomestic: boolean;
+    selectedCountry: string;
+    startDate: string | null;
+    endDate: string | null;
+    name: string;
+    budget: number;
+  };
+  updateTravelData: (data: any) => void;
+}
+
+const Where4: React.FC<Where4Props> = ({ travelData, updateTravelData }) => {
   const [name, setName] = useState<string>("");
   const navigate = useNavigate();
 
@@ -12,7 +24,19 @@ export default function Where4() {
   };
 
   const goToWhere5 = () => {
-    navigate("/where5");
+    // 지갑 이름을 travelData에 추가하여 업데이트
+    updateTravelData({
+      name: name, // 지갑 이름 업데이트
+    });
+
+    // 업데이트된 travelData 로그 출력
+    console.log("업데이트된 travelData:", {
+      ...travelData,
+      name: name,
+    });
+
+    // Where5 페이지로 이동
+    navigate("/Where5");
   };
 
   const isButtonDisabled = name.trim() === ""; // 이름이 없으면 버튼 비활성화
@@ -54,4 +78,5 @@ export default function Where4() {
       </div>
     </div>
   );
-}
+};
+export default Where4;

@@ -55,6 +55,7 @@ input {
   border-radius: 5px;
   box-sizing: border-box;
   margin-bottom: 20px;
+  padding-left: 5px;
 }
 
 .inD {

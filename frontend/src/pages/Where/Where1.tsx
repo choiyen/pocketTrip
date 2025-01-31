@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Common/Button";
 import "./Where1.css";
 
-export default function Where1() {
+// props 타입 정의
+interface Where1Props {
+  updateTravelData: (data: any) => void;
+}
+
+const Where1: React.FC<Where1Props> = ({ updateTravelData }) => {
   const navigate = useNavigate();
 
   const goToIndex = () => {
@@ -15,6 +20,10 @@ export default function Where1() {
   };
 
   const goToWhere3 = () => {
+    // 국내를 선택했을 때
+    updateTravelData({
+      selectedCountry: "대한민국",
+    });
     navigate("/where3");
   };
 
@@ -38,4 +47,6 @@ export default function Where1() {
       </div>
     </div>
   );
-}
+};
+
+export default Where1;
