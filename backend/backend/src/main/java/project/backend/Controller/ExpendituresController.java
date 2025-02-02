@@ -2,6 +2,8 @@ package project.backend.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,7 @@ public class ExpendituresController {
 
     // 지출 추가
     @PostMapping("/{travelCode}")
+    @CacheEvict(value = "Expenditure", allEntries = true)
     public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode) {
         try {
             int leftLimit = 48; // numeral '0'
@@ -90,6 +93,7 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
+    @Cacheable(value = "Expenditure", key = "#Expenditure")
     public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
 
         try
@@ -108,6 +112,7 @@ public class ExpendituresController {
 
     // 지출 수정
     @PutMapping("/{travelCode}/{expenditureId}")
+    @CacheEvict(value = "Expenditure", key = "#Expenditure")
     public ResponseEntity<?> updateExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode, @PathVariable String expenditureId) {
         try {
             ExpenditureEntity expenditure = ExpenditureEntity.builder()
@@ -153,6 +158,7 @@ public class ExpendituresController {
 
     // 지출 삭제
     @DeleteMapping("/{travelCode}/{expenditureId}")
+    @CacheEvict(value = "Expenditure", allEntries = true)
     public ResponseEntity<?> deleteExpenditure(@AuthenticationPrincipal String email, @PathVariable String travelCode,@PathVariable String expenditureId) {
         try {
             List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email, travelCode, expenditureId).collectList().block();
@@ -166,4 +172,5 @@ public class ExpendituresController {
 
 
 //마지막 과제 : 카드 별, 현금 별로 데이터 뽑아오는 함수 추가
+
 }
