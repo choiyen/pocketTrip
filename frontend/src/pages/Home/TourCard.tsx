@@ -5,11 +5,12 @@ import CardUserList from "./CardUserList";
 import { Link } from "react-router-dom";
 
 interface TravelData {
-  name: string; // 여행지 이름
-  cost: string; // 현재 누적 금액 (통화 단위 포함)
+  name: string; // 여행지갑 이름
+  selectedCountry: string; // 여행지 이름
+  budget: string; // 현재 누적 금액 (통화 단위 포함)
   ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
-  startOfDay: string; // 여행 시작일 (ISO 날짜 형식)
-  endOfDay: string; // 여행 종료일 (ISO 날짜 형식)
+  startDate: string; // 여행 시작일 (ISO 날짜 형식)
+  endDate: string; // 여행 종료일 (ISO 날짜 형식)
   bgImg?: string;
 }
 interface TourCardProps {
@@ -53,21 +54,22 @@ const TitleWrap = styled.div`
 export default function TourCard({ Tourdata }: TourCardProps) {
   const {
     name,
-    cost,
+    selectedCountry,
+    budget,
     ImgArr,
-    startOfDay,
-    endOfDay,
+    startDate,
+    endDate,
     bgImg = "japan.jpg",
   } = Tourdata;
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
-  const startDate = new Date(startOfDay);
-  const endDate = new Date(endOfDay);
+  const startedDate = new Date(startDate);
+  const endedDate = new Date(endDate);
   const today = new Date();
 
   // 시작 종료일 시간 차이 계산
-  const totalDuration = endDate.getTime() - startDate.getTime();
+  const totalDuration = endedDate.getTime() - startedDate.getTime();
   // 오늘과 시작일 차이 계산
-  const progressDuration = today.getTime() - startDate.getTime();
+  const progressDuration = today.getTime() - startedDate.getTime();
   // 진행률 0과 100 사이로 제한두고 계산
   const progress =
     totalDuration > 0
@@ -78,14 +80,14 @@ export default function TourCard({ Tourdata }: TourCardProps) {
     <Card to="/Tour" state={{ Tourdata }} $bgImg={bgImg}>
       <div>
         <TitleWrap>
-          <h2>{name}</h2>
+          <h2>{selectedCountry}</h2>
           <CardUserList user={ImgArr} />
         </TitleWrap>
-        <p>{cost}</p>
+        <p>{budget} ₩</p>
         <TourDateUi
           $precent={progress ? progress.toFixed(2) + "%" : "0%"}
-          startOfDay={startOfDay}
-          endOfDay={endOfDay}
+          startOfDay={startDate}
+          endOfDay={endDate}
           $bgColor="white"
           $backGraphColor="#626262"
         />
