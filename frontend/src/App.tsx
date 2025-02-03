@@ -16,6 +16,7 @@ import Where4 from "./pages/Where/Where4";
 import Where5 from "./pages/Where/Where5";
 import Where6 from "./pages/Where/Where6";
 import Tour from "./pages/Tour/Tour";
+import Categories from "./pages/Tour/Categories";
 import AccountBook from "./pages/Tour/AccountBook";
 import TourMembers from "./pages/TourMembers/TourMembers";
 import MoneyChart from "./pages/MoneyChart/MoneyChart";
@@ -93,6 +94,7 @@ function App() {
           <Route path="/TourMembers" element={<TourMembers />} />
           <Route path="/MoneyChart" element={<MoneyChart />} />
           <Route path="/accountbook" element={<AccountBook />} />
+          <Route path="/Categories" element={<Categories />} />
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
