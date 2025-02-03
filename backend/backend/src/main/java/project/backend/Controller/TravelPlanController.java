@@ -123,7 +123,7 @@ public class TravelPlanController
 
     }
     //유출되도 상관 없을 것 같은 데이터(기능 동작 확인)
-    @PostMapping("/update/{travelcode}")
+    @PutMapping("/update/{travelcode}")
     @CacheEvict(value = "travelCode", key = "#travelcode")
     public ResponseEntity<?> TravelUpdate(@AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode, @RequestBody TravelPlanDTO newtravelPlanDTO)
     {
@@ -250,7 +250,7 @@ public class TravelPlanController
 
 
     //데이터베이스에서 데이터 정상 제거 확인
-    @PostMapping("/delete/{travelCode}")
+    @DeleteMapping("/delete/{travelCode}")
     @CacheEvict(value = "travelCode", allEntries = true)
     public ResponseEntity<?> TravelDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "travelCode") String travelCode)
     {
