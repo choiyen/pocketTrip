@@ -43,8 +43,9 @@ export default function MainPage() {
   };
 
   const data = {
-    name: "일본", // 여행지 이름
-    cost: "2,000,000 ₩", // 현재 누적 금액
+    name: "일본여행지갑", // 여행지갑 이름
+    selectedCountry: "일본", // 여행지 이름
+    budget: "2,000,000", // 현재 누적 금액
     ImgArr: [
       "./ProfileImage.png",
       "./ProfileImage.png",
@@ -54,8 +55,8 @@ export default function MainPage() {
       "./ProfileImage.png",
       "./ProfileImage.png",
     ], // 참여인원들 프로필 이미지 주소
-    startOfDay: "2025-01-18", // 여행 시작일
-    endOfDay: "2025-02-20", // 여행 종료일
+    startDate: "2025-01-18", // 여행 시작일
+    endDate: "2025-02-20", // 여행 종료일
     bgImg: "./japan.jpg",
   };
 
