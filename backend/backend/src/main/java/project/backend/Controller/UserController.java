@@ -2,6 +2,8 @@ package project.backend.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -102,7 +104,8 @@ public class UserController {
 
     // 수정
     @PutMapping("/edit")
-    public ResponseEntity<?> editUser(@AuthenticationPrincipal String userId, @RequestBody UserDTO userDTO){
+    @Cacheable(value = "email", key = "#email")
+    public ResponseEntity<?> editUser(@AuthenticationPrincipal String email, @RequestBody UserDTO userDTO){
         try
         {
             UserEntity user = UserEntity.builder()
@@ -112,7 +115,7 @@ public class UserController {
                     .phone(userDTO.getPhone())
                     .build();
 
-            UserEntity editUser = userService.updateUser(userId, user);
+            UserEntity editUser = userService.updateUser(email, user);
 
             UserDTO responsedUserDTO = UserDTO.builder()
                     .name(editUser.getName())

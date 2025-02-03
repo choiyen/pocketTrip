@@ -2,6 +2,8 @@ package project.backend.Controller;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,6 +47,7 @@ public class TravelPlanController
     private  ResponseDTO responseDTO = new ResponseDTO<>();
 
     //시작 날짜를 기준으로 데이터 정렬하여 프론트엔드로 전송
+    @Cacheable(value = "travelCode")
     @PostMapping("/find")
     public ResponseEntity<?> TravelDTO(@AuthenticationPrincipal String userId)
     {
@@ -80,6 +83,7 @@ public class TravelPlanController
     }
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
+    @CacheEvict(value = "travelCode", allEntries = true)
     public ResponseEntity<?> TravelInsert(@AuthenticationPrincipal String userId, @RequestBody TravelPlanDTO travelPlanDTO)
     {
         try
@@ -120,6 +124,7 @@ public class TravelPlanController
     }
     //유출되도 상관 없을 것 같은 데이터(기능 동작 확인)
     @PostMapping("/update/{travelcode}")
+    @CacheEvict(value = "travelCode", key = "#travelcode")
     public ResponseEntity<?> TravelUpdate(@AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode, @RequestBody TravelPlanDTO newtravelPlanDTO)
     {
         try
@@ -163,6 +168,7 @@ public class TravelPlanController
 
     //travelcode에 따라 데이터 출력 확인
     @PostMapping("/select/{travelCode}")
+    @Cacheable(value = "travelCode", key = "#travelCode")
     public ResponseEntity<?> TravelSelect(@PathVariable(value = "travelCode") String travelCode)
     {
         try
@@ -179,6 +185,7 @@ public class TravelPlanController
     }
     //여행 신청 정보에 대해 개별 승인
     @PostMapping("/check/{travelCode}")
+    @CacheEvict(value = "travelCode", key = "#travelCode")
     public ResponseEntity<?> TravelCheckindividual(@AuthenticationPrincipal String userId, @PathVariable(value = "travelCode") String travelCode, @RequestBody String Applicant )
     {
         try
@@ -213,9 +220,6 @@ public class TravelPlanController
     }
 
 
-
-
-
     //여행신청자 정보에 대해 승인해주는 것 - 단체 승인
     @PostMapping("/checkAll/{travelCode}")
     public ResponseEntity<?> TravelCheckAll(@AuthenticationPrincipal String userId, @PathVariable(value = "travelCode") String travelCode) {
@@ -247,6 +251,7 @@ public class TravelPlanController
 
     //데이터베이스에서 데이터 정상 제거 확인
     @PostMapping("/delete/{travelCode}")
+    @CacheEvict(value = "travelCode", allEntries = true)
     public ResponseEntity<?> TravelDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "travelCode") String travelCode)
     {
         try
