@@ -8,6 +8,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { BsPersonSquare } from "react-icons/bs";
 import { FaChartPie } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import OptionButton from "./OptionButton";
 
 interface HeaderState {
   $bgColor?: string;
@@ -76,8 +77,9 @@ const BackButton = styled.button`
 const ButtonBox = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
-  button {
+  button.optionButton {
     background-color: transparent;
     border: none;
     width: 40px;
@@ -99,6 +101,8 @@ export default function Header({
   const modalState = useSelector(
     (state: RootState) => state.modalControl.modalState
   );
+
+  // 오늘 날짜 계산
   const months = [
     "January",
     "February",
@@ -117,30 +121,36 @@ export default function Header({
   const date = today.getDate();
   const month = months[today.getMonth()];
   const year = today.getFullYear();
-  console.log(date, month, year);
+
   return (
     <HeaderWrap $bgColor={$bgColor} $pathName={pathName}>
+      {/* 세부 페이지에서의 뒤로가기 버튼 설정*/}
       {pathName !== "/" && pathName !== "/mypage" && (
         <BackButton onClick={() => navigate(-1)}>
           <IoIosArrowBack size={"25px"} />
         </BackButton>
       )}
+
+      {/* 경로가 지갑페이지일때 */}
       {pathName === "/Tour" && (
         <ButtonBox>
-          <div>
-            <Link to="/TourMembers">
-              <button>
-                <FaChartPie size={"25px"} />
-              </button>
-            </Link>
-            <Link to="/MoneyChart">
-              <button>
-                <BsPersonSquare size={"25px"} />
-              </button>
-            </Link>
-          </div>
+          {/* <div> */}
+          <Link to="/MoneyChart">
+            <button className="optionButton">
+              <FaChartPie size={"25px"} />
+            </button>
+          </Link>
+          <Link to="/TourMembers">
+            <button className="optionButton">
+              <BsPersonSquare size={"25px"} />
+            </button>
+          </Link>
+          <OptionButton />
+          {/* </div> */}
         </ButtonBox>
       )}
+
+      {/* 경로가 메인페이지일때 */}
       {pathName === "/" && (
         <MainPageWrap>
           <UserWrap>
@@ -156,6 +166,7 @@ export default function Header({
             />
           </UserWrap>
           <DateWrap>
+            {/* 테두리만 있는 숫자(date)는 svg로 구현 */}
             <svg width="105px" height="60">
               <text
                 x="0"
@@ -176,7 +187,11 @@ export default function Header({
           </DateWrap>
         </MainPageWrap>
       )}
+
+      {/* 필요에 따라 모달창 활성화 */}
       {modalState && <Modal />}
+
+      {/* 네비 바 */}
       <Nav />
     </HeaderWrap>
   );
