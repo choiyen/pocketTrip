@@ -5,7 +5,19 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Where3.css";
 
-export default function Where3() {
+interface Where3Props {
+  travelData: {
+    // isDomestic: boolean;
+    selectedCountry: string;
+    startDate: string | null;
+    endDate: string | null;
+    name: string;
+    budget: number;
+  };
+  updateTravelData: (data: any) => void;
+}
+
+const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
   // 초기값을 null로 설정하고 타입을 Date | null로 지정
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -18,7 +30,20 @@ export default function Where3() {
   };
 
   const goToWhere4 = () => {
-    navigate("/where4");
+    // 여행 날짜가 업데이트 되면 travelData를 업데이트
+    updateTravelData({
+      startDate: startDate,
+      endDate: endDate,
+    });
+
+    // 로그 출력 (업데이트된 travelData 확인)
+    console.log("업데이트된 travelData:", {
+      ...travelData,
+      startDate: startDate,
+      endDate: endDate,
+    });
+
+    navigate("/Where4");
   };
 
   return (
@@ -79,4 +104,6 @@ export default function Where3() {
       </div>
     </div>
   );
-}
+};
+
+export default Where3;
