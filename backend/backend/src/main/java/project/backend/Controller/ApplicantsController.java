@@ -25,7 +25,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/Applicants")
+@RequestMapping("/apply")
 public class ApplicantsController
 {
     private ResponseDTO responseDTO = new ResponseDTO();
@@ -62,7 +62,7 @@ public class ApplicantsController
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
-    @PostMapping("/Delete/{Travelcode}")
+    @DeleteMapping("/Delete/{Travelcode}")
     public ResponseEntity<?> ApplicantsDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode)
     {
         try
