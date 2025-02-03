@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import styled from "styled-components";
 import MoneyLog from "./MoneyLog";
 import { io, Socket } from "socket.io-client";
@@ -17,9 +17,10 @@ const ButtonsWrap = styled.div`
   max-width: 700px;
   margin: 30px auto;
 `;
-const Buttons = styled.button`
+const Buttons = styled.button<{ $selected: boolean }>`
   width: 110px;
-  background-color: transparent;
+  background-color: ${(props) => (props.$selected ? "#051e31" : "transparent")};
+  color: ${(props) => (props.$selected ? "white" : "#051e31")};
   border: 2px solid #051e31;
   border-radius: 20px;
   font-size: 16px;
@@ -38,7 +39,10 @@ const SERVER_URL = process.env.REACT_APP_SERVER || "";
 
 export default function Usehistory() {
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
+  const [filteringLogs, setFilteringLogs] = useState<MoneyLogProps[]>([]);
+  const [tabState, setTabState] = useState("종합");
 
+  // 소켓 통신
   useEffect(() => {
     const newSocket = io(SERVER_URL, {
       reconnectionAttempts: 1,
@@ -94,16 +98,39 @@ export default function Usehistory() {
       }
     };
   }, []);
+
+  // 탭에 따라서 보이는 목록 필터링
+  useEffect(() => {
+    if (tabState === "종합") {
+      const data = logs.filter(
+        (log) => log.type === "카드" || log.type === "현금"
+      );
+      setFilteringLogs(data);
+    } else if (tabState === "카드") {
+      const data = logs.filter((log) => log.type === "카드");
+      setFilteringLogs(data);
+    } else {
+      const data = logs.filter((log) => log.type === "현금");
+      setFilteringLogs(data);
+    }
+  }, [tabState, logs]);
+
   return (
     <div>
       <ButtonsWrap>
-        <Buttons>종합</Buttons>
-        <Buttons>카드</Buttons>
-        <Buttons>현금</Buttons>
+        {["종합", "카드", "현금"].map((tab, index) => (
+          <Buttons
+            key={index}
+            $selected={tabState === tab}
+            onClick={() => setTabState(tab)}
+          >
+            {tab}
+          </Buttons>
+        ))}
       </ButtonsWrap>
 
       <LogList>
-        {logs.map((log, index) => (
+        {filteringLogs.map((log, index) => (
           <MoneyLog
             className="LogItem"
             key={index}
