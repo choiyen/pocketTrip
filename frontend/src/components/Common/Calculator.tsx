@@ -89,9 +89,13 @@ export default function Calculator() {
         console.log(input1, input2, result);
     };
 
+    function selectUnit(){
+
+    }
+
     const output2 = result * currency;
 
-    const svg = <div style={{ "margin": "30px" }}><svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    const selectUnitButton = <div style={{ "margin": "30px" }}><svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g id="chevron-down 1">
             <path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M3.08597 8.71125C3.17306 8.62394 3.27651 8.55467 3.39041 8.50741C3.50431 8.46015 3.62641 8.43582 3.74972 8.43582C3.87304 8.43582 3.99514 8.46015 4.10904 8.50741C4.22293 8.55467 4.32639 8.62394 4.41347 8.71125L14.9997 19.2994L25.586 8.71125C25.6731 8.62408 25.7766 8.55494 25.8905 8.50777C26.0044 8.46059 26.1265 8.43631 26.2497 8.43631C26.373 8.43631 26.4951 8.46059 26.6089 8.50777C26.7228 8.55494 26.8263 8.62408 26.9135 8.71125C27.0006 8.79841 27.0698 8.90189 27.117 9.01578C27.1641 9.12966 27.1884 9.25173 27.1884 9.375C27.1884 9.49827 27.1641 9.62033 27.117 9.73422C27.0698 9.8481 27.0006 9.95158 26.9135 10.0387L15.6635 21.2887C15.5764 21.3761 15.4729 21.4453 15.359 21.4926C15.2451 21.5398 15.123 21.5642 14.9997 21.5642C14.8764 21.5642 14.7543 21.5398 14.6404 21.4926C14.5265 21.4453 14.4231 21.3761 14.336 21.2887L3.08597 10.0387C2.99867 9.95166 2.9294 9.84821 2.88214 9.73431C2.83487 9.62041 2.81055 9.49831 2.81055 9.375C2.81055 9.25168 2.83487 9.12958 2.88214 9.01568C2.9294 8.90179 2.99867 8.79833 3.08597 8.71125Z" fill="#0095FF" />
         </g>
@@ -100,9 +104,12 @@ export default function Calculator() {
     return (
         <CalculatorBody>
             <Output>
-                <Text><span>{unit1}</span> {result}</Text>
+                <div style={{"display": "flex"}}>
+                <Unit>{unit1}</Unit>
+                <Text>{result}</Text>
+                </div>
                 <CurrencyInfo>{unit1}1 = {unit2}{currency}</CurrencyInfo>
-                {svg}
+                {selectUnitButton}
             </Output>
             <Exchange>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,8 +124,11 @@ export default function Calculator() {
                 </svg>
             </Exchange>
             <Output>
-                <Text><span>{unit2}</span> {parseFloat(output2.toFixed(10))}</Text>
-                {svg}
+                <div style={{"display": "flex", "width": "100%"}}>
+                <Unit>{unit2}</Unit>
+                <Text>{parseFloat(output2.toFixed(10))}</Text>
+                </div>
+                {selectUnitButton}
             </Output>
             <InputBody>
                 <Numbers>
@@ -174,10 +184,18 @@ const CurrencyInfo = styled.span`
     width: 100%;
 `;
 
+const Unit = styled.div`
+    margin: 0 0 0 30px;
+    font-size: 36px;
+`;
+
 const Text = styled.div`
-  width: 100%;
+  width: 210px;
   font-size: 36px;
-  margin: 40px;
+  margin: 0 0 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
 
   & span {
     font-weight: 500;
@@ -192,6 +210,7 @@ const Output = styled.div`
   margin: 8px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   position: relative;
 `;
 
