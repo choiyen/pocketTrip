@@ -8,6 +8,7 @@ interface ButtonState {
   $bgColor?: "green" | "red" | "blue" | "transparent"; // 버튼 색
   onClick?: () => void; // 클릭 메서드
   disabled?: boolean; // 추가된 disabled prop
+  className?: string;
 }
 
 const CutomButton = styled.button<{ $bgColor: string; disabled: boolean }>`
@@ -102,6 +103,7 @@ const SmallButton = styled(CutomButton)<{
 `;
 
 export default function Button({
+  className,
   size,
   name,
   $bgColor = "blue",
@@ -111,19 +113,39 @@ export default function Button({
   return (
     <>
       {size === "XL" ? (
-        <XLButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
+        <XLButton
+          disabled={disabled}
+          $bgColor={$bgColor}
+          onClick={onClick}
+          className={className}
+        >
           {name}
         </XLButton>
       ) : size === "L" ? (
-        <LargeButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
+        <LargeButton
+          disabled={disabled}
+          $bgColor={$bgColor}
+          onClick={onClick}
+          className={className}
+        >
           {name}
         </LargeButton>
       ) : size === "M" ? (
-        <MediumButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
+        <MediumButton
+          disabled={disabled}
+          $bgColor={$bgColor}
+          onClick={onClick}
+          className={className}
+        >
           {name}
         </MediumButton>
       ) : (
-        <SmallButton disabled={disabled} $bgColor={$bgColor} onClick={onClick}>
+        <SmallButton
+          disabled={disabled}
+          $bgColor={$bgColor}
+          onClick={onClick}
+          className={className}
+        >
           {name}
         </SmallButton>
       )}

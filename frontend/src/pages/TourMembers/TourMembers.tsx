@@ -2,18 +2,22 @@ import React from "react";
 import Header from "../../components/Common/Header";
 import UserListItem from "./UserListItem";
 import styled from "styled-components";
+import Button from "../../components/Common/Button";
 
 const CodeWrap = styled.div`
-  background-color: white;
   width: 90%;
   margin: 0 auto;
   border-radius: 20px;
   margin-bottom: 40px;
   padding: 20px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 `;
 const CurrentMembersWrap = styled.div`
   padding: 0px 20px;
+
+  ul {
+    border-radius: 20px;
+    padding: 10px;
+  }
 `;
 const TourMembersWrap = styled.div`
   .TourMemberTitle {
@@ -40,6 +44,21 @@ const TourMembersWrap = styled.div`
   }
 `;
 
+const StyledButtons = styled(Button)`
+  align-self: center;
+  background-color: #cc0003;
+  margin-top: 30px;
+`;
+
+const ContentBox = styled.div`
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  padding: 30px 0;
+`;
+
 export default function TourMembers() {
   const userData = [
     {
@@ -62,18 +81,26 @@ export default function TourMembers() {
   return (
     <TourMembersWrap>
       <Header />
-      <CodeWrap>
-        <h2 className="TourMemberTitle">초대코드</h2>
-        <span className="InviteCode">1H3D4G</span>
-      </CodeWrap>
-      <CurrentMembersWrap>
-        <h3>현재 참여 인원</h3>
-        <ul>
-          {userData.map((data, index) => (
-            <UserListItem key={index} name={data.name} profile={data.profile} />
-          ))}
-        </ul>
-      </CurrentMembersWrap>
+      <ContentBox>
+        <CodeWrap>
+          <h2 className="TourMemberTitle">초대코드</h2>
+          <span className="InviteCode">1H3D4G</span>
+        </CodeWrap>
+        <CurrentMembersWrap>
+          <h3>현재 참여 인원</h3>
+          <ul>
+            {userData.map((data, index) => (
+              <UserListItem
+                key={index}
+                name={data.name}
+                profile={data.profile}
+              />
+            ))}
+          </ul>
+        </CurrentMembersWrap>
+
+        <StyledButtons size="L" name="여행 나가기" $bgColor="red" />
+      </ContentBox>
     </TourMembersWrap>
   );
 }
