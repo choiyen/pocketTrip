@@ -7,6 +7,13 @@ import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import Alert from "../../components/Common/Alert";
 import OptionButton from "../../components/Common/OptionButton";
 import TourCard from "./TourCard";
+import styled from "styled-components";
+
+const H2 = styled.h2`
+  font-size: 18px;
+  font-family: inherit;
+  margin: 20px;
+`;
 
 export default function MainPage() {
   // 글로벌 상태값을 변경하려면 필요한 함수 usedispatch();
@@ -60,10 +67,15 @@ export default function MainPage() {
     bgImg: "./japan.jpg",
   };
 
+  const userData = {
+    name: "황종현",
+    profile: "ProfileImage.png",
+  };
+
   return (
     <div>
-      <Header />
-
+      <Header $bgColor={"#eaf6ff"} userData={userData} />
+      <H2>현재 여행중인 지역</H2>
       <TourCard Tourdata={data} />
       {/* isAlertVisible 상태값에 따라서 알림창 표시 */}
       {isAlertVisible && (
