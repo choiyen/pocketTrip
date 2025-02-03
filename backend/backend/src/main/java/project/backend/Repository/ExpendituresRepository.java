@@ -16,4 +16,8 @@ public interface ExpendituresRepository extends ReactiveMongoRepository<Expendit
 
 
     Mono<ExpenditureEntity> findByExpenditureId(String expenditureId);
+
+//    boolean deleteByExpenditureId(String expenditureId);
+
+    Mono<Void> deleteByExpenditureId(String expenditureId);
 }
