@@ -99,7 +99,8 @@ export default function OptionButton({ className }: { className?: string }) {
         <OptionMenu>
           <li>
             <MenuButton onClick={() => ChangeState()}>
-              <HiMiniPencilSquare />내 정보 수정
+              <HiMiniPencilSquare />
+              수정
             </MenuButton>
           </li>
           <li>
