@@ -12,9 +12,10 @@ import {
 import { ChangeAlertState } from "../../slices/AlertControlSlice";
 
 export const OptionWrap = styled.div`
-  position: absolute;
+  position: relative;
+  /* position: absolute;
   top: 10px;
-  right: 10px;
+  right: 10px; */
 `;
 const Button = styled.button`
   width: 40px;
@@ -31,6 +32,7 @@ const OptionMenu = styled.ul`
   right: 100%;
   width: max-content;
   border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 `;
 const MenuButton = styled.button`
   width: 123px;
