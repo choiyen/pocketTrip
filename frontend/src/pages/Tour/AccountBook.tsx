@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +10,6 @@ const Container = styled.div`
   width: 100%;
   max-width: 375px;
   margin: 0 auto;
-  font-family: Arial, sans-serif;
   box-sizing: border-box;
 `;
 
@@ -141,7 +140,15 @@ export default function AccountBook() {
   };
 
   const handleSvgClick = () => {
-    navigate(-1);
+    navigate("/Tour");
+  };
+
+  const handleNavigation = (paymentType: string) => {
+    if (!amount) {
+      alert("금액을 입력해주세요.");
+      return;
+    }
+    navigate("/categories", { state: { amount, currency, paymentType } });
   };
 
   const currencySymbol = currency === "KRW" ? "₩" : "$";
@@ -198,13 +205,13 @@ export default function AccountBook() {
       <Footer>
         <ActionButton
           bgColor="#4CAF50"
-          onClick={() => console.log("Cash clicked", amount)}
+          onClick={() => handleNavigation("cash")}
         >
           현금
         </ActionButton>
         <ActionButton
           bgColor="#007BFF"
-          onClick={() => console.log("Card clicked", amount)}
+          onClick={() => handleNavigation("card")}
         >
           카드
         </ActionButton>
