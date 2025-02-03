@@ -13,7 +13,7 @@ export default function Tour() {
     <div>
       <Header $bgColor={"white"} />
       <TourInfo Tourdata={Tourdata} />
-      <MoneyInfo />
+      <MoneyInfo Tourdata={Tourdata} />
       <Usehistory />
     </div>
   );

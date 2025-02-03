@@ -3,11 +3,12 @@ import styled from "styled-components";
 import TourDateUi from "../../components/Common/TourDateUi";
 
 interface TravelData {
-  name: string; // 여행지 이름
-  cost: string; // 현재 누적 금액 (통화 단위 포함)
+  name: string; // 여행지갑 이름
+  selectedCountry: string; // 여행지 이름
+  budget: string; // 현재 누적 금액 (통화 단위 포함)
   ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
-  startOfDay: string; // 여행 시작일 (ISO 날짜 형식)
-  endOfDay: string; // 여행 종료일 (ISO 날짜 형식)
+  startDate: string; // 여행 시작일 (ISO 날짜 형식)
+  endDate: string; // 여행 종료일 (ISO 날짜 형식)
   bgImg?: string;
 }
 
@@ -50,8 +51,8 @@ const TourWrap = styled.div`
 `;
 export default function TourInfo({ Tourdata }: TourCardProps) {
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
-  const startDate = new Date(Tourdata.startOfDay);
-  const endDate = new Date(Tourdata.endOfDay);
+  const startDate = new Date(Tourdata.startDate);
+  const endDate = new Date(Tourdata.endDate);
   const today = new Date();
 
   // 시작 종료일 시간 차이 계산
@@ -66,11 +67,11 @@ export default function TourInfo({ Tourdata }: TourCardProps) {
   return (
     <TourWrap>
       <h2>여행지</h2>
-      <h3>일본</h3>
+      <h3>{Tourdata.selectedCountry}</h3>
       <TourDateUi
         $precent={progress ? progress.toFixed(2) + "%" : "0%"}
-        startOfDay={Tourdata.startOfDay}
-        endOfDay={Tourdata.endOfDay}
+        startOfDay={Tourdata.startDate}
+        endOfDay={Tourdata.endDate}
         $bgColor="black"
         $backGraphColor="#E9E9E9"
       />

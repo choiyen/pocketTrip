@@ -2,6 +2,18 @@ import React from "react";
 import Button from "../../components/Common/Button";
 import styled from "styled-components";
 
+interface TravelData {
+  name: string; // 여행지갑 이름
+  selectedCountry: string; // 여행지 이름
+  budget: string; // 현재 누적 금액 (통화 단위 포함)
+  ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
+  startDate: string; // 여행 시작일 (ISO 날짜 형식)
+  endDate: string; // 여행 종료일 (ISO 날짜 형식)
+  bgImg?: string;
+}
+interface TourCardProps {
+  Tourdata: TravelData; // props 타입 정의
+}
 const MoneyInfoWrap = styled.div`
   padding-top: 30px;
   display: flex;
@@ -35,11 +47,11 @@ const MoneyInfoWrap = styled.div`
   } */
 `;
 
-export default function MoneyInfo() {
+export default function MoneyInfo({ Tourdata }: TourCardProps) {
   return (
     <MoneyInfoWrap>
       <h2>현재예산</h2>
-      <strong>2,000,000</strong>
+      <strong>{Tourdata.budget}</strong>
       {/* <span>₩</span> */}
       <Button size="M" name="가계부 작성" />
     </MoneyInfoWrap>
