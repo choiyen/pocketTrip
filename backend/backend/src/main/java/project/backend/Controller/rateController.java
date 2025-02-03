@@ -270,6 +270,7 @@ public class rateController {
     }
 
 
+    //AI관련 기능 : 아직 사용 여부 불확실함.
     public List getAIDescription(List<Map<String, Object>> list)
     {
 
@@ -294,3 +295,4 @@ public class rateController {
         }
     }
 }
+
