@@ -234,7 +234,6 @@ public class TravelPlanController
                 appllicantsService.TravelPlanAllDelete(travelCode);//전체 승인이 완료되었으므로 데이터 삭제
                 List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));
                 return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
-
             }
             else
             {
@@ -299,6 +298,7 @@ public class TravelPlanController
                 .startDate(travelPlanDTO.getStartDate())
                 .endDate(travelPlanDTO.getEndDate())
                 .expense(travelPlanDTO.getExpense())
+                .title(travelPlanDTO.getTitle())
                 .founder(userid)
                 .participants(userset)
                 .isCalculate(travelPlanDTO.isCalculate())
@@ -317,6 +317,7 @@ public class TravelPlanController
                 .endDate(NewDTO.getEndDate())
                 .expense(NewDTO.getExpense())
                 .founder(OldEntity.getFounder())
+                .title(NewDTO.getTitle())
                 .participants(OldEntity.getParticipants())
                 .isCalculate(NewDTO.isCalculate())
                 .id(OldEntity.getId())
@@ -335,6 +336,7 @@ public class TravelPlanController
                 .expense(travelPlanEntity.getExpense())
                 .founder(travelPlanEntity.getFounder())
                 .participants(travelPlanEntity.getParticipants())
+                .title(travelPlanEntity.getTitle())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .id(travelPlanEntity.getId())
                 .build();
@@ -352,6 +354,7 @@ public class TravelPlanController
                 .endDate(travelPlanEntity.getEndDate())
                 .expense(travelPlanEntity.getExpense())
                 .founder(travelPlanEntity.getFounder())
+                .title(travelPlanEntity.getTitle())
                 .participants(travelPlanEntity.getParticipants())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .id(travelPlanEntity.getId())
