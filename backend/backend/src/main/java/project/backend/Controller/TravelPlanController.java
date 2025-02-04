@@ -14,8 +14,10 @@ import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.TravelPlanDTO;
 import project.backend.Entity.ApplicantsEntity;
 import project.backend.Entity.TravelPlanEntity;
+import project.backend.Entity.UserTravelsEntity;
 import project.backend.Service.AppllicantsService;
 import project.backend.Service.TravelPlanService;
+import project.backend.Service.UserTravelsService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -45,6 +47,8 @@ public class TravelPlanController
     private final String key = "1234567890123456";
 
     private  ResponseDTO responseDTO = new ResponseDTO<>();
+    @Autowired
+    private UserTravelsService userTravelsService;
 
     //시작 날짜를 기준으로 데이터 정렬하여 프론트엔드로 전송
     @Cacheable(value = "travelCode")
@@ -113,7 +117,10 @@ public class TravelPlanController
             TravelPlanEntity travelPlan = ConvertTo(userId, encrypt(generatedString, key), travelPlanDTO);
             TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
 
+            UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
+
             List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
+            list.add(userTravels);
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
         }
         catch (Exception e)
@@ -198,6 +205,7 @@ public class TravelPlanController
                 {
                     TravelPlanEntity travelPlan = ConvertToParticipants(Applicant, travelPlanEntityMono);
                     Mono<TravelPlanEntity> travelPlanEntityMono1 = travelPlanService.TravelPlanUpdate(travelPlan);
+                    UserTravelsEntity userTravels = userTravelsService.insertUserTravels(Applicant, travelCode);
                     List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
@@ -232,6 +240,10 @@ public class TravelPlanController
                 TravelPlanEntity travelPlan = ConvertToParticipants(applicantsEntityMono, travelPlanEntityMono);
                 Mono<TravelPlanEntity> travelPlanEntityMono1 = travelPlanService.TravelPlanUpdate(travelPlan);
                 appllicantsService.TravelPlanAllDelete(travelCode);//전체 승인이 완료되었으므로 데이터 삭제
+                Set<String> applicants = applicantsEntityMono.block().getUserList();
+                for( String applicant : applicants ){
+                    userTravelsService.insertUserTravels(applicant, travelCode);
+                }
                 List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));
                 return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
             }
