@@ -5,7 +5,7 @@ import TourDateUi from "../../components/Common/TourDateUi";
 interface TravelData {
   name: string; // 여행지갑 이름
   selectedCountry: string; // 여행지 이름
-  budget: string; // 현재 누적 금액 (통화 단위 포함)
+  budget: number; // 현재 누적 금액 (통화 단위 포함)
   ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
@@ -70,8 +70,8 @@ export default function TourInfo({ Tourdata }: TourCardProps) {
       <h3>{Tourdata.selectedCountry}</h3>
       <TourDateUi
         $precent={progress ? progress.toFixed(2) + "%" : "0%"}
-        startOfDay={Tourdata.startDate}
-        endOfDay={Tourdata.endDate}
+        startDate={Tourdata.startDate}
+        endDate={Tourdata.endDate}
         $bgColor="black"
         $backGraphColor="#E9E9E9"
       />

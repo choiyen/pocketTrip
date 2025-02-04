@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 interface TravelData {
   name: string; // 여행지갑 이름
   selectedCountry: string; // 여행지 이름
-  budget: string; // 현재 누적 금액 (통화 단위 포함)
+  budget: number; // 현재 누적 금액 (통화 단위 포함)
   ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
@@ -76,6 +76,8 @@ export default function TourCard({ Tourdata }: TourCardProps) {
       ? Math.min(100, Math.max(0, (progressDuration / totalDuration) * 100))
       : 0;
 
+  const formattedBudget = new Intl.NumberFormat().format(budget);
+
   return (
     <Card to="/Tour" state={{ Tourdata }} $bgImg={bgImg}>
       <div>
@@ -83,11 +85,11 @@ export default function TourCard({ Tourdata }: TourCardProps) {
           <h2>{selectedCountry}</h2>
           <CardUserList user={ImgArr} />
         </TitleWrap>
-        <p>{budget} ₩</p>
+        <p>{formattedBudget} ₩</p>
         <TourDateUi
           $precent={progress ? progress.toFixed(2) + "%" : "0%"}
-          startOfDay={startDate}
-          endOfDay={endDate}
+          startDate={startDate}
+          endDate={endDate}
           $bgColor="white"
           $backGraphColor="#626262"
         />

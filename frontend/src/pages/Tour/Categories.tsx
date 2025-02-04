@@ -167,14 +167,14 @@ export default function Categories() {
     navigate("/Accountbook");
   };
   const handleComplete = () => {
-    const data = {
-      amount,
-      paymentType,
-      description,
-      selectedCategoryId, // 선택한 카테고리 ID
-    };
+    // const data = {
+    //   amount,
+    //   paymentType,
+    //   description,
+    //   selectedCategoryId, // 선택한 카테고리 ID
+    // };
 
-    navigate("/tour", { state: data });
+    navigate("/Tour"); // , { state: data }
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
