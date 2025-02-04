@@ -4,47 +4,51 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
+import OptionButton from "../../components/Common/OptionButton";
+import { useNavigate } from "react-router-dom";
 
 export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(ChangeCurrentPage("mypage"));
   }, []);
 
 
   const travelList: any[] = [
-    // {
-    //   travelCode: "sdfsdfsdf",
-    //   title: "일본 여행의 방",
-    //   startDate: "25.01.27",
-    //   endDate: "25.02.02",
-    //   expense: 2000000,
-    // },
-    // {
-    //   travelCode: "ddddddd",
-    //   title: "일본 여행의 방",
-    //   startDate: "25.01.27",
-    //   endDate: "25.02.02",
-    //   expense: 2000000,
-    // },
-    // {
-    //   travelCode: "sdfsdfdfdfdf",
-    //   title: "일본 여행의 방",
-    //   startDate: "25.01.27",
-    //   endDate: "25.02.02",
-    //   expense: 2000000,
-    // }
+    {
+      travelCode: "sdfsdfsdf",
+      title: "일본 여행의 방",
+      startDate: "25.01.27",
+      endDate: "25.02.02",
+      expense: 2000000,
+    },
+    {
+      travelCode: "ddddddd",
+      title: "일본 여행의 방",
+      startDate: "25.01.27",
+      endDate: "25.02.02",
+      expense: 2000000,
+    },
+    {
+      travelCode: "sdfsdfdfdfdf",
+      title: "일본 여행의 방",
+      startDate: "25.01.27",
+      endDate: "25.02.02",
+      expense: 2000000,
+    }
   ]
 
   return (
     <div>
       <Header />
       <ProfileContainer>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="10.5" cy="3.5" r="1.5" fill="#1C1C1C" />
           <circle cx="10.5" cy="10.5" r="1.5" fill="#1C1C1C" />
           <circle cx="10.5" cy="17.5" r="1.5" fill="#1C1C1C" />
-        </svg>
+        </svg> */}
+        <OptionButton className="profileButton"/>
         <Profile>
           <img src="" alt="" />
           <span>name</span>
@@ -65,16 +69,12 @@ export default function MyPage() {
                     <Duration>{travel.startDate} - {travel.endDate}</Duration>
                     {/* 참여자 목록 추가 */}
                   </div>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="10.5" cy="3.5" r="1.5" fill="#FFFFFF" />
-                    <circle cx="10.5" cy="10.5" r="1.5" fill="#FFFFFF" />
-                    <circle cx="10.5" cy="17.5" r="1.5" fill="#FFFFFF" />
-                  </svg>
+                  <OptionButton className="travelButton"/>
                 </Travel>
               );
             })}
 
-            <AddTravel>
+            <AddTravel onClick={() => navigate("/where1")}>
               <div>+</div>
             </AddTravel>
           </TravelList>
@@ -89,7 +89,7 @@ export default function MyPage() {
             <p>등록된 여행이 없습니다.</p>
             <span>아직 떠날 준비가 안 되셨나요?</span>
             <span>새로운 여행을 추가해보세요!</span>
-            <button>여행 추가</button>
+            <button onClick={() => navigate("/where1")}>여행 추가</button>
           </div>
         </NoTravelList>}
     </div>
@@ -103,7 +103,7 @@ const ProfileContainer = styled.div`
 
   position: relative;
 
-  & svg {
+  & .profileButton {
     position: absolute;
     top: 0;
     right: 0;
@@ -147,7 +147,7 @@ const NoTravelList = styled.div`
   & svg {
     position: absolute;
     top: 140px;
-    z-index: 0;
+    z-index: -1;
   }
   
   & div {
@@ -208,11 +208,19 @@ const Travel = styled.div`
   align-items: flex-start;
   color: white;
 
-  & svg {
+  & .travelButton {
     // position: absolute;
     top: 0;
     right: 0;
-    margin: 15px 10px;
+    margin: 10px 0;
+    
+    & button svg {
+      fill: white;
+    }
+    
+    & ul li button svg {
+      fill: currentColor;
+    }
   }
 `;
 
