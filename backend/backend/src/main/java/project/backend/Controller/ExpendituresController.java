@@ -99,7 +99,6 @@ public class ExpendituresController {
         try
         {
             List<ExpenditureEntity> expenditures = expenditureService.findAllByTravelCode(travelCode).collectList().block();
-
             return ResponseEntity.ok().body(responseDTO.Response("info", "지출 목록 전송 완료!!", expenditures));
         }
         catch (Exception e)
@@ -109,8 +108,7 @@ public class ExpendituresController {
         }
     }
 
-
-    // 지출 수정
+    //지출수정
     @PutMapping("/{travelCode}/{expenditureId}")
     @CacheEvict(value = "Expenditure", key = "#Expenditure")
     public ResponseEntity<?> updateExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode, @PathVariable String expenditureId) {
@@ -154,8 +152,6 @@ public class ExpendituresController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
-
-
     // 지출 삭제
     @DeleteMapping("/{travelCode}/{expenditureId}")
     @CacheEvict(value = "Expenditure", allEntries = true)

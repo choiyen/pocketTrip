@@ -29,6 +29,8 @@ public class TravelPlanEntity
     @NonNull
     private String location;
     @NonNull
+    private String title;
+    @NonNull
     private LocalDate startDate;
     private LocalDate endDate;
     private int expense;
