@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static org.springframework.messaging.simp.stomp.StompHeaders.SESSION;
 
-public class WebSocketChatHandler implements HandshakeInterceptor
+public class HttpHandshakeInterceptor implements HandshakeInterceptor
 {
 
     @Override
@@ -27,7 +27,8 @@ public class WebSocketChatHandler implements HandshakeInterceptor
     }
 
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex)
+    {
 
     }
     //https://hyeooona825.tistory.com/89

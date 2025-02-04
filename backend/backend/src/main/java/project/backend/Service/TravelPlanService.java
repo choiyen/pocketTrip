@@ -69,13 +69,8 @@ public class TravelPlanService
         return Base64.getEncoder().encodeToString(encryptedData);
     }
 
-
-
     public Flux<TravelPlanEntity> travelPlanEntityAll(String userId)
     {
         return travelPlanRepository.findByFounder(userId,Sort.by(Sort.Order.asc("startDate")));
     }
-
-
-
 }
