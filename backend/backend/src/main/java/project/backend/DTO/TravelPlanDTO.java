@@ -15,6 +15,7 @@ import java.util.Set;
 public class TravelPlanDTO {
     private String id;
     private String travelCode;
+    private String title;
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -23,3 +24,4 @@ public class TravelPlanDTO {
     private Set<String> participants;
     private boolean isCalculate;
 }
+//소켓으로 알림으로 보냄
