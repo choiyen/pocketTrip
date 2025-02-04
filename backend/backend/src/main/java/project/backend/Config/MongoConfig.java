@@ -16,7 +16,8 @@ import com.mongodb.client.MongoClients;
 @EnableMongoRepositories(basePackages = "project.backend.Repository")
 public class MongoConfig {
 
-    public MongoTemplate mongoTemplate() {
+    public MongoTemplate mongoTemplate()
+    {
         return new MongoTemplate(MongoClients.create("mongodb://localhost:27017/travel"), "travel");
     }
     @Bean
