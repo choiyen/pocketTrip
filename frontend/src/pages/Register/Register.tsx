@@ -1,6 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Register.css";
 import Button from "../../components/Common/Button";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+interface RegisterResponse {
+  status: string,
+  message: string,
+  data? : string[] 
+}
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +35,18 @@ const Register: React.FC = () => {
     // Validation and API submission logic here
     console.log("Form 전송", formData);
   };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.post("http://localhost:8080/auth/signin",formData)
+    .then((response) => {
+      if (response.data.status == "success") {
+        navigate("/login");
+      }
+    })
+
+  }, [])
 
   return (
     <div className="Register-page" style={{ backgroundColor: "#ffffff" }}>
