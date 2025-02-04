@@ -18,6 +18,7 @@ const CurrentMembersWrap = styled.div`
     border-radius: 20px;
     padding: 10px;
   }
+
 `;
 const TourMembersWrap = styled.div`
   .TourMemberTitle {
