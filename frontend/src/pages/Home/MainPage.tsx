@@ -7,6 +7,7 @@ import Alert from "../../components/Common/Alert";
 import TourCard from "./TourCard";
 import styled from "styled-components";
 import EmptyCard from "./EmptyCard";
+import NextTour from "./NextTour";
 
 const H2 = styled.h2`
   font-size: 18px;
@@ -86,6 +87,7 @@ export default function MainPage() {
       <H2>현재 여행중인 지역</H2>
       {data ? <TourCard Tourdata={data} /> : <EmptyCard />}
       <H2>다가오는 여행</H2>
+      <NextTour />
       {isAlertVisible && (
         <Alert
           alertState={alertType}
