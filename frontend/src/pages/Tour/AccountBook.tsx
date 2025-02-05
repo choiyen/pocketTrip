@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -113,6 +113,7 @@ const ActionButton = styled.button<{ bgColor: string }>`
 export default function AccountBook() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("KRW");
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const getFormattedDate = () => {
@@ -140,7 +141,7 @@ export default function AccountBook() {
   };
 
   const handleSvgClick = () => {
-    navigate("/Tour");
+    navigate(`/Tour/${id}`);
   };
 
   const handleNavigation = (paymentType: string) => {
@@ -155,7 +156,7 @@ export default function AccountBook() {
 
   return (
     <Container>
-      <Header>
+      <Header id={id}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"

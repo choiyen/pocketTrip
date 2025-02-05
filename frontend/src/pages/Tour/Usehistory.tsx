@@ -1,7 +1,6 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import MoneyLog from "./MoneyLog";
-import { io, Socket } from "socket.io-client";
 interface MoneyLogProps {
   LogState: "plus" | "minus";
   title: string;
@@ -9,6 +8,10 @@ interface MoneyLogProps {
   profile: string;
   type: "카드" | "현금";
   money: string;
+}
+
+interface logsProps {
+  logs: MoneyLogProps[];
 }
 
 const ButtonsWrap = styled.div`
@@ -35,69 +38,9 @@ const LogList = styled.ul`
   }
 `;
 
-const SERVER_URL = process.env.REACT_APP_SERVER || "";
-
-export default function Usehistory() {
-  const [logs, setLogs] = useState<MoneyLogProps[]>([]);
-  const [filteringLogs, setFilteringLogs] = useState<MoneyLogProps[]>([]);
-  const [tabState, setTabState] = useState("종합");
-
-  // 소켓 통신
-  useEffect(() => {
-    const newSocket = io(SERVER_URL, {
-      reconnectionAttempts: 1,
-      timeout: 500,
-    });
-
-    // 소켓 연결 상태 확인용
-    newSocket.on("connect", () => {
-      console.log("소켓 연결됨!");
-    });
-
-    // 마운트 시 소켓 연결한다.
-    newSocket.on("moneyLogs", (data) => {
-      setLogs(data);
-    });
-
-    newSocket.on("connect_error", (error) => {
-      console.error("소켓 연결 오류:", error.message);
-      setLogs([
-        {
-          LogState: "minus",
-          title: "숙소 비용",
-          detail: "숙박",
-          profile: "./ProfileImage.png",
-          type: "카드",
-          money: "130,000",
-        },
-        {
-          LogState: "plus",
-          title: "급여",
-          detail: "월급",
-          profile: "./ProfileImage.png",
-          type: "현금",
-          money: "2,000,000",
-        },
-        {
-          LogState: "minus",
-          title: "식비",
-          detail: "점심",
-          profile: "./ProfileImage.png",
-          type: "카드",
-          money: "20,000",
-        },
-      ]);
-    });
-    // 언마운트 시 소켓 정리
-    return () => {
-      if (newSocket) {
-        newSocket.off("connect");
-        newSocket.off("moneyLogs");
-        newSocket.off("connect_error");
-        newSocket.disconnect();
-      }
-    };
-  }, []);
+export default function Usehistory({ logs }: logsProps) {
+  const [filteringLogs, setFilteringLogs] = useState<MoneyLogProps[]>([]); // 탭 전환에 따른 목록
+  const [tabState, setTabState] = useState("종합"); // 현재 선택된 탭
 
   // 탭에 따라서 보이는 목록 필터링
   useEffect(() => {
