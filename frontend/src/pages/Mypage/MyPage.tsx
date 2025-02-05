@@ -42,6 +42,7 @@ export default function MyPage() {
   return (
     <div>
       <Header />
+      <div style={{overflow: "scroll"}}>
       <ProfileContainer>
         {/* <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="10.5" cy="3.5" r="1.5" fill="#1C1C1C" />
@@ -60,12 +61,12 @@ export default function MyPage() {
             {travelList.map((travel) => {
               return (
                 <Travel id={travel.travelCode}>
-                  <div style={{ padding: "20px", display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-around" }}>
+                  <div style={{ padding: "20px 15px", display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
                     <Title>{travel.title}</Title>
                     <Expense>{travel.expense}</Expense>
                   </div>
 
-                  <div style={{ padding: "20px", display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+                  <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
                     <Duration>{travel.startDate} - {travel.endDate}</Duration>
                     {/* 참여자 목록 추가 */}
                   </div>
@@ -82,9 +83,9 @@ export default function MyPage() {
         </TravelListContainer>
         :
         <NoTravelList>
-          <svg width="172" height="268" viewBox="0 0 172 268" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* <svg width="172" height="268" viewBox="0 0 172 268" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M58.1718 178.562C58.1718 147.384 66.6618 130.063 89.6161 112.743C108.168 98.5711 118.23 89.1234 118.23 74.0071C118.23 58.2609 106.91 48.4982 87.1005 48.4982C66.0329 48.4982 54.713 63.2997 54.713 79.3608H0C0 34.0117 35.8464 0 86.7861 0C141.185 0 172 31.1775 172 74.0071C172 97.3114 160.68 115.892 140.241 131.638C117.287 149.589 110.055 160.926 110.055 178.562H58.1718ZM85.8428 268C66.6618 268 52.5119 254.143 52.5119 234.933C52.5119 215.723 66.6618 201.551 85.8428 201.551C105.024 201.551 119.174 215.723 119.174 234.933C119.174 254.143 105.024 268 85.8428 268Z" fill="#E8E8E8" fill-opacity="0.45" />
-          </svg>
+          </svg> */}
           <div>
             <p>등록된 여행이 없습니다.</p>
             <span>아직 떠날 준비가 안 되셨나요?</span>
@@ -92,6 +93,7 @@ export default function MyPage() {
             <button onClick={() => navigate("/where1")}>여행 추가</button>
           </div>
         </NoTravelList>}
+        </div>
     </div>
   );
 }
@@ -116,12 +118,12 @@ const Profile = styled.div`
 
 display: flex;
 flex-direction: column;
-margin: 20px 0 0 0;
+// margin: 20px 0 0 0;
   
 & img {
   border-radius: 100%;
-  width: 160px;
-  height: 160px;
+  width: 150px;
+  height: 150px;
   background-color: #111111;}
 
   & span {
@@ -133,7 +135,7 @@ margin: 20px 0 0 0;
 
 const TravelListContainer = styled.div`
   width: 100%;
-  height: 60vh;
+  height: 55vh;
   // background: black;
   overflow: scroll;
 `;
@@ -144,7 +146,8 @@ const NoTravelList = styled.div`
   justify-content: center;
   position: relative;
 
-  & svg {
+  & :: before {
+    content: "?";
     position: absolute;
     top: 140px;
     z-index: -1;
@@ -201,7 +204,7 @@ const Travel = styled.div`
   height: 100px;
   background-color: #005EFF;
   border-radius: 15px;
-  margin: 15px 0;
+  margin: 10px 0;
   // position: relative;
   display: flex;
   justify-content: space-between;
