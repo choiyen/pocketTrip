@@ -43,6 +43,27 @@ export default function MainPage() {
     setIsAlertVisible(true);
   };
 
+
+  // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
+  const data = {
+    id: 1,
+    name: "일본여행지갑", // 여행지갑 이름
+    selectedCountry: "일본", // 여행지 이름
+    budget: "2,000,000", // 현재 누적 금액
+    ImgArr: [
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+      "./ProfileImage.png",
+    ], // 참여인원들 프로필 이미지 주소
+    startDate: "2025-01-18", // 여행 시작일
+    endDate: "2025-02-20", // 여행 종료일
+    bgImg: "./japan.jpg",
+  };
+
   const userData = {
     name: "황종현",
     profile: "ProfileImage.png",
