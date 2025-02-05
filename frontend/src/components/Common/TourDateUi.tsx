@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import { IoAirplane } from "react-icons/io5";
+
 interface DateUiState {
   $precent: string;
-  startOfDay: string;
-  endOfDay: string;
+  startDate: string | Date; // startDate가 문자열이거나 날짜 객체일 수 있음
+  endDate: string | Date; // endDate가 문자열이거나 날짜 객체일 수 있음
   $bgColor: string;
   $backGraphColor: string;
 }
@@ -14,6 +15,7 @@ const DateWrap = styled.div`
   font-family: inherit;
   justify-content: space-between;
 `;
+
 const DateNum = styled.div`
   font-size: 16px;
   font-weight: 200;
@@ -23,12 +25,15 @@ const DateNum = styled.div`
     font-weight: 400;
   }
 `;
+
 const StartDate = styled(DateNum)`
   text-align: left;
 `;
+
 const EndDate = styled(DateNum)`
   text-align: right;
 `;
+
 const Graph = styled.div<{ $backGraphColor: string }>`
   width: 100%;
   position: relative;
@@ -63,21 +68,29 @@ const MovingGraph = styled.div<{ $precent: string; $bgColor: string }>`
     right: 0;
   }
 `;
+
 export default function TourDateUi({
   $precent,
-  startOfDay,
-  endOfDay,
+  startDate,
+  endDate,
   $bgColor = "white",
   $backGraphColor,
 }: DateUiState) {
-  // "2025-01-18" >>> ['25.01', '18'] 로 변환
+  // startDate가 Date 객체일 경우 문자열로 변환
+  const startDateStr =
+    startDate instanceof Date
+      ? startDate.toISOString().split("T")[0]
+      : startDate;
+  const endDateStr =
+    endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate;
+
   // 출발일
-  const startOfArr = startOfDay.split("-");
+  const startOfArr = startDateStr.split("-");
   startOfArr[1] = startOfArr[0].slice(2) + "." + startOfArr[1];
   startOfArr.shift();
 
   // 도착일
-  const endOfArr = endOfDay.split("-");
+  const endOfArr = endDateStr.split("-");
   endOfArr[1] = endOfArr[0].slice(2) + "." + endOfArr[1];
   endOfArr.shift();
 
