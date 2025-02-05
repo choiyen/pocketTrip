@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Header from "../../components/Common/Header";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
 import OptionButton from "../../components/Common/OptionButton";
@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-
   useEffect(() => {
     dispatch(ChangeCurrentPage("mypage"));
   }, []);
@@ -50,7 +49,7 @@ export default function MyPage() {
         </svg> */}
         <OptionButton className="profileButton" />
         <Profile>
-          <img src="/profileImage.png" alt="" />
+          <img src="" alt="" />
           <span>name</span>
         </Profile>
       </ProfileContainer>
@@ -128,6 +127,7 @@ const ProfileContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   position: relative;
 
   & .profileButton {
@@ -217,6 +217,7 @@ const NoTravelList = styled.div`
 const TravelList = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -253,6 +254,7 @@ const AddTravel = styled.div`
   height: 100px;
   background-color: #dfdfdf;
   border-radius: 15px;
+  margin: 15px 0;
   display: flex;
   justify-content: center;
   align-items: center;
