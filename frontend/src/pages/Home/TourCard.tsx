@@ -5,7 +5,7 @@ import CardUserList from "./CardUserList";
 import { Link } from "react-router-dom";
 
 interface TravelData {
-  id: number;
+  id: string;
   name: string; // 여행지갑 이름
   selectedCountry: string; // 여행지 이름
   budget: number; // 현재 누적 금액 (통화 단위 포함)
