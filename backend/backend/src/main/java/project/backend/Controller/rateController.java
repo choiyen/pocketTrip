@@ -29,7 +29,7 @@ public class rateController {
     public List<Map<String, Object>> list2 = new ArrayList<>();
 
 
-    @Value("${gemini.api.key}")
+    @Value("${api.key}")
     private String apiKey;
 
 
