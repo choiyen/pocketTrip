@@ -5,6 +5,7 @@ import CardUserList from "./CardUserList";
 import { Link } from "react-router-dom";
 
 interface TravelData {
+  id: number;
   name: string; // 여행지갑 이름
   selectedCountry: string; // 여행지 이름
   budget: string; // 현재 누적 금액 (통화 단위 포함)
@@ -53,6 +54,7 @@ const TitleWrap = styled.div`
 
 export default function TourCard({ Tourdata }: TourCardProps) {
   const {
+    id,
     name,
     selectedCountry,
     budget,
@@ -77,7 +79,7 @@ export default function TourCard({ Tourdata }: TourCardProps) {
       : 0;
 
   return (
-    <Card to="/Tour" state={{ Tourdata }} $bgImg={bgImg}>
+    <Card to={`/Tour/${Tourdata.id}`} state={{ Tourdata }} $bgImg={bgImg}>
       <div>
         <TitleWrap>
           <h2>{selectedCountry}</h2>
