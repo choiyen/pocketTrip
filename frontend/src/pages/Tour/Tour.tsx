@@ -20,7 +20,7 @@ const data = {
   id: 1,
   name: "일본여행지갑", // 여행지갑 이름
   selectedCountry: "일본", // 여행지 이름
-  budget: "2,000,000", // 현재 누적 금액
+  budget: 2000000, // 현재 누적 금액
   ImgArr: [
     "./ProfileImage.png",
     "./ProfileImage.png",
