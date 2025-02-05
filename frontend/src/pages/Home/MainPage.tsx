@@ -8,9 +8,12 @@ import TourCard from "./TourCard";
 import styled from "styled-components";
 import EmptyCard from "./EmptyCard";
 import NextTour from "./NextTour";
+<<<<<<< HEAD
 import CodeBanner from "./CodeBanner";
 import InputCodeBox from "../../components/Common/InputCodeBox";
 import RankChart from "./RankChart";
+=======
+>>>>>>> d2d0d0e (백엔드 연결)
 
 const H2 = styled.h2`
   font-size: 18px;
@@ -108,9 +111,13 @@ export default function MainPage() {
       <H2>현재 여행중인 지역</H2>
       {data ? <TourCard Tourdata={data} /> : <EmptyCard />}
       <H2>다가오는 여행</H2>
+<<<<<<< HEAD
       <NextTour nextTour={nextTour} />
       <CodeBanner setInputCodeVisible={setInputCodeVisible} />
       <RankChart />
+=======
+      <NextTour />
+>>>>>>> d2d0d0e (백엔드 연결)
       {isAlertVisible && (
         <Alert
           alertState={alertType}
