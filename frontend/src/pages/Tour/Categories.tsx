@@ -75,8 +75,9 @@ const CompleteButton = styled.button`
   }
 `;
 
-const Amount = styled.div`
-  background-color: #4caf50;
+const Amount = styled.div<{ paymentType: string }>`
+  background-color: ${(props) =>
+    props.paymentType === "cash" ? "#4CAF50" : "#007BFF"};
   color: white;
   padding: 10px 20px;
   border-radius: 20px;
@@ -166,14 +167,14 @@ export default function Categories() {
     navigate("/Accountbook");
   };
   const handleComplete = () => {
-    const data = {
-      amount,
-      paymentType,
-      description,
-      selectedCategoryId, // 선택한 카테고리 ID
-    };
+    // const data = {
+    //   amount,
+    //   paymentType,
+    //   description,
+    //   selectedCategoryId, // 선택한 카테고리 ID
+    // };
 
-    navigate("/tour", { state: data });
+    navigate("/Tour"); // , { state: data }
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
@@ -215,7 +216,9 @@ export default function Categories() {
         <span>{getFormattedDate()}</span>
       </Header>
       <CompleteButton onClick={handleComplete}>완료</CompleteButton>
-      <Amount>{`${Number(amount).toLocaleString()} ₩`}</Amount>
+      <Amount paymentType={paymentType}>{`${Number(
+        amount
+      ).toLocaleString()} ₩`}</Amount>
 
       <Display
         hasDescription={!!description}
