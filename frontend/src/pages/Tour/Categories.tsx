@@ -167,14 +167,23 @@ export default function Categories() {
     navigate("/Accountbook");
   };
   const handleComplete = () => {
-    // const data = {
-    //   amount,
-    //   paymentType,
-    //   description,
-    //   selectedCategoryId, // 선택한 카테고리 ID
-    // };
+    const selectedCategory = categories.find(
+      (cat) => cat.id === selectedCategoryId
+    );
+    const data = {
+      amount,
+      paymentType,
+      description,
+      category: selectedCategory
+        ? {
+            id: selectedCategory.id,
+            label: selectedCategory.label,
+            icon: selectedCategory.icon,
+          }
+        : null,
+    };
 
-    navigate("/Tour"); // , { state: data }
+    navigate("/Tour/1", { state: data }); // , { state: data }
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
