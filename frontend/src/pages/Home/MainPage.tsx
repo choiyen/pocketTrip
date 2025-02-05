@@ -15,7 +15,6 @@ const H2 = styled.h2`
 
 export default function MainPage() {
   const dispatch: AppDispatch = useDispatch();
-  const travelData = useSelector((state: RootState) => state.travel); // Redux에서 여행 데이터 가져오기
 
   useEffect(() => {
     dispatch(ChangeCurrentPage("home"));
@@ -43,13 +42,12 @@ export default function MainPage() {
     setIsAlertVisible(true);
   };
 
-
   // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
   const data = {
-    id: 1,
+    id: "1",
     name: "일본여행지갑", // 여행지갑 이름
     selectedCountry: "일본", // 여행지 이름
-    budget: "2,000,000", // 현재 누적 금액
+    budget: 2000000, // 현재 누적 금액
     ImgArr: [
       "./ProfileImage.png",
       "./ProfileImage.png",
@@ -69,16 +67,11 @@ export default function MainPage() {
     profile: "ProfileImage.png",
   };
 
-  const data = {
-    ...travelData,
-    budget: Number(travelData.budget),
-  };
-
   return (
     <div>
       <Header $bgColor={"#eaf6ff"} userData={userData} />
       <H2>현재 여행중인 지역</H2>
-      <TourCard Tourdata={travelData} /> {/* Redux에서 가져온 데이터 사용 */}
+      <TourCard Tourdata={data} />
       {isAlertVisible && (
         <Alert
           alertState={alertType}
