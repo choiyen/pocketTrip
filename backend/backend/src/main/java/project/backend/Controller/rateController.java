@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import project.backend.DTO.GeminiReqDto;
-import project.backend.DTO.GeminiResDto;
 import project.backend.DTO.ResponseDTO;
 import project.backend.Service.RateService;
 
@@ -266,32 +264,6 @@ public class rateController {
             return ResponseEntity.ok().body(responseDTO.Response("success","여행 가계부 데이터 삽입을 위한 환율 전송", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
-        }
-    }
-
-
-    //AI관련 기능 : 아직 사용 여부 불확실함.
-    public List getAIDescription(List<Map<String, Object>> list)
-    {
-
-        try
-        {
-            String geminiURL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="
-                    + apiKey;
-            String requestText = list + "기준통화에 맞는 현지인이 쓰는 통화 기호를 찾아서 JSON 형식으로 출력해줘";
-            GeminiReqDto request = new GeminiReqDto();
-            request.createGeminiReqDto(requestText);
-            String description = "";
-            RestTemplate geminiRestTemplate = new RestTemplate();
-            GeminiResDto response = geminiRestTemplate.postForObject(geminiURL, request, GeminiResDto.class);
-            description = response.getCandidates().get(0).getContent().getParts().get(0).getText();
-            System.out.println(description);
-            return Collections.singletonList(description);
-        }
-        catch (Exception e)
-        {
-            log.error("INTERNAL SERVER ERROR");
-            throw  new RuntimeException(e);
         }
     }
 }
