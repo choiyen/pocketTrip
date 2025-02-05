@@ -24,19 +24,17 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
   };
 
   const goToWhere6 = () => {
-    // 예산(budget)을 travelData에 추가하여 업데이트
-    updateTravelData({
-      budget: budget, // 예산 값 업데이트
-    });
-
-    // 업데이트된 travelData 로그 출력
-    console.log("업데이트된 travelData:", {
+    // travelData를 업데이트하고, state에 담아서 Where6으로 전달
+    const updatedTravelData = {
       ...travelData,
-      budget: budget, // 예산 업데이트
-    });
+      budget: budget,
+    };
 
-    // Where6 페이지로 이동
-    navigate("/Where6");
+    updateTravelData(updatedTravelData); // 상태 업데이트
+    console.log("업데이트된 travelData:", updatedTravelData);
+
+    // Where6 페이지로 이동하면서 데이터 전달
+    navigate("/Where6", { state: updatedTravelData });
   };
 
   const isButtonDisabled = budget <= 0; // 예산이 0 이하이면 버튼 비활성화
