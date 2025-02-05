@@ -3,6 +3,7 @@ import counterReducer from "../slices/counterSlice";
 import currentPageReducer from "../slices/currentPageSlice";
 import ModalControlReducer from "../slices/ModalControlSlice";
 import AlertControlReducer from "../slices/AlertControlSlice";
+import travelReducer from "../slices/travelSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     currentPage: currentPageReducer,
     modalControl: ModalControlReducer,
     AlertControl: AlertControlReducer,
+    travel: travelReducer,
   },
 });
 
