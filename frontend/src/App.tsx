@@ -90,10 +90,10 @@ function App() {
             }
           />
           <Route path="/Where6" element={<Where6 />} />
-          <Route path="/Tour" element={<Tour />} />
-          <Route path="/TourMembers" element={<TourMembers />} />
-          <Route path="/MoneyChart" element={<MoneyChart />} />
-          <Route path="/accountbook" element={<AccountBook />} />
+          <Route path="/Tour/:id" element={<Tour />} />
+          <Route path="/Tour/:id/TourMembers" element={<TourMembers />} />
+          <Route path="/Tour/:id/MoneyChart" element={<MoneyChart />} />
+          <Route path="/Tour/:id/accountbook" element={<AccountBook />} />
           <Route path="/Categories" element={<Categories />} />
         </Routes>
       </BrowserRouter>
