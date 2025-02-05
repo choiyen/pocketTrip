@@ -3,6 +3,7 @@ import Header from "../../components/Common/Header";
 import UserListItem from "./UserListItem";
 import styled from "styled-components";
 import Button from "../../components/Common/Button";
+import { useParams } from "react-router-dom";
 
 const CodeWrap = styled.div`
   width: 90%;
@@ -18,7 +19,6 @@ const CurrentMembersWrap = styled.div`
     border-radius: 20px;
     padding: 10px;
   }
-
 `;
 const TourMembersWrap = styled.div`
   .TourMemberTitle {
@@ -61,6 +61,7 @@ const ContentBox = styled.div`
 `;
 
 export default function TourMembers() {
+  const { id } = useParams<{ id: string }>();
   const userData = [
     {
       name: "홍길동",
@@ -81,7 +82,7 @@ export default function TourMembers() {
   ];
   return (
     <TourMembersWrap>
-      <Header />
+      <Header id={id} />
       <ContentBox>
         <CodeWrap>
           <h2 className="TourMemberTitle">초대코드</h2>
