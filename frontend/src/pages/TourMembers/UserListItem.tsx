@@ -31,7 +31,7 @@ const ListItem = styled.li`
 export default function UserListItem({ name, profile }: UserInfoProps) {
   return (
     <ListItem>
-      <img src={"./" + profile} alt="프로필 사진" width="40px" height="40px" />
+      <img src={"/" + profile} alt="프로필 사진" width="40px" height="40px" />
       <div>
         <h2>이름</h2>
         <span>{name}</span>
