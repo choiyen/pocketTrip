@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.UserEntity;
+import project.backend.Entity.UserTravelsEntity;
 import project.backend.Repository.UserRepository;
+import project.backend.Repository.UserTravelsRepository;
 
 @Slf4j
 @Service
