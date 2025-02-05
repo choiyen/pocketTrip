@@ -15,7 +15,6 @@ interface MoneyLogProps {
   money: string;
 }
 
-// 초대 코드 혹은 클릭했던 여행카드의 id에 맞게 여행 정보를 불러온다.
 const data = {
   id: 1,
   name: "일본여행지갑", // 여행지갑 이름
@@ -38,11 +37,27 @@ const SERVER_URL = process.env.REACT_APP_SERVER || "";
 
 export default function Tour() {
   const { id } = useParams<{ id: string }>();
-  const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const { state } = useLocation();
-  const { Tourdata } = state || {};
+  const [logs, setLogs] = useState<MoneyLogProps[]>([]);
 
-  // 소켓 통신
+  const { amount, paymentType, description, category } = state || {};
+
+  useEffect(() => {
+    if (category) {
+      setLogs([
+        {
+          LogState: "minus",
+          title: category.label,
+          detail: description || "설명 없음",
+          profile: "/ProfileImage.png",
+          type: paymentType === "cash" ? "현금" : "카드",
+          money: Number(amount).toLocaleString(),
+        },
+      ]);
+    }
+  }, [amount, paymentType, description, category]);
+
+  // 소켓 통신 (필요시 추가)
   useEffect(() => {
     const newSocket = io(SERVER_URL, {
       query: { tourId: id },
@@ -50,46 +65,18 @@ export default function Tour() {
       timeout: 500,
     });
 
-    // 소켓 연결 상태 확인용
     newSocket.on("connect", () => {
       console.log("소켓 연결됨!");
     });
 
-    // 마운트 시 소켓 연결한다.
     newSocket.on("moneyLogs", (data) => {
       setLogs(data);
     });
 
     newSocket.on("connect_error", (error) => {
       console.error("소켓 연결 오류:", error.message);
-      setLogs([
-        {
-          LogState: "minus",
-          title: "숙소 비용",
-          detail: "숙박",
-          profile: "/ProfileImage.png",
-          type: "카드",
-          money: "130,000",
-        },
-        {
-          LogState: "plus",
-          title: "급여",
-          detail: "월급",
-          profile: "/ProfileImage.png",
-          type: "현금",
-          money: "2,000,000",
-        },
-        {
-          LogState: "minus",
-          title: "식비",
-          detail: "점심",
-          profile: "/ProfileImage.png",
-          type: "카드",
-          money: "20,000",
-        },
-      ]);
     });
-    // 언마운트 시 소켓 정리
+
     return () => {
       if (newSocket) {
         newSocket.off("connect");
@@ -98,7 +85,7 @@ export default function Tour() {
         newSocket.disconnect();
       }
     };
-  }, []);
+  }, [id]);
 
   return (
     <div>
