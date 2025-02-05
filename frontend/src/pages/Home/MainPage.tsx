@@ -6,6 +6,7 @@ import Header from "../../components/Common/Header";
 import Alert from "../../components/Common/Alert";
 import TourCard from "./TourCard";
 import styled from "styled-components";
+import EmptyCard from "./EmptyCard";
 
 const H2 = styled.h2`
   font-size: 18px;
@@ -43,6 +44,7 @@ export default function MainPage() {
   };
 
   // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
+  // const data = null;
   const data = {
     id: "1",
     name: "일본여행지갑", // 여행지갑 이름
@@ -62,16 +64,28 @@ export default function MainPage() {
     bgImg: "./japan.jpg",
   };
 
+  const nextTour = {
+    selectedCountry: "태국",
+    startDate: "2025-03-18", // 여행 시작일
+    endDate: "2025-03-20", // 여행 종료일
+  };
+
   const userData = {
     name: "황종현",
     profile: "ProfileImage.png",
   };
 
+  // D-day 계산
+  const today = new Date().getTime();
+  const startedDate = new Date(nextTour.startDate).getTime();
+  const leftDate = new Date(startedDate - today).getDate() - 1;
+
   return (
     <div>
       <Header $bgColor={"#eaf6ff"} userData={userData} />
       <H2>현재 여행중인 지역</H2>
-      <TourCard Tourdata={data} />
+      {data ? <TourCard Tourdata={data} /> : <EmptyCard />}
+      <H2>다가오는 여행</H2>
       {isAlertVisible && (
         <Alert
           alertState={alertType}

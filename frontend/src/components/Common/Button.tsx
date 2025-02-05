@@ -25,7 +25,7 @@ const CutomButton = styled.button<{ $bgColor: string; disabled: boolean }>`
   color: ${(props) => (props.$bgColor === "transparent" ? "#121212" : "white")};
   border: none;
   font-family: GmarketSansMedium, Arial, Helvetica, sans-serif;
-  font-weight: bold;
+  font-weight: normal;
   box-sizing: border-box;
   opacity: ${(props) => (props.disabled ? 0.4 : 1)};
 `;
