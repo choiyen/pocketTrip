@@ -12,9 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.UserDTO;
+import project.backend.DTO.UserTravelsDTO;
 import project.backend.Entity.UserEntity;
+import project.backend.Entity.UserTravelsEntity;
 import project.backend.Security.TokenProvider;
 import project.backend.Service.UserService;
+import project.backend.Service.UserTravelsService;
 
 import javax.naming.AuthenticationException;
 import java.util.*;
@@ -37,6 +40,8 @@ public class UserController {
     private TokenProvider tokenProvider;
 
     private ResponseDTO responseDTO = new ResponseDTO<>();
+    @Autowired
+    private UserTravelsService userTravelsService;
 
     // 회원가입
     @PostMapping("/signup")
@@ -50,7 +55,14 @@ public class UserController {
                     .phone(userDTO.getPhone())
                     .build();
 
+            UserTravelsEntity userTravels = UserTravelsEntity.builder()
+                    .email(userDTO.getEmail())
+                    .travelList(new ArrayList<String>())
+                    .build();
+
             UserEntity registerUser = userService.createUser(user);
+
+            UserTravelsEntity registerUserTravels = userTravelsService.createUserTravels(userTravels);
 
             UserDTO responsedUserDTO = UserDTO.builder()
                     .name(registerUser.getName())
@@ -60,8 +72,15 @@ public class UserController {
                     .id(registerUser.getId())
                     .build();
 
+            UserTravelsDTO responsedUserTravelsDTO = UserTravelsDTO.builder()
+                    .id(registerUserTravels.getId())
+                    .email(registerUserTravels.getEmail())
+                    .travelList(registerUserTravels.getTravelList())
+                    .build();
+
             List<Object> list = new ArrayList<>();
             list.add(responsedUserDTO);
+            list.add(responsedUserTravelsDTO);
             return ResponseEntity.ok().body(responseDTO.Response("success", "우리 앱을 이용해주셔서 감사합니다. 여러분의 기입을 환영합니다.", list));
 
         }
