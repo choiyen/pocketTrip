@@ -51,7 +51,6 @@ const MainPageWrap = styled.div`
   }
   .year {
     font-size: 24px;
-    font-weight: 300;
   }
 `;
 const DateWrap = styled.div`
