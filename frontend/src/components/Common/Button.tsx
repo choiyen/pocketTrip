@@ -83,6 +83,8 @@ const MediumButton = styled(CutomButton)<{
       ? "#4CAF50"
       : props.$bgColor === "red"
       ? "#CC0003"
+      : props.$bgColor === "transparent"
+      ? "transparent"
       : "#0077cc"};
 `;
 
@@ -100,6 +102,8 @@ const SmallButton = styled(CutomButton)<{
       ? "#4CAF50"
       : props.$bgColor === "red"
       ? "#CC0003"
+      : props.$bgColor === "transparent"
+      ? "transparent"
       : "#0077cc"};
 `;
 

@@ -8,7 +8,6 @@ interface UserListProps {
 
 const UserList = styled.ul`
   display: flex;
-  gap: 10px; /* 아이템 사이에 간격 추가 */
 
   li {
     position: relative;
