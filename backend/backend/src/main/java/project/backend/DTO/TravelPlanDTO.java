@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
-@Setter
 @Builder
 public class TravelPlanDTO {
     private String id;
