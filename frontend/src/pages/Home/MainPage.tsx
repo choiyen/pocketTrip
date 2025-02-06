@@ -8,9 +8,13 @@ import TourCard from "./TourCard";
 import styled from "styled-components";
 import EmptyCard from "./EmptyCard";
 import NextTour from "./NextTour";
+import CodeBanner from "./CodeBanner";
+import InputCodeBox from "../../components/Common/InputCodeBox";
+import RankChart from "./RankChart";
 
 const H2 = styled.h2`
   font-size: 18px;
+  font-weight: 500;
   font-family: inherit;
   margin: 20px;
 `;
@@ -24,6 +28,7 @@ export default function MainPage() {
 
   // 알림창 관련 로직
   const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [InputCodeVisible, setInputCodeVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<"success" | "error" | "info">(
     "success"
@@ -45,7 +50,7 @@ export default function MainPage() {
   };
 
   // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
-  // const data = null;
+  // 현재 여행
   const data = {
     id: "1",
     name: "일본여행지갑", // 여행지갑 이름
@@ -64,36 +69,57 @@ export default function MainPage() {
     endDate: "2025-02-20", // 여행 종료일
     bgImg: "./japan.jpg",
   };
+  // 현재 여행이 없을 경우
+  // const data = null;
 
+  // 다음 여행지 계획
   const nextTour = {
     selectedCountry: "태국",
     startDate: "2025-03-18", // 여행 시작일
     endDate: "2025-03-20", // 여행 종료일
   };
+  // 다음 여행지 계획이 없을 경우
+  // const nextTour = false;
 
+  // 유저 데이터
   const userData = {
     name: "황종현",
     profile: "ProfileImage.png",
   };
 
-  // D-day 계산
-  const today = new Date().getTime();
-  const startedDate = new Date(nextTour.startDate).getTime();
-  const leftDate = new Date(startedDate - today).getDate() - 1;
-
+  // 순위 데이터
+  const popularCountry = [
+    {
+      name: "일본",
+      percentage: 60,
+    },
+    {
+      name: "태국",
+      percentage: 40,
+    },
+    {
+      name: "프랑스",
+      percentage: 20,
+    },
+  ];
   return (
-    <div>
+    <div style={{ paddingBottom: "100px" }}>
       <Header $bgColor={"#eaf6ff"} userData={userData} />
       <H2>현재 여행중인 지역</H2>
       {data ? <TourCard Tourdata={data} /> : <EmptyCard />}
       <H2>다가오는 여행</H2>
-      <NextTour />
+      <NextTour nextTour={nextTour} />
+      <CodeBanner setInputCodeVisible={setInputCodeVisible} />
+      <RankChart />
       {isAlertVisible && (
         <Alert
           alertState={alertType}
           message={alertMessage}
           setIsAlertVisible={setIsAlertVisible}
         />
+      )}
+      {InputCodeVisible && (
+        <InputCodeBox setInputCodeVisible={setInputCodeVisible} />
       )}
     </div>
   );
