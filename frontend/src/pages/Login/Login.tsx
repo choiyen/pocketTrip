@@ -2,26 +2,62 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./LoginPage.css";
 import Button from "../../components/Common/Button";
+import { useNavigate } from "react-router-dom";
 
 interface LoginResponse {
-  success: boolean;
+  resultType: string;
   message: string;
+  data? : string;
 }
 
 const LoginPage: React.FC = () => {
-  const [email, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
-  const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
+  // const [email, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
+  // const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const navigate = useNavigate()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target;
+    setFormData({...formData, [name]: value});
+  }
 
   // 로그인 함수
-  const loginUser = (): void => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    console.log(formData);
     axios
-      .post<LoginResponse>("http://localhost:8080/auth/signin", { email: email, password: password },
-        {headers: {
+      .post<LoginResponse>(
+        "http://localhost:8080/auth/signin"
+        , { email: formData.email, password: formData.password },
+        {
+          headers: {
           "Content-Type": "application/json"
       }}) // 응답의 타입을 LoginResponse로 지정
       .then((response) => {
-        if (response.data.success) {
-          window.location.href = "/dashboard";
+        if (response.status === 200) {
+          // 성공 처리
+          console.log(response.data);
+          if (response.data.resultType === "success") {
+            navigate("/");
+          } else {
+            console.log(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        // 400 에러 발생 시 처리
+        if (error.response) {
+          if (error.response.status === 400) {
+            console.error("400 Error:", error.response.data.message);
+          } else {
+            console.error("Unexpected Error:", error.response);
+          }
+        } else {
+          console.error("Network Error:", error.message);
         }
       });
   };
@@ -38,16 +74,16 @@ const LoginPage: React.FC = () => {
         </a>
       </div>
 
-      <form className="loginForm">
+      <form className="loginForm" id="loginForm" onSubmit={handleSubmit}>
         <label className="formLabel">아이디</label>
         <input
           type="text"
-          className="emailAddr"
-          name="emailAddr"
+          className="email"
+          name="email"
           required
           placeholder="이메일을 입력해 주세요"
-          value={email}
-          onChange={(e) => setEmailAddr(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
         />
         <label className="formLabel">비밀번호</label>
         <input
@@ -56,8 +92,8 @@ const LoginPage: React.FC = () => {
           name="password"
           required
           placeholder="비밀번호를 입력해 주세요"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
         />
         <div className="lostE">
           <p style={{ fontSize: "9px" }}>
@@ -67,7 +103,8 @@ const LoginPage: React.FC = () => {
             이메일 & 비밀번호 찾기
           </a>
         </div>
-        <Button size="L" name="로그인" $bgColor="blue" onClick={loginUser} />
+        <Button size="L" name="로그인" $bgColor="blue" type="submit" />
+        {/* <button type="submit">로그인</button> */}
       </form>
 
       {/* 회원가입 페이지 만들면 경로 바꾸기! */}
