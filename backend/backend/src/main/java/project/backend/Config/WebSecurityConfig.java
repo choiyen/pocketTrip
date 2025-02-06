@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(
                         sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/", "/auth/**", "/rate/**", "/expenditures/**").permitAll().anyRequest().authenticated());
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/", "/auth/**", "/rate/**", "/expenditures/**", "/user/**").permitAll().anyRequest().authenticated());
 
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
 
