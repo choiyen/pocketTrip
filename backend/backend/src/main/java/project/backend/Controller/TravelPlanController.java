@@ -1,14 +1,11 @@
 package project.backend.Controller;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ResponseDTO;
@@ -26,7 +23,6 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.beans.Transient;
 import java.util.*;
 
 /*
@@ -261,7 +257,51 @@ public class TravelPlanController
     }
 
 
+    @PostMapping("/count/All")
+    public ResponseEntity<?> TravelCount()
+    {
+        try
+        {
+            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(travelPlanService.TravelPlanCount())));
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
 
+        }
+    }
+    @PostMapping("/count/location")
+    public ResponseEntity<?> locationCount()
+    {
+        try
+        {
+
+            System.out.println(travelPlanService.getVisitCountByRegion());
+            List<Map> list = travelPlanService.getVisitCountByRegion();
+            // List<Map>에서 각 데이터를 수정하는 예시
+            // 각 지역의 방문 횟수를 전체 방문 횟수로 나누기
+            for (Map<String, Object> data : list) {
+                String region = (String) data.get("_id");
+                Integer visitCount = (Integer) data.get("visitCount");
+
+                // 전체 방문 횟수로 나누기
+                double visitRatio = ((double) visitCount / travelPlanService.TravelPlanCount()) * 100;
+                double roundedValue = Math.round(visitRatio * 10.0) / 10.0;
+                // 결과에 비율 추가
+                data.put("visitRatio", roundedValue); // visitRatio 필드를 추가
+            }
+
+            // 수정된 데이터 확인
+            for (Map<String, Object> data : list) {
+                System.out.println(data); // 수정된 데이터를 출력
+            }
+
+            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
     //데이터베이스에서 데이터 정상 제거 확인
     @DeleteMapping("/delete/{travelCode}")
     @CacheEvict(value = "travelCode", allEntries = true)
