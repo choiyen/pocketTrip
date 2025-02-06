@@ -9,13 +9,16 @@ interface LoginResponse {
 }
 
 const LoginPage: React.FC = () => {
-  const [emailAddr, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
+  const [email, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
   const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
 
   // 로그인 함수
   const loginUser = (): void => {
     axios
-      .post<LoginResponse>("/login", { emailAddr, password }) // 응답의 타입을 LoginResponse로 지정
+      .post<LoginResponse>("http://localhost:8080/auth/signin", { email: email, password: password },
+        {headers: {
+          "Content-Type": "application/json"
+      }}) // 응답의 타입을 LoginResponse로 지정
       .then((response) => {
         if (response.data.success) {
           window.location.href = "/dashboard";
@@ -43,7 +46,7 @@ const LoginPage: React.FC = () => {
           name="emailAddr"
           required
           placeholder="이메일을 입력해 주세요"
-          value={emailAddr}
+          value={email}
           onChange={(e) => setEmailAddr(e.target.value)}
         />
         <label className="formLabel">비밀번호</label>
