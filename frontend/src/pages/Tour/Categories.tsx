@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 const categories = [
@@ -151,6 +151,8 @@ const Category = styled.div<{ backgroundColor: string; isSelected: boolean }>`
 export default function Categories() {
   const location = useLocation();
   const { amount, paymentType } = location.state;
+  const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
+  console.log(id);
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
@@ -166,15 +168,26 @@ export default function Categories() {
   const goToAccountbook = () => {
     navigate("/Accountbook");
   };
-  const handleComplete = () => {
-    // const data = {
-    //   amount,
-    //   paymentType,
-    //   description,
-    //   selectedCategoryId, // 선택한 카테고리 ID
-    // };
 
-    navigate("/Tour"); // , { state: data }
+  const handleComplete = () => {
+    const selectedCategory = categories.find(
+      (cat) => cat.id === selectedCategoryId
+    );
+    const data = {
+      amount,
+      paymentType,
+      description,
+      category: selectedCategory
+        ? {
+            id: selectedCategory.id,
+            label: selectedCategory.label,
+            icon: selectedCategory.icon,
+          }
+        : null,
+    };
+
+    // 동적으로 받아온 id를 URL에 반영하여 이동
+    navigate(`/Tour/${id}`, { state: data });
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
