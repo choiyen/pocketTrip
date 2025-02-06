@@ -1,5 +1,4 @@
 import React from "react";
-<<<<<<< HEAD
 import styled from "styled-components";
 
 interface nextTourProps {
@@ -102,9 +101,4 @@ export default function NextTour({ nextTour }: nextTourProps) {
       )}
     </BannerWrap>
   );
-=======
-
-export default function NextTour() {
-  return <div>NextTour</div>;
->>>>>>> d2d0d0e (백엔드 연결)
 }

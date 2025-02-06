@@ -168,8 +168,6 @@ export default function Categories() {
   const goToAccountbook = () => {
     navigate("/Accountbook");
   };
-<<<<<<< HEAD
-<<<<<<< HEAD
 
   const handleComplete = () => {
     const selectedCategory = categories.find(
@@ -190,34 +188,6 @@ export default function Categories() {
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${id}`, { state: data });
-=======
-=======
-
->>>>>>> d35b7db (가계부랑 카테고리오류잡음)
-  const handleComplete = () => {
-    const selectedCategory = categories.find(
-      (cat) => cat.id === selectedCategoryId
-    );
-    const data = {
-      amount,
-      paymentType,
-      description,
-      category: selectedCategory
-        ? {
-            id: selectedCategory.id,
-            label: selectedCategory.label,
-            icon: selectedCategory.icon,
-          }
-        : null,
-    };
-
-<<<<<<< HEAD
-    navigate("/Tour/1", { state: data }); // , { state: data }
->>>>>>> 0944218 (가계부랑 지갑연결)
-=======
-    // 동적으로 받아온 id를 URL에 반영하여 이동
-    navigate(`/Tour/${id}`, { state: data });
->>>>>>> d35b7db (가계부랑 카테고리오류잡음)
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
