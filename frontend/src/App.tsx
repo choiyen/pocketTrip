@@ -94,7 +94,7 @@ function App() {
           <Route path="/Tour/:id/TourMembers" element={<TourMembers />} />
           <Route path="/Tour/:id/MoneyChart" element={<MoneyChart />} />
           <Route path="/Tour/:id/accountbook" element={<AccountBook />} />
-          <Route path="/Categories" element={<Categories />} />
+          <Route path="/Tour/:id/Categories" element={<Categories />} />
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}

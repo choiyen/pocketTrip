@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Register.css";
 import Button from "../../components/Common/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+
+interface RegisterResponse {
+  status: string,
+  message: string,
+  data? : string[] 
+}
 
 const Register: React.FC = () => {
 
@@ -70,6 +77,16 @@ const Register: React.FC = () => {
       });
   };
   
+
+  useEffect(() => {
+    axios.post("http://localhost:8080/auth/signin",formData)
+    .then((response) => {
+      if (response.data.status == "success") {
+        navigate("/login");
+      }
+    })
+
+  }, [])
 
   return (
     <div className="Register-page" style={{ backgroundColor: "#ffffff" }}>
