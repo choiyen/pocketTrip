@@ -85,8 +85,10 @@ public class ApplicantsController
         {
 
             // AWS 암호화 정책 설정 중에 application.properties에 시크릿 키가 존재하면 안됨.
-            //그 부분 수정 하다가, 여행 비율 계산 코드 빠짐.
             // AWS S3 관련 코드도 다시 추가해서 commit 해야 함.
+
+
+
             if(appllicantsService.ApplicantExistance(encrypt(Travelcode,key)).block() == true)
             {
                 if(travelPlanService.SelectTravelCode(Travelcode) == true)
