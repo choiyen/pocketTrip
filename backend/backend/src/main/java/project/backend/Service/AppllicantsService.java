@@ -6,13 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.ApplicantsEntity;
 import project.backend.Repository.ApplicantsRepository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -26,6 +22,7 @@ public class AppllicantsService
     {
         if(applicantsRepository.existsByTravelCode(TravelCode).block() == true)
         {
+            System.out.println("out");
             ApplicantsEntity applicantsEntity = applicantsRepository.findByTravelCode(TravelCode).block();
             if(applicantsEntity.getUserList().contains(userid) == true)
             {
@@ -37,31 +34,32 @@ public class AppllicantsService
                 Set<String> uplist = new HashSet<>();
                 uplist.addAll(applicantsEntity.getUserList());
                 uplist.add(userid);
-                ApplicantsEntity applicants = ApplicantsEntity.builder()
+                ApplicantsEntity applicants2 = ApplicantsEntity.builder()
                         .travelCode(TravelCode)
-                        .userList(uplist)
                         .id(applicantsEntity.getId())
+                        .userList(uplist)
                         .build();
-                return applicantsRepository.save(applicants);
+                ApplicantsEntity applicantsEntityMono = applicantsRepository.save(applicants2).block();
+                return Mono.just(applicantsEntityMono);
             }
         }
         else
         {
-            Set<String> uplist = new HashSet<>();
-            uplist.add(userid);
+            System.out.println("in");
             ApplicantsEntity applicants = ApplicantsEntity.builder()
                     .travelCode(TravelCode)
-                    .userList(uplist)
+                    .userList(Collections.singleton(userid))
                     .build();
-
-            return applicantsRepository.save(applicants);
-
+            // 새로운 id를 생성하여 중복 오류 방지
+            Mono<ApplicantsEntity> applicantsEntityMono2 = applicantsRepository.save(applicants);
+            System.out.println(applicantsEntityMono2.block().getId());
+            ApplicantsEntity applicantsEntityMono = applicantsRepository.findByTravelCode(TravelCode).block();
+            return Mono.just(applicantsEntityMono);
         }
-
     }
 
     //참여자 목록에 데이터가 있을 때 데이터 삭제, 데이터 삭제 실행 후 빈배열일 경우, 해당 Document 제거
-    public Mono<? extends Object> AppllicantsDelete(String TravelCode, String userid)
+    public Mono<ApplicantsEntity> AppllicantsDelete(String TravelCode, String userid)
     {
        ApplicantsEntity applicantsEntity = applicantsRepository.findByTravelCode(TravelCode).block();
         if(applicantsEntity.getUserList().contains(userid) == false)
@@ -73,30 +71,26 @@ public class AppllicantsService
         {
             Set allList = new HashSet<>();
             allList.addAll(applicantsEntity.getUserList());
-            allList.remove(String.valueOf(userid));
+            allList.remove(userid);
             ApplicantsEntity applicants = ApplicantsEntity.builder()
                     .userList(allList)
                     .travelCode(applicantsEntity.getTravelCode())
                     .id(applicantsEntity.getId())
                     .build();
-            if(allList.isEmpty())
-            {
-                applicantsRepository.delete(applicantsEntity);
-                log.warn("데이터가 전부 삭제되어있습니다");
-                throw new IllegalArgumentException("데이터가 전부 삭제되어있습니다");
-            }
+
             return applicantsRepository.save(applicants);
         }
     }
+
 
     public Mono<Boolean> ApplicantExistance(String TravelCode)
     {
         return applicantsRepository.existsByTravelCode(TravelCode);
     }
 
-    public void TravelPlanAllDelete(String TravelCode)
+    public Void TravelPlanAllDelete(String TravelCode)
     {
-        applicantsRepository.deleteByTravelCode(TravelCode).block();
+       return applicantsRepository.deleteByTravelCode(TravelCode).block();
     }
 
     public Mono<ApplicantsEntity> applicantsSelect(String TravelCode)
