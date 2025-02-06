@@ -3,6 +3,7 @@ package project.backend.Controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +31,10 @@ public class ApplicantsController
 {
     private ResponseDTO responseDTO = new ResponseDTO();
 
+
+    @Value("${encrypt.key}")
+    private String key;
+
     @Autowired
     private TravelPlanService travelPlanService;
 
@@ -42,10 +47,9 @@ public class ApplicantsController
     {
         try
         {
-
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(Travelcode, userId);
+                Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(encrypt(Travelcode , key), userId);
                 Mono<ApplicantsDTO> travelPlanDTO1 = ConvertTo(applicantsEntity);
                 List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntity)));
                 return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
@@ -70,7 +74,7 @@ public class ApplicantsController
 
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                Mono<ApplicantsEntity> applicantsEntity = (Mono<ApplicantsEntity>) appllicantsService.AppllicantsDelete(Travelcode, userId);
+                Mono<ApplicantsEntity> applicantsEntity = (Mono<ApplicantsEntity>) appllicantsService.AppllicantsDelete(encrypt(Travelcode,key), userId);
                 List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntity)));
                 return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));            }
             else
@@ -109,6 +113,14 @@ public class ApplicantsController
 
         return  Mono.just(applicantsDTO);
     }
-
+    //암호화 코드 작성
+    private static String encrypt(String data, String key) throws Exception
+    {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedData = cipher.doFinal(data.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedData);
+    }
 
 }
