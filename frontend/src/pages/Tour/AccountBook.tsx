@@ -114,6 +114,7 @@ export default function AccountBook() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("KRW");
   const { id } = useParams<{ id: string }>();
+  console.log(id);
   const navigate = useNavigate();
 
   const getFormattedDate = () => {
@@ -149,7 +150,9 @@ export default function AccountBook() {
       alert("금액을 입력해주세요.");
       return;
     }
-    navigate("/categories", { state: { amount, currency, paymentType } });
+    navigate(`/Tour/${id}/categories`, {
+      state: { amount, currency, paymentType },
+    });
   };
 
   const currencySymbol = currency === "KRW" ? "₩" : "$";
