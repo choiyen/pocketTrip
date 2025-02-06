@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -49,10 +50,21 @@ public class ApplicantsController
         {
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(encrypt(Travelcode , key), userId);
-                Mono<ApplicantsDTO> travelPlanDTO1 = ConvertTo(applicantsEntity);
-                List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntity)));
-                return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
+                System.out.println("스크릿 키 : " + key);
+                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(Travelcode, key));
+                if(travelPlanEntityMono.block().getFounder().equals(userId))
+                {
+                    throw new RemoteException("여행을 주관하는 사람은 이미 참석하는 사람입니다.");
+                }
+                else
+                {
+                    Mono<ApplicantsEntity> applicantsEntity = appllicantsService.AppllicantsInsert(encrypt(Travelcode , key), userId);
+                    Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.applicantsSelect(encrypt(Travelcode, key));
+                    List<Object> list = new ArrayList<>();
+                    list.add(applicantsEntityMono.block());
+                    return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
+                }
+
             }
             else
             {
@@ -67,22 +79,53 @@ public class ApplicantsController
         }
     }
     @DeleteMapping("/Delete/{Travelcode}")
-    public ResponseEntity<?> ApplicantsDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode)
+    public synchronized ResponseEntity<?> ApplicantsDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode)
     {
         try
         {
 
-            if(travelPlanService.SelectTravelCode(Travelcode) == true)
+            // AWS 암호화 정책 설정 중에 application.properties에 시크릿 키가 존재하면 안됨.
+            //그 부분 수정 하다가, 여행 비율 계산 코드 빠짐.
+            // AWS S3 관련 코드도 다시 추가해서 commit 해야 함.
+            if(appllicantsService.ApplicantExistance(encrypt(Travelcode,key)).block() == true)
             {
-                Mono<ApplicantsEntity> applicantsEntity = (Mono<ApplicantsEntity>) appllicantsService.AppllicantsDelete(encrypt(Travelcode,key), userId);
-                List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntity)));
-                return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));            }
+                if(travelPlanService.SelectTravelCode(Travelcode) == true)
+                {
+                    Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(Travelcode, key));
+                    if(travelPlanEntityMono.block().getFounder().equals(userId))
+                    {
+                        throw new RemoteException("여행을 주관하는 사람은 참석하지 않을 수 없습니다.");
+                    }
+                    else
+                    {
+                        Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.AppllicantsDelete(encrypt(Travelcode,key), userId);
+                        if(applicantsEntityMono.block().getUserList().isEmpty())
+                        {
+                            List<Object> list = new ArrayList<>();
+                            list.add(appllicantsService.TravelPlanAllDelete(encrypt(Travelcode, key)));
+                            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
+                        }
+                        else
+                        {
+                            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(applicantsEntityMono)));
+                            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
+                        }
+
+                    }
+                }
+                else
+                {
+                    log.warn("The data with Travelcode {} is not present in the Applicants document", Travelcode);
+                    throw new IllegalArgumentException("Travelcode 값이 없는데 넣는 것은 불가능");
+                    //The data for that travel code is not present in the travel document.
+                }
+            }
             else
             {
-                log.warn("The data with Travelcode {} is not present in the travel document", Travelcode);
-                throw new IllegalArgumentException("Travelcode 값이 없는데 넣는 것은 불가능");
-                //The data for that travel code is not present in the travel document.
+                log.warn("The data with Travelcode {} is not present in the Applicants document", Travelcode);
+                throw new IllegalArgumentException("TravelCode를 가진 Applicants가 존재하지 않음");
             }
+
         }
         catch (Exception e)
         {
