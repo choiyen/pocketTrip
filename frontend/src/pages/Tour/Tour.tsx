@@ -6,7 +6,7 @@ import MoneyInfo from "./MoneyInfo";
 import Usehistory from "./Usehistory";
 import { io } from "socket.io-client";
 
-interface MoneyLogProps {
+export interface MoneyLogProps {
   LogState: "plus" | "minus";
   title: string;
   detail: string;
