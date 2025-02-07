@@ -53,6 +53,7 @@ export default function MainPage() {
   // 현재 여행
   const data = {
     id: "1",
+    travelCode: "sdfsdfsdf",
     name: "일본여행지갑", // 여행지갑 이름
     selectedCountry: "일본", // 여행지 이름
     budget: 2000000, // 현재 누적 금액
@@ -67,7 +68,7 @@ export default function MainPage() {
     ], // 참여인원들 프로필 이미지 주소
     startDate: "2025-01-18", // 여행 시작일
     endDate: "2025-02-20", // 여행 종료일
-    bgImg: "./japan.jpg",
+    bgImg: "/japan.jpg",
   };
   // 현재 여행이 없을 경우
   // const data = null;
@@ -88,20 +89,10 @@ export default function MainPage() {
   };
 
   // 순위 데이터
-  const popularCountry = [
-    {
-      name: "일본",
-      percentage: 60,
-    },
-    {
-      name: "태국",
-      percentage: 40,
-    },
-    {
-      name: "프랑스",
-      percentage: 20,
-    },
-  ];
+  const popularCountry = {
+    labels: ["일본", "태국", "프랑스"],
+    data: [60, 40, 20],
+  };
   return (
     <div style={{ paddingBottom: "100px" }}>
       <Header $bgColor={"#eaf6ff"} userData={userData} />
@@ -110,7 +101,7 @@ export default function MainPage() {
       <H2>다가오는 여행</H2>
       <NextTour nextTour={nextTour} />
       <CodeBanner setInputCodeVisible={setInputCodeVisible} />
-      <RankChart />
+      <RankChart popularCountry={popularCountry} />
       {isAlertVisible && (
         <Alert
           alertState={alertType}
