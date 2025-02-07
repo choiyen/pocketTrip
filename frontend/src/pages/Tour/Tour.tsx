@@ -5,7 +5,7 @@ import { useLocation, useParams } from "react-router-dom";
 import MoneyInfo from "./MoneyInfo";
 import Usehistory from "./Usehistory";
 import { io } from "socket.io-client";
-import { AppDispatch } from "@/store";
+import { AppDispatch } from "../../store";
 import { useDispatch } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 

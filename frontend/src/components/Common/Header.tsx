@@ -187,7 +187,7 @@ export default function Header({
               <BsPersonSquare size={"25px"} />
             </button>
           </Link>
-          <OptionButton />
+          <OptionButton remove={false} />
           {/* </div> */}
         </ButtonBox>
       )}
