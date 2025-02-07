@@ -4,6 +4,7 @@ import currentPageReducer from "../slices/currentPageSlice";
 import ModalControlReducer from "../slices/ModalControlSlice";
 import AlertControlReducer from "../slices/AlertControlSlice";
 import travelReducer from "../slices/travelSlice";
+import RoutePathReducer from "../slices/RoutePathSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     modalControl: ModalControlReducer,
     AlertControl: AlertControlReducer,
     travel: travelReducer,
+    prevPath: RoutePathReducer,
   },
 });
 
