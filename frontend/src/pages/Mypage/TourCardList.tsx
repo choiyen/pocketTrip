@@ -18,6 +18,24 @@ interface TravelPlan {
   formattedBudget: string[];
   index: number;
 }
+const TrvelWrap = styled.div`
+  position: relative;
+  .travelButton {
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    right: 10px;
+    margin: 10px 0;
+
+    & button svg {
+      fill: white;
+    }
+
+    & ul li button svg {
+      fill: currentColor;
+    }
+  }
+`;
 
 const Travel = styled(Link)<{ $bgImg?: string }>`
   width: 85vw;
@@ -36,26 +54,11 @@ const Travel = styled(Link)<{ $bgImg?: string }>`
   /* background-color: #5a6974; */
   border-radius: 15px;
   margin: 15px 0;
-  // position: relative;
+  /* position: relative; */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   color: white;
-
-  & .travelButton {
-    // position: absolute;
-    top: 0;
-    right: 0;
-    margin: 10px 0;
-
-    & button svg {
-      fill: white;
-    }
-
-    & ul li button svg {
-      fill: currentColor;
-    }
-  }
 `;
 
 const Title = styled.h2`
@@ -90,40 +93,30 @@ export default function TourCardList({
   index,
 }: TravelPlan) {
   return (
-    <Travel
-      to={`/Tour/${travel.id}`}
-      $bgImg={travel.bgImg}
-      state={{ from: "/mypage" }}
-    >
-      <div
-        style={{
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          justifyContent: "space-around",
-        }}
+    <TrvelWrap>
+      <Travel
+        to={`/Tour/${travel.id}`}
+        $bgImg={travel.bgImg}
+        state={{ from: "/mypage" }}
       >
-        <Title>{travel.name}</Title>
-        <Duration>
-          {travel.startDate} - {travel.endDate}
-        </Duration>
-        <SmallUserBox user={travel.ImgArr} $size={"S"} />
-        <Expense>₩ {formattedBudget[index]}</Expense>
-      </div>
-
-      <div
-        style={{
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* 참여자 목록 추가 */}
-      </div>
+        <div
+          style={{
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "space-around",
+          }}
+        >
+          <Title>{travel.name}</Title>
+          <Duration>
+            {travel.startDate} - {travel.endDate}
+          </Duration>
+          <SmallUserBox user={travel.ImgArr} $size={"S"} />
+          <Expense>₩ {formattedBudget[index]}</Expense>
+        </div>
+      </Travel>
       <OptionButton className="travelButton" />
-    </Travel>
+    </TrvelWrap>
   );
 }
