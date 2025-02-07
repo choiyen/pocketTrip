@@ -4,7 +4,6 @@ import Button from "../../components/Common/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 interface RegisterResponse {
   status: string,
   message: string,
@@ -77,6 +76,18 @@ const Register: React.FC = () => {
       });
   };
   
+
+  useEffect(() => {
+    axios.post("http://localhost:8080/auth/signin",formData)
+    .then((response) => {
+      if (response.data.status == "success") {
+        navigate("/login");
+      }
+    })
+
+  }, [])
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.post("http://localhost:8080/auth/signin",formData)
