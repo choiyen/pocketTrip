@@ -8,6 +8,7 @@ import {
   ChangeModalState,
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
+import Modal from "./Modal";
 
 const Navbar = styled.div`
   max-width: 768px;
@@ -19,7 +20,7 @@ const Navbar = styled.div`
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  border-radius: 15px;
+  border-radius: 15px 15px 0 0;
   box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.25);
   display: flex;
   justify-content: space-around;
@@ -72,6 +73,7 @@ export default function Nav() {
         <MdCurrencyExchange />
       </CalcButton>
       <NavButton where="mypage" />
+      {/* {modalState && <Modal />} */}
     </Navbar>
   );
 }
