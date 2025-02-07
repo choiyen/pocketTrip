@@ -1,11 +1,24 @@
 import React, { useEffect } from "react";
 import Header from "../../components/Common/Header";
 import { useDispatch } from "react-redux";
+import OptionButton from "../../components/Common/OptionButton";
 import { AppDispatch } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
-import OptionButton from "../../components/Common/OptionButton";
+
 import { useNavigate } from "react-router-dom";
+import TourCardList from "./TourCardList";
+
+interface TravelPlan {
+  id: string;
+  travelCode: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  budget: number;
+  ImgArr: string[];
+  bgImg?: string;
+}
 
 export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
@@ -15,30 +28,64 @@ export default function MyPage() {
     dispatch(ChangeCurrentPage("mypage"));
   }, []);
 
-  const travelList: any[] = [
+  const travelList: TravelPlan[] = [
     {
-      travelCode: "sdfsdfsdf",
-      title: "일본 여행의 방",
-      startDate: "25.01.27",
-      endDate: "25.02.02",
-      expense: 2000000,
+      id: "1",
+      travelCode: "sdsdds",
+      name: "일본여행지갑",
+      startDate: "2025-01-18",
+      endDate: "2025-02-20",
+      budget: 2000000,
+      ImgArr: [
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+      ], // 참여인원들 프로필 이미지 주소
+      bgImg: "/japan.jpg",
     },
     {
+      id: "2",
       travelCode: "ddddddd",
-      title: "일본 여행의 방",
-      startDate: "25.01.27",
-      endDate: "25.02.02",
-      expense: 2000000,
+      name: "미국 여행의 방",
+      startDate: "2024-10-20",
+      endDate: "2024-10-25",
+      budget: 1000000,
+      ImgArr: [
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+      ], // 참여인원들 프로필 이미지 주소
     },
     {
+      id: "3",
       travelCode: "sdfsdfdfdfdf",
-      title: "일본 여행의 방",
-      startDate: "25.01.27",
-      endDate: "25.02.02",
-      expense: 2000000,
+      name: "프랑스 여행의 방",
+      startDate: "2024-05-02",
+      endDate: "2024-05-10",
+      budget: 2500000,
+      ImgArr: [
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+        "./ProfileImage.png",
+      ], // 참여인원들 프로필 이미지 주소
     },
   ];
-
+  const formattedBudget: string[] = [];
+  travelList.map((item, index) => {
+    formattedBudget.push(new Intl.NumberFormat().format(item.budget));
+  });
   return (
     <div>
       <Header />
@@ -50,45 +97,21 @@ export default function MyPage() {
         </svg> */}
         <OptionButton className="profileButton" />
         <Profile>
-          <img src="/profileImage.png" alt="" />
+          <img src="/profileImage.png" alt="프로필사진" />
           <span>name</span>
         </Profile>
       </ProfileContainer>
       {travelList.length != 0 ? (
         <TravelListContainer>
           <TravelList>
-            {travelList.map((travel) => {
+            {travelList.map((travel, index) => {
               return (
-                <Travel id={travel.travelCode}>
-                  <div
-                    style={{
-                      padding: "20px",
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                      justifyContent: "space-around",
-                    }}
-                  >
-                    <Title>{travel.title}</Title>
-                    <Expense>{travel.expense}</Expense>
-                  </div>
-
-                  <div
-                    style={{
-                      padding: "20px",
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Duration>
-                      {travel.startDate} - {travel.endDate}
-                    </Duration>
-                    {/* 참여자 목록 추가 */}
-                  </div>
-                  <OptionButton className="travelButton" />
-                </Travel>
+                <TourCardList
+                  key={index}
+                  travel={travel}
+                  formattedBudget={formattedBudget}
+                  index={index}
+                />
               );
             })}
 
@@ -147,7 +170,6 @@ const Profile = styled.div`
     border-radius: 100%;
     width: 150px;
     height: 150px;
-    background-color: #111111;
   }
 
   & span {
@@ -220,34 +242,6 @@ const TravelList = styled.div`
   align-items: center;
 `;
 
-const Travel = styled.div`
-  width: 85vw;
-  height: 100px;
-  background-color: #005eff;
-  border-radius: 15px;
-  margin: 15px 0;
-  // position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  color: white;
-
-  & .travelButton {
-    // position: absolute;
-    top: 0;
-    right: 0;
-    margin: 10px 0;
-
-    & button svg {
-      fill: white;
-    }
-
-    & ul li button svg {
-      fill: currentColor;
-    }
-  }
-`;
-
 const AddTravel = styled.div`
   width: 85vw;
   height: 100px;
@@ -267,19 +261,4 @@ const AddTravel = styled.div`
     text-align: center;
     line-height: 30px;
   }
-`;
-
-const Title = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-`;
-
-const Expense = styled.div`
-  font-size: 20px;
-  font-weight: 500;
-`;
-
-const Duration = styled.div`
-  font-size: 12px;
-  font-weight: 500;
 `;

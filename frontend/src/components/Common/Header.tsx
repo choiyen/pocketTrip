@@ -14,6 +14,7 @@ interface HeaderState {
   $bgColor?: string;
   userData?: { name: string; profile: string };
   id?: string;
+  fromPage?: string;
 }
 
 const UserWrap = styled.div`
@@ -91,6 +92,7 @@ export default function Header({
   $bgColor = "transparent",
   userData,
   id,
+  fromPage,
 }: HeaderState) {
   const [pathName, setPathName] = useState("");
   const navigate = useNavigate();
@@ -127,7 +129,7 @@ export default function Header({
   const navPath = () => {
     switch (pathName) {
       case `/Tour/${id}`:
-        navigate("/");
+        fromPage === "/" ? navigate("/") : navigate("/mypage");
         break;
       case `/Tour/${id}/accountbook`:
         navigate(`/Tour/${id}`);
