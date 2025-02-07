@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Nav from "./Nav";
 import styled, { keyframes } from "styled-components";
 import Modal from "./Modal";
@@ -15,6 +15,16 @@ interface HeaderState {
   userData?: { name: string; profile: string };
   id?: string;
   fromPage?: string;
+  logs?: MoneyLogProps[];
+}
+
+interface MoneyLogProps {
+  LogState: "plus" | "minus";
+  title: string;
+  detail: string;
+  profile: string;
+  type: "카드" | "현금";
+  money: string;
 }
 
 const AccountHeader = styled.div`
@@ -102,6 +112,7 @@ export default function Header({
   userData,
   id,
   fromPage,
+  logs = [],
 }: HeaderState) {
   const [pathName, setPathName] = useState("");
   const navigate = useNavigate();
@@ -112,12 +123,16 @@ export default function Header({
 
   useEffect(() => {
     setPathName(location.pathname);
-  }, []);
+  }, [location.pathname]);
 
   // 리덕스로 모달 상태 글로벌 참조
   const modalState = useSelector(
     (state: RootState) => state.modalControl.modalState
   );
+
+  const handleGoToMoneyChart = () => {
+    navigate(`/Tour/${id}/MoneyChart`, { state: { logs } });
+  };
 
   // 오늘 날짜 계산
   const months = [
@@ -178,7 +193,7 @@ export default function Header({
         <ButtonBox>
           {/* <div> */}
           <Link to={`/Tour/${id}/MoneyChart`}>
-            <button className="optionButton">
+            <button className="optionButton" onClick={handleGoToMoneyChart}>
               <FaChartPie size={"25px"} />
             </button>
           </Link>

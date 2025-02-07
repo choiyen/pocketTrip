@@ -9,7 +9,7 @@ import { AppDispatch } from "../../store";
 import { useDispatch } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 
-interface MoneyLogProps {
+export interface MoneyLogProps {
   LogState: "plus" | "minus";
   title: string;
   detail: string;
