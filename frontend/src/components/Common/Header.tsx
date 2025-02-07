@@ -17,6 +17,15 @@ interface HeaderState {
   fromPage?: string;
 }
 
+const AccountHeader = styled.div`
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+`;
 const UserWrap = styled.div`
   display: flex;
   justify-content: space-between;
@@ -97,6 +106,10 @@ export default function Header({
   const [pathName, setPathName] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 글로벌 상태관리로 메인과 마이페이지 중 어디서 들어온 경로인지를 불러와서 관리
+  const savePath = useSelector((state: RootState) => state.prevPath.value);
+
   useEffect(() => {
     setPathName(location.pathname);
   }, []);
@@ -132,17 +145,26 @@ export default function Header({
         fromPage === "/" ? navigate("/") : navigate("/mypage");
         break;
       case `/Tour/${id}/accountbook`:
-        navigate(`/Tour/${id}`);
+        navigate(`/Tour/${id}`, { state: { from: savePath } });
         break;
       case `/Tour/${id}/TourMembers`:
-        navigate(`/Tour/${id}`);
+        navigate(`/Tour/${id}`, { state: { from: savePath } });
         break;
       case `/Tour/${id}/MoneyChart`:
-        navigate(`/Tour/${id}`);
+        navigate(`/Tour/${id}`, { state: { from: savePath } });
         break;
     }
   };
 
+  const getFormattedDate = () => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short",
+    };
+    return today.toLocaleDateString("ko-KR", options);
+  };
   return (
     <HeaderWrap $bgColor={$bgColor} $pathName={pathName}>
       {/* 세부 페이지에서의 뒤로가기 버튼 설정*/}
@@ -206,6 +228,13 @@ export default function Header({
             </div>
           </DateWrap>
         </MainPageWrap>
+      )}
+
+      {/* 경로가 가계부일때 */}
+      {pathName === `/Tour/${id}/accountbook` && (
+        <AccountHeader id={id}>
+          <span>{getFormattedDate()}</span>
+        </AccountHeader>
       )}
 
       {/* 필요에 따라 모달창 활성화 */}
