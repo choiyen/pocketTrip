@@ -7,28 +7,28 @@ import { BsFire } from "react-icons/bs";
 // Chart.js 등록
 ChartJS.register(ArcElement, Tooltip);
 
-const data = {
-  labels: ["한국", "일본", "미국"],
-  datasets: [
-    {
-      data: [35, 25, 15], // 퍼센트 데이터
-      backgroundColor: [
-        "#0085E5", //
-        "#50a6e4", // 파랑
-        "#b7cbda", // 노랑
-      ],
-    },
-  ],
-};
+// const data = {
+//   labels: ["한국", "일본", "미국"],
+//   datasets: [
+//     {
+//       data: [35, 25, 15], // 퍼센트 데이터
+//       backgroundColor: [
+//         "#0085E5", //
+//         "#50a6e4", // 파랑
+//         "#b7cbda", // 노랑
+//       ],
+//     },
+//   ],
+// };
 
-const options = {
-  cutout: "50%", // 중앙 구멍 크기 조절
-  plugins: {
-    legend: {
-      display: false, // 기본 Chart.js 범례 숨기기
-    },
-  },
-};
+// const options = {
+//   cutout: "50%", // 중앙 구멍 크기 조절
+//   plugins: {
+//     legend: {
+//       display: false, // 기본 Chart.js 범례 숨기기
+//     },
+//   },
+// };
 const ChartBoxWrap = styled.div`
   width: 80%;
   margin: 0 auto;
@@ -61,10 +61,10 @@ const LabelItem = styled.li<{ $index: number }>`
     height: 20px;
     background-color: ${(props) =>
       props.$index === 0
-        ? "#0085E5"
+        ? "#FFCC00"
         : props.$index === 1
-        ? "#50a6e4"
-        : "#b7cbda"};
+        ? "#C0C0C0"
+        : "#CD7F32"};
     position: absolute;
     left: -25px;
     top: 50%;
@@ -79,7 +79,37 @@ const LabelItem = styled.li<{ $index: number }>`
 const Title = styled.h2`
   margin-bottom: 10px;
 `;
-export default function DoughnutChart() {
+
+interface ChartProps {
+  popularCountry: {
+    labels: string[];
+    data: number[];
+  };
+}
+export default function DoughnutChart({ popularCountry }: ChartProps) {
+  const data = {
+    labels: popularCountry.labels,
+    datasets: [
+      {
+        data: popularCountry.data, // 퍼센트 데이터
+        backgroundColor: [
+          "#FFCC00", //
+          "#C0C0C0", // 파랑
+          "#CD7F32", // 노랑
+        ],
+      },
+    ],
+  };
+
+  const options = {
+    cutout: "50%", // 중앙 구멍 크기 조절
+    plugins: {
+      legend: {
+        display: false, // 기본 Chart.js 범례 숨기기
+      },
+    },
+  };
+
   return (
     <ChartBoxWrap>
       <Title>
