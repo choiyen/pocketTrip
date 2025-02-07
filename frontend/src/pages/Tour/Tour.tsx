@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../components/Common/Header";
 import TourInfo from "./TourInfo";
 import { useLocation, useParams } from "react-router-dom";
 import MoneyInfo from "./MoneyInfo";
 import Usehistory from "./Usehistory";
 import { io } from "socket.io-client";
+import { AppDispatch } from "@/store";
+import { useDispatch } from "react-redux";
+import { savePath } from "../../slices/RoutePathSlice";
 
 interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -59,11 +62,17 @@ const data = [
 const SERVER_URL = process.env.REACT_APP_SERVER || "";
 
 export default function Tour() {
+  const dispatch: AppDispatch = useDispatch();
+
   const { id } = useParams<{ id: string }>();
 
   // 뒤로가기 누를때 메인에서 온거면 메인, 마이페이지에서 온거면 그곳으로 되돌아가야한다.
   const { state } = useLocation(); // 메인 / 마이페이지 어디서 들어온 경로인지 판별
   const fromPage = state.from; // "/" 혹은 "/mypage" 경로 추출
+
+  useEffect(() => {
+    dispatch(savePath(fromPage));
+  }, []);
 
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const FilteringData = data.filter((item) => item.id === id);
