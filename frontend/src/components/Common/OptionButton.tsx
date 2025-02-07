@@ -27,6 +27,7 @@ const Button = styled.button`
 const OptionMenu = styled.ul`
   background-color: white;
   position: absolute;
+  width: min-content;
   z-index: 1;
   top: 100%;
   right: 100%;
