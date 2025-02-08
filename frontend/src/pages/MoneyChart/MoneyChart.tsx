@@ -2,46 +2,60 @@ import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { useParams, useLocation } from "react-router-dom";
 import Header from "../../components/Common/Header"; // Header 컴포넌트 임포트
-import { MoneyLogProps } from "../Tour/Tour";
 
 // 카테고리, 지출 수단, 통화 데이터
-const categoryData = [
-  { id: 1, name: "숙소", icon: "🏠", color: "#A5D8FF" },
-  { id: 2, name: "교통", icon: "🚌", color: "#FFD3B6" },
-  { id: 3, name: "식사", icon: "🍽️", color: "#FFEE93" },
-  { id: 4, name: "쇼핑", icon: "🛍️", color: "#FFB6C1" },
-  { id: 5, name: "선물", icon: "🎁", color: "#D9C2E9" },
-  { id: 6, name: "마트", icon: "🛒", color: "#C4E9C5" },
-  { id: 7, name: "투어", icon: "🎡", color: "#B9EBC2" },
-  { id: 8, name: "카페", icon: "☕", color: "#D9B99B" },
-  { id: 9, name: "항공", icon: "✈️", color: "#A8CFF0" },
-  { id: 10, name: "통신", icon: "📱", color: "#D1E4F2" },
-  { id: 11, name: "의료", icon: "🩺", color: "#AEE6E6" },
-  { id: 12, name: "주류", icon: "🍻", color: "#F4A8A8" },
-  { id: 13, name: "환전", icon: "💱", color: "#C8E5B5" },
-  { id: 14, name: "미용", icon: "💇🏻", color: "#EAB2E8" },
-  { id: 15, name: "관광", icon: "🎠", color: "#FFEAB6" },
-  { id: 16, name: "팁", icon: "💸", color: "#C8E6D8" },
-];
-const paymentData = [
-  { name: "현금", id: 60, color: "#D3D3D3" },
-  { name: "카드", id: 40, color: "#BEBEBE" },
-];
-const currencyData = [
-  { name: "VND", id: 90, color: "#D3D3D3" },
-  { name: "KRW", id: 10, color: "#BEBEBE" },
-];
-
 const categoryList = [
-  { name: "숙소", percentage: 14.2, amount: "68,400 KRW", icon: "🏨" },
-  { name: "식사", percentage: 9.7, amount: "46,740 KRW", icon: "🍴" },
-  { name: "투어", percentage: 8.3, amount: "39,900 KRW", icon: "🎡" },
-  { name: "마트", percentage: 7.2, amount: "34,507.8 KRW", icon: "🛒" },
-  { name: "교통", percentage: 7.1, amount: "34,200 KRW", icon: "🚗" },
+  {
+    name: "숙소",
+    percentage: 14.2,
+    amount: "68,400 KRW",
+    icon: "🏨",
+    color: "#A5D8FF",
+  },
+  {
+    name: "식사",
+    percentage: 9.7,
+    amount: "46,740 KRW",
+    icon: "🍴",
+    color: "#FFD3B6",
+  },
+  {
+    name: "투어",
+    percentage: 8.3,
+    amount: "39,900 KRW",
+    icon: "🎡",
+    color: "#FFEE93",
+  },
+  {
+    name: "마트",
+    percentage: 7.2,
+    amount: "34,507.8 KRW",
+    icon: "🛒",
+    color: "#FFB6C1",
+  },
+  {
+    name: "교통",
+    percentage: 7.1,
+    amount: "34,200 KRW",
+    icon: "🚗",
+    color: "#D9C2E9",
+  },
 ];
 const paymentList = [
-  { name: "현금", percentage: 77.1, amount: "370,500 KRW", icon: "💵" },
-  { name: "카드", percentage: 22.9, amount: "109,747.8 KRW", icon: "💳" },
+  {
+    name: "현금",
+    percentage: 77.1,
+    amount: "370,500 KRW",
+    icon: "💵",
+    color: "#4CAF50",
+  },
+  {
+    name: "카드",
+    percentage: 22.9,
+    amount: "109,747.8 KRW",
+    icon: "💳",
+    color: "#007BFF",
+  },
 ];
 const currencyList = [
   {
@@ -50,6 +64,7 @@ const currencyList = [
     amount: "10,435,480 VND",
     converted: "594,822.36 KRW",
     icon: "🇻🇳",
+    color: "#D3D3D3",
   },
   {
     name: "KRW",
@@ -57,6 +72,7 @@ const currencyList = [
     amount: "30,000 KRW",
     converted: "30,000 KRW",
     icon: "🇰🇷",
+    color: "#BEBEBE",
   },
   {
     name: "USD",
@@ -64,6 +80,7 @@ const currencyList = [
     amount: "30 USD",
     converted: "43,379.68 KRW",
     icon: "🇺🇸",
+    color: "#F4A8A8",
   },
 ];
 
@@ -108,14 +125,14 @@ const TabMenu = ({
 const PieChartComponent = ({
   data,
 }: {
-  data: { name: string; id: number; color: string }[];
+  data: { name: string; percentage: number; color: string }[];
 }) => {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie
           data={data}
-          dataKey="id"
+          dataKey="percentage"
           nameKey="name"
           innerRadius="40%"
           outerRadius="70%"
@@ -172,36 +189,31 @@ const MoneyChart = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { id } = useParams();
 
-  const dataSets = [categoryData, paymentData, currencyData];
-  const listSets = [categoryList, paymentList, currencyList];
+  const dataSets = [
+    categoryList.map((item) => ({
+      name: item.name,
+      percentage: item.percentage,
+      color: item.color || "#A5D8FF", // 기본 색상
+    })),
+    paymentList.map((item) => ({
+      name: item.name,
+      percentage: item.percentage,
+      color: item.color || "#4CAF50", // 기본 색상
+    })),
+    currencyList.map((item) => ({
+      name: item.name,
+      percentage: item.percentage,
+      color: item.color || "#D3D3D3", // 기본 색상
+    })),
+  ];
 
   useEffect(() => {
     console.log(`Tour ID: ${id}`);
   }, [id]);
 
   const location = useLocation();
-  const dummyLogs: MoneyLogProps[] = [
-    {
-      LogState: "minus",
-      title: "커피",
-      detail: "스타벅스 아메리카노",
-      profile: "/ProfileImage.png",
-      type: "카드",
-      money: "5,000",
-    },
-    {
-      LogState: "minus",
-      title: "환전",
-      detail: "100달러 환전",
-      profile: "/ProfileImage.png",
-      type: "현금",
-      money: "130,000",
-    },
-  ];
-
-  const logs = location.state?.logs ?? dummyLogs; // ✅ 기본값 설정
-
-  console.log("받은 logs 데이터:", logs);
+  const logs = location.state?.logs || [];
+  console.log("받은 logs 데이터 : ", logs);
 
   return (
     <div
@@ -209,12 +221,21 @@ const MoneyChart = () => {
         maxWidth: "400px",
         margin: "0 auto",
         fontFamily: "Arial, sans-serif",
+        paddingBottom: "60px",
       }}
     >
       <Header $bgColor="transparent" id={id} />
       <TabMenu activeTab={activeTab} setActiveTab={setActiveTab} />
       <PieChartComponent data={dataSets[activeTab]} />
-      <List list={listSets[activeTab]} />
+      <List
+        list={
+          activeTab === 0
+            ? categoryList
+            : activeTab === 1
+            ? paymentList
+            : currencyList
+        }
+      />
       {activeTab === 2 && (
         <div
           style={{ textAlign: "center", marginTop: "20px", fontWeight: "bold" }}
