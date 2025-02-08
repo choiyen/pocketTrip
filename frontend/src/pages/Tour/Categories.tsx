@@ -75,9 +75,9 @@ const CompleteButton = styled.button`
   }
 `;
 
-const Amount = styled.div<{ paymentType: string }>`
+const Amount = styled.div<{ $paymentType: string }>`
   background-color: ${(props) =>
-    props.paymentType === "cash" ? "#4CAF50" : "#007BFF"};
+    props.$paymentType === "cash" ? "#4CAF50" : "#007BFF"};
   color: white;
   padding: 10px 20px;
   border-radius: 20px;
@@ -87,10 +87,10 @@ const Amount = styled.div<{ paymentType: string }>`
   margin-top: 20%;
 `;
 
-const Display = styled.textarea<{ hasDescription: boolean }>`
+const Display = styled.textarea<{ $hasDescription: boolean }>`
   font-size: 24px;
   font-weight: bold;
-  color: ${(props) => (props.hasDescription ? "#333" : "#b0b0b0")};
+  color: ${(props) => (props.$hasDescription ? "#333" : "#b0b0b0")};
   margin: 20px 0;
   text-align: center;
   min-height: 30px;
@@ -112,7 +112,7 @@ const CategoriesGrid = styled.div`
   margin-top: 15%;
 `;
 
-const Category = styled.div<{ backgroundColor: string; isSelected: boolean }>`
+const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -125,7 +125,7 @@ const Category = styled.div<{ backgroundColor: string; isSelected: boolean }>`
   span {
     font-size: 32px;
     margin-bottom: 10px;
-    background-color: ${(props) => props.backgroundColor};
+    background-color: ${(props) => props.$backgroundColor};
     border-radius: 50%;
     padding: 15px;
     color: white;
@@ -139,7 +139,7 @@ const Category = styled.div<{ backgroundColor: string; isSelected: boolean }>`
 
   /* 선택된 카테고리에 대한 스타일 */
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     `
     transform: scale(1.2);
     span {
@@ -150,9 +150,7 @@ const Category = styled.div<{ backgroundColor: string; isSelected: boolean }>`
 
 export default function Categories() {
   const location = useLocation();
-  const { amount, paymentType } = location.state;
-  const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
-  console.log(id);
+  const { amount, paymentType, date } = location.state;
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
@@ -164,9 +162,11 @@ export default function Categories() {
     setDescription(e.target.value);
   };
 
+  const { id } = useParams();
   const navigate = useNavigate();
+
   const goToAccountbook = () => {
-    navigate("/Accountbook");
+    navigate(-1);
   };
 
   const handleComplete = () => {
@@ -229,12 +229,12 @@ export default function Categories() {
         <span>{getFormattedDate()}</span>
       </Header>
       <CompleteButton onClick={handleComplete}>완료</CompleteButton>
-      <Amount paymentType={paymentType}>{`${Number(
+      <Amount $paymentType={paymentType}>{`${Number(
         amount
       ).toLocaleString()} ₩`}</Amount>
 
       <Display
-        hasDescription={!!description}
+        $hasDescription={!!description}
         value={description}
         onChange={handleDescriptionChange}
         placeholder="어디에 사용하셨나요"
@@ -243,8 +243,8 @@ export default function Categories() {
         {categories.map((category) => (
           <Category
             key={category.id}
-            backgroundColor={category.color}
-            isSelected={selectedCategoryId === category.id}
+            $backgroundColor={category.color}
+            $isSelected={selectedCategoryId === category.id}
             onClick={() => handleCategoryClick(category.id)} // 카테고리 클릭 시 선택 처리
           >
             <span>{category.icon}</span>

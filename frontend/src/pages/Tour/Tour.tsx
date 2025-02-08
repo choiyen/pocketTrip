@@ -77,22 +77,22 @@ export default function Tour() {
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const FilteringData = data.filter((item) => item.id === id);
 
-  // const { amount, paymentType, description, category } = state || {};
+  const { amount, paymentType, description, category } = state || {};
 
-  // useEffect(() => {
-  //   if (category) {
-  //     setLogs([
-  //       {
-  //         LogState: "minus",
-  //         title: category.label,
-  //         detail: description || "설명 없음",
-  //         profile: "/ProfileImage.png",
-  //         type: paymentType === "cash" ? "현금" : "카드",
-  //         money: Number(amount).toLocaleString(),
-  //       },
-  //     ]);
-  //   }
-  // }, [amount, paymentType, description, category]);
+  useEffect(() => {
+    if (category) {
+      setLogs([
+        {
+          LogState: "minus",
+          title: category.label,
+          detail: description || "설명 없음",
+          profile: "/ProfileImage.png",
+          type: paymentType === "cash" ? "현금" : "카드",
+          money: Number(amount).toLocaleString(),
+        },
+      ]);
+    }
+  }, [amount, paymentType, description, category]);
 
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
