@@ -180,6 +180,7 @@ export default function Header({
     };
     return today.toLocaleDateString("ko-KR", options);
   };
+
   return (
     <HeaderWrap $bgColor={$bgColor} $pathName={pathName}>
       {/* 세부 페이지에서의 뒤로가기 버튼 설정*/}
@@ -188,10 +189,10 @@ export default function Header({
           <IoIosArrowBack size={"25px"} />
         </BackButton>
       )}
+
       {/* 경로가 지갑페이지일때 */}
       {pathName === `/Tour/${id}` && (
         <ButtonBox>
-          {/* <div> */}
           <Link to={`/Tour/${id}/MoneyChart`}>
             <button className="optionButton" onClick={handleGoToMoneyChart}>
               <FaChartPie size={"25px"} />
@@ -204,6 +205,7 @@ export default function Header({
           </Link>
           <OptionButton remove={false} editType="editTour" />
           {/* </div> */}
+          <OptionButton remove={false} />
         </ButtonBox>
       )}
 
@@ -223,7 +225,6 @@ export default function Header({
             />
           </UserWrap>
           <DateWrap>
-            {/* 테두리만 있는 숫자(date)는 svg로 구현 */}
             <svg width="105px" height="60">
               <text
                 x="0"
@@ -236,7 +237,6 @@ export default function Header({
                 {+date < 10 ? "0" + date : date}
               </text>
             </svg>
-
             <div>
               <span className="month">{month}</span>
               <span className="year">{year}</span>
@@ -252,11 +252,11 @@ export default function Header({
         </AccountHeader>
       )}
 
+      {/* 네비바를 숨기고 싶을 때 */}
+      {pathName !== `/Tour/${id}/accountbook` && <Nav />}
+
       {/* 필요에 따라 모달창 활성화 */}
       {modalState && <Modal />}
-
-      {/* 네비 바 */}
-      <Nav />
     </HeaderWrap>
   );
 }
