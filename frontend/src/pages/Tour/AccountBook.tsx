@@ -12,6 +12,7 @@ const Container = styled.div`
   max-width: 375px;
   margin: 0 auto;
   box-sizing: border-box;
+  margin-top: -10%;
 `;
 
 // const Header = styled.div`
@@ -48,10 +49,10 @@ const CurrencyButton = styled.button`
   height: 40px;
 `;
 
-const Display = styled.div<{ hasAmount: boolean }>`
+const Display = styled.div<{ $hasAmount: boolean }>`
   font-size: 24px;
   font-weight: bold;
-  color: ${(props) => (props.hasAmount ? "#333" : "#b0b0b0")};
+  color: ${(props) => (props.$hasAmount ? "#333" : "#b0b0b0")};
   margin: 20px 0;
   text-align: center;
   min-height: 30px;
@@ -96,8 +97,8 @@ const Footer = styled.div`
   gap: 10px;
 `;
 
-const ActionButton = styled.button<{ bgColor: string }>`
-  background-color: ${(props) => props.bgColor};
+const ActionButton = styled.button<{ $bgColor: string }>`
+  background-color: ${(props) => props.$bgColor};
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -137,8 +138,16 @@ export default function AccountBook() {
       alert("금액을 입력해주세요.");
       return;
     }
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short",
+    };
+    const formattedDate = today.toLocaleDateString("ko-KR", options);
+
     navigate(`/Tour/${id}/categories`, {
-      state: { amount, currency, paymentType },
+      state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
     });
   };
 
@@ -150,7 +159,7 @@ export default function AccountBook() {
       <Container>
         <CurrencyButton onClick={toggleCurrency}>{currency} ▼</CurrencyButton>
 
-        <Display hasAmount={!!amount}>
+        <Display $hasAmount={!!amount}>
           {amount
             ? `${parseFloat(amount).toLocaleString()} ${currencySymbol}`
             : "얼마를 사용하셨나요"}
@@ -181,13 +190,13 @@ export default function AccountBook() {
 
         <Footer>
           <ActionButton
-            bgColor="#4CAF50"
+            $bgColor="#4CAF50"
             onClick={() => handleNavigation("cash")}
           >
             현금
           </ActionButton>
           <ActionButton
-            bgColor="#007BFF"
+            $bgColor="#007BFF"
             onClick={() => handleNavigation("card")}
           >
             카드
