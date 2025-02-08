@@ -87,7 +87,7 @@ export default function MoneyLog({
           </MoneyData>
           <span>{type}</span>
         </div>
-        <StyledOptionButton />
+        <StyledOptionButton editType="editMoneyLog" />
       </div>
     </LogWrap>
   );

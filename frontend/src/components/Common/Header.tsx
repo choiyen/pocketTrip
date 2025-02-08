@@ -203,6 +203,8 @@ export default function Header({
               <BsPersonSquare size={"25px"} />
             </button>
           </Link>
+          <OptionButton remove={false} editType="editTour" />
+          {/* </div> */}
           <OptionButton remove={false} />
         </ButtonBox>
       )}

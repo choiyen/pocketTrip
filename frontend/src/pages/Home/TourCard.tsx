@@ -3,6 +3,7 @@ import styled from "styled-components";
 import TourDateUi from "../../components/Common/TourDateUi";
 import CardUserList from "./CardUserList";
 import { Link } from "react-router-dom";
+import OptionButton from "../../components/Common/OptionButton";
 
 interface TravelData {
   id: string;
@@ -18,7 +19,6 @@ interface TourCardProps {
   Tourdata: TravelData; // props 타입 정의
 }
 const Card = styled(Link)<{ $bgImg: string }>`
-  width: 80%;
   height: 422px;
   background-image: linear-gradient(
       to top,
@@ -29,7 +29,7 @@ const Card = styled(Link)<{ $bgImg: string }>`
     url(${(props) => props.$bgImg});
   background-size: cover;
   background-position: center;
-  margin: 0 auto;
+
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -52,6 +52,17 @@ const Card = styled(Link)<{ $bgImg: string }>`
 const TitleWrap = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const Container = styled.div`
+  position: relative;
+  width: 80%;
+  margin: 0 auto;
+`;
+const StyledOptionButton = styled(OptionButton)`
+  position: absolute;
+  right: 10px;
+  top: 10px;
 `;
 
 export default function TourCard({ Tourdata }: TourCardProps) {
@@ -83,22 +94,25 @@ export default function TourCard({ Tourdata }: TourCardProps) {
   const formattedBudget = new Intl.NumberFormat().format(budget);
 
   return (
-    <Card to={`/Tour/${Tourdata.id}`} state={{ from: "/" }} $bgImg={bgImg}>
-      <div>
-        <TitleWrap>
-          <h2>{selectedCountry}</h2>
-          <CardUserList user={ImgArr} $size="L" />
-        </TitleWrap>
-        <p>{formattedBudget} ₩</p>
-        <TourDateUi
-          $precent={progress ? progress.toFixed(2) + "%" : "0%"}
-          startDate={startDate}
-          endDate={endDate}
-          $bgColor="white"
-          $backGraphColor="#626262"
-        />
-        {/* 진행률 기입 시 자동 변경 */}
-      </div>
-    </Card>
+    <Container>
+      <Card to={`/Tour/${Tourdata.id}`} state={{ from: "/" }} $bgImg={bgImg}>
+        <div>
+          <TitleWrap>
+            <h2>{selectedCountry}</h2>
+            <CardUserList user={ImgArr} $size="L" />
+          </TitleWrap>
+          <p>{formattedBudget} ₩</p>
+          <TourDateUi
+            $precent={progress ? progress.toFixed(2) + "%" : "0%"}
+            startDate={startDate}
+            endDate={endDate}
+            $bgColor="white"
+            $backGraphColor="#626262"
+          />
+          {/* 진행률 기입 시 자동 변경 */}
+        </div>
+      </Card>
+      <StyledOptionButton remove={false} editType="editTourCard" />
+    </Container>
   );
 }
