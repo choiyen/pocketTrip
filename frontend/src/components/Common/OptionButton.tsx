@@ -10,11 +10,13 @@ import {
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
 import { ChangeAlertState } from "../../slices/AlertControlSlice";
+import { setEditType } from "../../slices/editSlice";
 
 interface OptionButtonProps {
   className?: string;
   edit?: boolean;
   remove?: boolean;
+  editType: string;
 }
 
 export const OptionWrap = styled.div`
@@ -72,9 +74,9 @@ export default function OptionButton({
   className,
   edit = true,
   remove = true,
+  editType,
 }: OptionButtonProps) {
   const [visibleOption, setVisibleOption] = useState(false);
-
   const dispatch: AppDispatch = useDispatch();
   const modalState = useSelector(
     (state: RootState) => state.modalControl.modalState
@@ -85,6 +87,7 @@ export default function OptionButton({
     // 모달창이 렌더링 되기 전이면 렌더링 후 등장
     if (modalState === false) {
       dispatch(ChangeModalState());
+      dispatch(setEditType(editType));
       setTimeout(() => {
         dispatch(ChangeMovingModal());
       }, 50);

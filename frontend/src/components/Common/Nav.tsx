@@ -9,6 +9,7 @@ import {
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
 import Modal from "./Modal";
+import { setEditType } from "../../slices/editSlice";
 
 const Navbar = styled.div`
   max-width: 768px;
@@ -55,6 +56,7 @@ export default function Nav() {
     // 모달창이 렌더링 되기 전이면 렌더링 후 등장
     if (modalState === false) {
       dispatch(ChangeModalState());
+      dispatch(setEditType("calculator"));
       setTimeout(() => {
         dispatch(ChangeMovingModal());
       }, 50);
