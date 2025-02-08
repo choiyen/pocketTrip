@@ -11,6 +11,12 @@ import {
 } from "../../slices/ModalControlSlice";
 import { ChangeAlertState } from "../../slices/AlertControlSlice";
 
+interface OptionButtonProps {
+  className?: string;
+  edit?: boolean;
+  remove?: boolean;
+}
+
 export const OptionWrap = styled.div`
   position: relative;
   /* position: absolute;
@@ -62,7 +68,11 @@ const DeleteButton = styled(MenuButton)`
   color: #cc0003;
 `;
 
-export default function OptionButton({ className }: { className?: string }) {
+export default function OptionButton({
+  className,
+  edit = true,
+  remove = true,
+}: OptionButtonProps) {
   const [visibleOption, setVisibleOption] = useState(false);
 
   const dispatch: AppDispatch = useDispatch();
@@ -100,18 +110,22 @@ export default function OptionButton({ className }: { className?: string }) {
       </Button>
       {visibleOption && (
         <OptionMenu>
-          <li>
-            <MenuButton onClick={() => ChangeState()}>
-              <HiMiniPencilSquare />
-              수정
-            </MenuButton>
-          </li>
-          <li>
-            <DeleteButton onClick={() => showAlert()}>
-              <FaTrash />
-              삭제
-            </DeleteButton>
-          </li>
+          {edit && (
+            <li>
+              <MenuButton onClick={() => ChangeState()}>
+                <HiMiniPencilSquare />
+                수정
+              </MenuButton>
+            </li>
+          )}
+          {remove && (
+            <li>
+              <DeleteButton onClick={() => showAlert()}>
+                <FaTrash />
+                삭제
+              </DeleteButton>
+            </li>
+          )}
         </OptionMenu>
       )}
     </OptionWrap>

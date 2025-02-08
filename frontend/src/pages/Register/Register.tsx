@@ -5,9 +5,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 interface RegisterResponse {
-  status: string,
-  message: string,
-  data? : string[] 
+  status: string;
+  message: string;
+  data?: string[];
 }
 
 const Register: React.FC = () => {
@@ -33,20 +33,67 @@ const Register: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validation and API submission logic here
-    console.log("Form 전송", formData);
+    axios
+      .post(
+        "http://localhost:8080/auth/signup",
+        {
+          name: formData.username,
+          email: formData.emailAddr,
+          password: formData.password,
+          phone: formData.phoneNumber,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          // 성공 처리
+          console.log(response);
+          if (response.data.resultType === "success") {
+            navigate("/Login");
+          } else {
+            console.log(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        // 400 에러 발생 시 처리
+        if (error.response) {
+          if (error.response.status === 400) {
+            console.error("400 Error:", error.response.data.message);
+          } else {
+            console.error("Unexpected Error:", error.response);
+          }
+        } else {
+          console.error("Network Error:", error.message);
+        }
+      });
   };
+
+  useEffect(() => {
+    axios
+      .post("http://localhost:8080/auth/signin", formData)
+      .then((response) => {
+        if (response.data.status == "success") {
+          navigate("/login");
+        }
+      });
+  }, []);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.post("http://localhost:8080/auth/signin",formData)
-    .then((response) => {
-      if (response.data.status == "success") {
-        navigate("/login");
-      }
-    })
-
-  }, [])
+    axios
+      .post("http://localhost:8080/auth/signin", formData)
+      .then((response) => {
+        if (response.data.status == "success") {
+          navigate("/login");
+        }
+      });
+  }, []);
 
   return (
     <div className="Register-page" style={{ backgroundColor: "#ffffff" }}>
@@ -61,7 +108,7 @@ const Register: React.FC = () => {
       </div>
 
       <form
-        action="/login/register"
+        action="http://localhost:8080/auth/signup"
         method="POST"
         id="registerForm"
         onSubmit={handleSubmit}
