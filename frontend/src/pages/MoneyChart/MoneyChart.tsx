@@ -221,6 +221,7 @@ const MoneyChart = () => {
         maxWidth: "400px",
         margin: "0 auto",
         fontFamily: "Arial, sans-serif",
+        paddingBottom: "60px",
       }}
     >
       <Header $bgColor="transparent" id={id} />
