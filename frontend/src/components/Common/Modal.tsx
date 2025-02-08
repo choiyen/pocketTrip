@@ -48,6 +48,7 @@ export default function Modal() {
   const movingModal = useSelector(
     (state: RootState) => state.modalControl.movingModal
   );
+  const editType = useSelector((state: RootState) => state.edit.type);
 
   const dispatch: AppDispatch = useDispatch();
   // 버튼 동작에 따라서 모달창이 on/off된다.
@@ -58,13 +59,19 @@ export default function Modal() {
       dispatch(ChangeModalState());
     }, 500);
   };
+
   return (
     <ModalBox $isActive={movingModal}>
       <CloseButton onClick={() => ChangeState()}>
         <IoIosArrowDown />
       </CloseButton>
-      {/* <Calculator /> */}
-      <EditProfile />
+
+      {editType === "calculator" && <Calculator />}
+      {editType === "editProfile" && <EditProfile />}
+      {editType === "editTour" && <EditProfile />}
+      {editType === "editTourCard" && <EditProfile />}
+      {editType === "editTourCardList" && <EditProfile />}
+      {editType === "editMoneyLog" && <EditProfile />}
     </ModalBox>
   );
 }

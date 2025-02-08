@@ -152,7 +152,6 @@ export default function Categories() {
   const location = useLocation();
   const { amount, paymentType } = location.state;
   const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
-  console.log(id);
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null

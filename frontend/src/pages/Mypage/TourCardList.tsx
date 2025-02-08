@@ -116,7 +116,7 @@ export default function TourCardList({
           <Expense>₩ {formattedBudget[index]}</Expense>
         </div>
       </Travel>
-      <OptionButton className="travelButton" />
+      <OptionButton className="travelButton" editType="editTourCardList" />
     </TrvelWrap>
   );
 }
