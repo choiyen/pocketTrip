@@ -95,7 +95,11 @@ export default function MyPage() {
           <circle cx="10.5" cy="10.5" r="1.5" fill="#1C1C1C" />
           <circle cx="10.5" cy="17.5" r="1.5" fill="#1C1C1C" />
         </svg> */}
-        <OptionButton className="profileButton" remove={false} />
+        <OptionButton
+          className="profileButton"
+          remove={false}
+          editType="editProfile"
+        />
         <Profile>
           <img src="/profileImage.png" alt="프로필사진" />
           <span>name</span>
