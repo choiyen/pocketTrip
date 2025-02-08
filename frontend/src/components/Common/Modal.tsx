@@ -8,6 +8,7 @@ import {
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
 import Calculator from "./Calculator";
+import EditProfile from "./EditProfile";
 
 const ModalBox = styled.div<{ $isActive: boolean }>`
   background-color: white;
@@ -16,7 +17,7 @@ const ModalBox = styled.div<{ $isActive: boolean }>`
   max-width: 768px;
   border-radius: 20px 20px 0 0;
   box-shadow: 0px -1px 3px 3px rgba(0, 0, 0, 0.2);
-  position: absolute;
+  position: fixed;
   left: 50%;
   z-index: 80;
   transform: ${({ $isActive }) =>
@@ -62,7 +63,8 @@ export default function Modal() {
       <CloseButton onClick={() => ChangeState()}>
         <IoIosArrowDown />
       </CloseButton>
-      <Calculator />
+      {/* <Calculator /> */}
+      <EditProfile />
     </ModalBox>
   );
 }
