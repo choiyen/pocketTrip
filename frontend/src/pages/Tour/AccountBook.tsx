@@ -12,6 +12,7 @@ const Container = styled.div`
   max-width: 375px;
   margin: 0 auto;
   box-sizing: border-box;
+  margin-top: -15%;
 `;
 
 // const Header = styled.div`
@@ -137,8 +138,16 @@ export default function AccountBook() {
       alert("금액을 입력해주세요.");
       return;
     }
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short",
+    };
+    const formattedDate = today.toLocaleDateString("ko-KR", options);
+
     navigate(`/Tour/${id}/categories`, {
-      state: { amount, currency, paymentType },
+      state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
     });
   };
 
