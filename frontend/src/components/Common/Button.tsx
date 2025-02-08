@@ -9,7 +9,7 @@ interface ButtonState {
   onClick?: () => void; // 클릭 메서드
   disabled?: boolean; // 추가된 disabled prop
   className?: string;
-  type?:  "button" | "submit" | "reset";
+  type?: "button" | "submit" | "reset";
 }
 
 const CutomButton = styled.button<{ $bgColor: string; disabled: boolean }>`
@@ -114,7 +114,7 @@ export default function Button({
   $bgColor = "blue",
   onClick,
   disabled = false,
-  type = "button"
+  type = "button",
 }: ButtonState & { disabled?: boolean }) {
   return (
     <>
@@ -124,7 +124,7 @@ export default function Button({
           $bgColor={$bgColor}
           onClick={onClick}
           className={className}
-          type = {type}
+          type={type}
         >
           {name}
         </XLButton>
@@ -134,7 +134,7 @@ export default function Button({
           $bgColor={$bgColor}
           onClick={onClick}
           className={className}
-          type = {type}
+          type={type}
         >
           {name}
         </LargeButton>
@@ -144,7 +144,7 @@ export default function Button({
           $bgColor={$bgColor}
           onClick={onClick}
           className={className}
-          type = {type}
+          type={type}
         >
           {name}
         </MediumButton>
@@ -154,7 +154,7 @@ export default function Button({
           $bgColor={$bgColor}
           onClick={onClick}
           className={className}
-          type = {type}
+          type={type}
         >
           {name}
         </SmallButton>
