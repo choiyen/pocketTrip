@@ -49,10 +49,10 @@ const CurrencyButton = styled.button`
   height: 40px;
 `;
 
-const Display = styled.div<{ hasAmount: boolean }>`
+const Display = styled.div<{ $hasAmount: boolean }>`
   font-size: 24px;
   font-weight: bold;
-  color: ${(props) => (props.hasAmount ? "#333" : "#b0b0b0")};
+  color: ${(props) => (props.$hasAmount ? "#333" : "#b0b0b0")};
   margin: 20px 0;
   text-align: center;
   min-height: 30px;
@@ -97,8 +97,8 @@ const Footer = styled.div`
   gap: 10px;
 `;
 
-const ActionButton = styled.button<{ bgColor: string }>`
-  background-color: ${(props) => props.bgColor};
+const ActionButton = styled.button<{ $bgColor: string }>`
+  background-color: ${(props) => props.$bgColor};
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -159,7 +159,7 @@ export default function AccountBook() {
       <Container>
         <CurrencyButton onClick={toggleCurrency}>{currency} ▼</CurrencyButton>
 
-        <Display hasAmount={!!amount}>
+        <Display $hasAmount={!!amount}>
           {amount
             ? `${parseFloat(amount).toLocaleString()} ${currencySymbol}`
             : "얼마를 사용하셨나요"}
@@ -190,13 +190,13 @@ export default function AccountBook() {
 
         <Footer>
           <ActionButton
-            bgColor="#4CAF50"
+            $bgColor="#4CAF50"
             onClick={() => handleNavigation("cash")}
           >
             현금
           </ActionButton>
           <ActionButton
-            bgColor="#007BFF"
+            $bgColor="#007BFF"
             onClick={() => handleNavigation("card")}
           >
             카드
