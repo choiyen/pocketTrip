@@ -116,7 +116,6 @@ export default function AccountBook() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("KRW");
   const { id } = useParams<{ id: string }>();
-  console.log(id);
   const navigate = useNavigate();
 
   const handleKeyPress = (key: string) => {
