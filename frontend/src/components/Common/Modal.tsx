@@ -9,6 +9,7 @@ import {
 } from "../../slices/ModalControlSlice";
 import Calculator from "./Calculator";
 import EditProfile from "./EditProfile";
+import EditTourCard from "./EditTourCard";
 
 const ModalBox = styled.div<{ $isActive: boolean }>`
   background-color: white;
@@ -69,7 +70,7 @@ export default function Modal() {
       {editType === "calculator" && <Calculator />}
       {editType === "editProfile" && <EditProfile />}
       {editType === "editTour" && <EditProfile />}
-      {editType === "editTourCard" && <EditProfile />}
+      {editType === "editTourCard" && <EditTourCard />}
       {editType === "editTourCardList" && <EditProfile />}
       {editType === "editMoneyLog" && <EditProfile />}
     </ModalBox>
