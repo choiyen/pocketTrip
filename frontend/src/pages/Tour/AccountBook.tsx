@@ -12,7 +12,7 @@ const Container = styled.div`
   max-width: 375px;
   margin: 0 auto;
   box-sizing: border-box;
-  margin-top: -15%;
+  margin-top: -10%;
 `;
 
 // const Header = styled.div`
