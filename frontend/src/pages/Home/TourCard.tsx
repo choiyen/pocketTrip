@@ -83,11 +83,11 @@ export default function TourCard({ Tourdata }: TourCardProps) {
   const formattedBudget = new Intl.NumberFormat().format(budget);
 
   return (
-    <Card to={`/Tour/${Tourdata.id}`} state={{ Tourdata }} $bgImg={bgImg}>
+    <Card to={`/Tour/${Tourdata.id}`} state={{ from: "/" }} $bgImg={bgImg}>
       <div>
         <TitleWrap>
           <h2>{selectedCountry}</h2>
-          <CardUserList user={ImgArr} />
+          <CardUserList user={ImgArr} $size="L" />
         </TitleWrap>
         <p>{formattedBudget} ₩</p>
         <TourDateUi

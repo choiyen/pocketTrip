@@ -19,6 +19,11 @@ const CurrentMembersWrap = styled.div`
     border-radius: 20px;
     padding: 10px;
   }
+
+  h3 > span {
+    font-weight: 500;
+    font-size: 15px;
+  }
 `;
 const TourMembersWrap = styled.div`
   .TourMemberTitle {
@@ -60,13 +65,15 @@ const ContentBox = styled.div`
   padding: 30px 0;
 `;
 
+const UserContainer = styled.ul`
+  height: 40vh;
+  overflow: scroll;
+  scrollbar-width: none;
+`;
+
 export default function TourMembers() {
   const { id } = useParams<{ id: string }>();
   const userData = [
-    {
-      name: "홍길동",
-      profile: "profileImage.png",
-    },
     {
       name: "홍길동",
       profile: "profileImage.png",
@@ -89,8 +96,10 @@ export default function TourMembers() {
           <span className="InviteCode">1H3D4G</span>
         </CodeWrap>
         <CurrentMembersWrap>
-          <h3>현재 참여 인원</h3>
-          <ul>
+          <h3>
+            현재 참여 인원 <span>({userData.length}명)</span>
+          </h3>
+          <UserContainer>
             {userData.map((data, index) => (
               <UserListItem
                 key={index}
@@ -98,7 +107,7 @@ export default function TourMembers() {
                 profile={data.profile}
               />
             ))}
-          </ul>
+          </UserContainer>
         </CurrentMembersWrap>
 
         <StyledButtons size="L" name="여행 나가기" $bgColor="red" />
