@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
 import { AppDispatch } from "../../store";
 import { useDispatch } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
+import axios from "axios";
 
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -79,18 +80,53 @@ export default function Tour() {
 
   const { amount, paymentType, description, category } = state || {};
 
+  // 지출 정보 엑시오스 요청 보내는 함수
+  const sendExpenditure = async (data: any) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.error("토큰이 없습니다.");
+        return;
+      }
+
+      const response = await axios.put(
+        `/expenditures/${data.category.id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.resultType === "success") {
+        console.log("지출 추가 성공:", response.data);
+        // 성공적인 응답 처리
+      } else {
+        console.error("지출 추가 실패:", response.data.message);
+      }
+    } catch (error) {
+      console.error("엑시오스 요청 실패:", error);
+    }
+  };
+
   useEffect(() => {
     if (category) {
-      setLogs([
-        {
-          LogState: "minus",
-          title: category.label,
-          detail: description || "설명 없음",
-          profile: "/ProfileImage.png",
-          type: paymentType === "cash" ? "현금" : "카드",
-          money: Number(amount).toLocaleString(),
-        },
-      ]);
+      const expenditureData = {
+        purpose: category.label,
+        method: paymentType === "cash" ? "현금" : "카드",
+        isPublic: true,
+        date: new Date().toISOString().split("T")[0], // 현재 날짜
+        KRW: amount, // 환전 금액 (원화로 가정)
+        payer: "example1@email.com", // 지출한 사람의 이메일 (로그인된 사용자 정보로 교체 가능)
+        amount: amount,
+        currency: "元", // 사용된 통화 (여기서는 예시로 '元' 사용)
+        description: description || "설명 없음",
+        category,
+      };
+
+      // 엑시오스 요청 보내기
+      sendExpenditure(expenditureData);
     }
   }, [amount, paymentType, description, category]);
 
