@@ -153,6 +153,7 @@ export default function Categories() {
   const location = useLocation();
   const { amount, paymentType, date, id: stateId } = location.state;
   const { id: paramId } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
+  const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
@@ -166,7 +167,6 @@ export default function Categories() {
     setDescription(e.target.value);
   };
 
-  const { id } = useParams();
   const navigate = useNavigate();
 
   const goToAccountbook = () => {
