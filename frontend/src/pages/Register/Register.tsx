@@ -18,7 +18,6 @@ const Register: React.FC = () => {
     passwordConfirm: "",
     phoneNumber: "",
   });
-
   const [errors, setErrors] = useState({
     emailAddrError: "",
     passwordConfirmError: "",
@@ -30,9 +29,10 @@ const Register: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validation and API submission logic here
+    console.log(formData);
     axios
       .post(
         "http://localhost:8080/auth/signup",
@@ -73,27 +73,17 @@ const Register: React.FC = () => {
       });
   };
 
-  useEffect(() => {
-    axios
-      .post("http://localhost:8080/auth/signin", formData)
-      .then((response) => {
-        if (response.data.status == "success") {
-          navigate("/login");
-        }
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .post("http://localhost:8080/auth/signin", formData)
+  //     .then((response) => {
+  //       if (response.data.status == "success") {
+  //         navigate("/login");
+  //       }
+  //     });
+  // }, []);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axios
-      .post("http://localhost:8080/auth/signin", formData)
-      .then((response) => {
-        if (response.data.status == "success") {
-          navigate("/login");
-        }
-      });
-  }, []);
 
   return (
     <div className="Register-page" style={{ backgroundColor: "#ffffff" }}>
@@ -194,7 +184,7 @@ const Register: React.FC = () => {
         </div>
 
         <div className="inD">
-          <Button size="L" name="회원가입" $bgColor="blue" />
+          <Button size="L" name="회원가입" $bgColor="blue" type="submit" />
         </div>
       </form>
 

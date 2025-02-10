@@ -204,8 +204,6 @@ export default function Header({
             </button>
           </Link>
           <OptionButton remove={false} editType="editTour" />
-          {/* </div> */}
-          <OptionButton remove={false} />
         </ButtonBox>
       )}
 

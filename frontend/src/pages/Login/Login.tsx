@@ -4,10 +4,19 @@ import "./LoginPage.css";
 import Button from "../../components/Common/Button";
 import { useNavigate } from "react-router-dom";
 
+interface dataState {
+  email: string;
+  id: string;
+  name: string;
+  password: string;
+  phone: string;
+  token: string;
+}
+
 interface LoginResponse {
   resultType: string;
   message: string;
-  data? : string;
+  data: dataState[];
 }
 
 const LoginPage: React.FC = () => {
@@ -15,15 +24,15 @@ const LoginPage: React.FC = () => {
   // const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.target;
-    setFormData({...formData, [name]: value});
-  }
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   // 로그인 함수
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -31,17 +40,27 @@ const LoginPage: React.FC = () => {
     console.log(formData);
     axios
       .post<LoginResponse>(
-        "http://localhost:8080/auth/signin"
-        , { email: formData.email, password: formData.password },
+        "http://localhost:8080/auth/signin",
+        { email: formData.email, password: formData.password },
         {
           headers: {
-          "Content-Type": "application/json"
-      }}) // 응답의 타입을 LoginResponse로 지정
+            "Content-Type": "application/json",
+          },
+        }
+      ) // 응답의 타입을 LoginResponse로 지정
       .then((response) => {
-        if (response.status === 200) {
+        if (typeof response === "undefined") {
+          console.error("응답 데이터가 undefined 입니다.");
+        } else if (response.status === 200) {
           // 성공 처리
-          console.log(response.data);
-          if (response.data.resultType === "success") {
+          if (response.data && response.data.resultType === "success") {
+            const data = response.data.data[0];
+
+            if (data.token) {
+              localStorage.setItem("accessToken", data.token);
+            } else {
+              console.error("토큰을 찾을 수 없습니다.");
+            }
             navigate("/");
           } else {
             console.log(response.data.message);
