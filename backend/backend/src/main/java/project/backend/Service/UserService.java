@@ -33,6 +33,16 @@ public class UserService {
 
 
     // 로그인
+    public UserEntity getByCredentials(String email) {
+        UserEntity originalUser = userRepository.findByEmail(email);
+        if(originalUser != null)
+        {
+            return originalUser;
+        }
+        return null;
+    }
+
+    // 로그인
     public UserEntity getByCredentials(String email, String password, PasswordEncoder passwordEncoder) {
         UserEntity originalUser = userRepository.findByEmail(email);
         if(originalUser != null && passwordEncoder.matches(password, originalUser.getPassword())) {
