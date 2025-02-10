@@ -58,8 +58,6 @@ public class RateService
             Date today = new Date(); // 현재 날짜
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(today);
-            calendar.add(Calendar.DATE, -1); // 전날 날짜
-            Date yesterday = calendar.getTime();
 
             LocalTime currentTime = LocalTime.now();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -79,6 +77,7 @@ public class RateService
                     attempts++;
 
                     String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
+                    System.out.println(formattedDate);
                     String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
 
                     response = restTemplate.getForObject(url, String.class);
@@ -123,27 +122,33 @@ public class RateService
 
         if (dayOfWeek == DayOfWeek.SUNDAY)
         {
-            // 일요일인 경우 전전날 날짜
-            calendar.add(Calendar.DATE, -1);
+            // 일요일인 경우 전전날 날짜인 금요일의 데이터
+            calendar.add(Calendar.DATE, -2);
             formattedDate = formatter.format(calendar.getTime());
 
         }
         else if (dayOfWeek == DayOfWeek.SATURDAY)
         {
-            // 토요일인 경우 전날 날짜
+            // 토요일인 경우 전날 날짜인 금요일의 데이터
+            calendar.add(Calendar.DATE, -1);
+            formattedDate = formatter.format(calendar.getTime());
+        }
+        else if(dayOfWeek == DayOfWeek.MONDAY && currentTime.isBefore(LocalTime.of(12,0)))
+        {//월요일 오전일때는 금요일의 API 데이터를 가져온다.
+            calendar.add(Calendar.DATE, -3);
             formattedDate = formatter.format(calendar.getTime());
         }
         else
         {
             // 평일일 경우 오후 6시 이후/이전 처리
-            if (currentTime.isAfter(LocalTime.of(18, 0)))
+            if (currentTime.isAfter(LocalTime.of(12, 0)))
             {
-                formattedDate = formatter.format(new Date());  // 오늘 날짜
+                formattedDate = formatter.format(new Date());  // 오늘 날짜로 처리
             }
             else
             {
                 calendar.add(Calendar.DATE, -1);
-                formattedDate = formatter.format(calendar.getTime());  // 전날 날짜
+                formattedDate = formatter.format(calendar.getTime());  // 전날 날짜로 처리
             }
         }
 
