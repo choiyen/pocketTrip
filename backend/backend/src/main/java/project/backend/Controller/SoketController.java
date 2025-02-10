@@ -29,8 +29,8 @@ public class SoketController
 
     RestTemplate restTemplate = new RestTemplate();
 
-    @MessageMapping("info/{travelCode}")
-    @SendToUser("/queue/info/{travelCode}")//해당 주소를 가진 자기 자신에게 방에 입장했으니, 여행방과 관련된 데이터를 보낸다.
+    @MessageMapping("/travelPlan/{travelCode}")
+    @SendToUser("/queue/{travelCode}")//해당 주소를 가진 자기 자신에게 방에 입장했으니, 여행방과 관련된 데이터를 보낸다.
     public ResponseEntity<?> info(@PathVariable String travelCode, SimpMessageHeaderAccessor messageHeaderAccessor)
     {
         try
@@ -55,8 +55,8 @@ public class SoketController
         }
     }
 
-    @MessageMapping("info/{travelCode}/Insert")
-    @SendTo("/topic/info/{travelCode}")//새로운 데이터가 저장되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
+    @MessageMapping("/travelPlan/{travelCode}/Insert")
+    @SendTo("/topic/insert/{travelCode}")//새로운 데이터가 저장되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
     public ResponseEntity<?> insert(@PathVariable String travelCode, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
     {
          try
@@ -81,8 +81,8 @@ public class SoketController
              return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
          }
     }
-    @MessageMapping("info/{travelCode}/Update")
-    @SendTo("/Topic/info/{travelCode}/{expenditureId}")//데이터가 수정되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
+    @MessageMapping("/travelPlan/{travelCode}/Update")
+    @SendTo("/topic/{travelCode}/{expenditureId}/Update")//데이터가 수정되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
     public ResponseEntity<?> Update(@PathVariable String travelCode,@PathVariable String expenditureId, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
     {
         try
@@ -99,8 +99,8 @@ public class SoketController
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
-    @MessageMapping("info/{travelCode}/{expenditureId}/Delete")
-    @SendTo("/Topic/info/{travelCode}/{expenditureId}")//데이터가 삭제되었으니, 해당 채팅방에 속한 사람 모두에게 변경된 지출 DB를 보낸다.
+    @MessageMapping("/travelPlan/{travelCode}/{expenditureId}/Delete")
+    @SendTo("/Topic/{travelCode}/{expenditureId}/Delete")//데이터가 삭제되었으니, 해당 채팅방에 속한 사람 모두에게 변경된 지출 DB를 보낸다.
     public ResponseEntity<?> Delete(@PathVariable String travelCode, @PathVariable String expenditureId, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
     {
         try
