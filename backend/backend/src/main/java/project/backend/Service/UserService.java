@@ -41,6 +41,12 @@ public class UserService {
         return null;
     }
 
+    //userID가 DB에 있는지 여부 확인
+    public Boolean getUserID(String userId)
+    {
+        Boolean bool = userRepository.existsByEmail(userId);
+        return bool;
+    }
     // 수정하기
     public UserEntity updateUser(String email, UserEntity userEntity) {
 
