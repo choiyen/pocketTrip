@@ -14,6 +14,7 @@ import project.backend.DTO.TravelPlanDTO;
 import project.backend.Entity.ApplicantsEntity;
 import project.backend.Entity.TravelPlanEntity;
 import project.backend.Entity.UserTravelsEntity;
+import project.backend.Security.TokenProvider;
 import project.backend.Service.AppllicantsService;
 import project.backend.Service.S3ImageService;
 import project.backend.Service.TravelPlanService;
@@ -51,6 +52,10 @@ public class TravelPlanController
     private  ResponseDTO responseDTO = new ResponseDTO<>();
     @Autowired
     private UserTravelsService userTravelsService;
+
+
+    @Autowired
+    private TokenProvider tokenProvider;
 
 
     //https://innovation123.tistory.com/197
