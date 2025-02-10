@@ -150,7 +150,6 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 
 export default function Categories() {
   const location = useLocation();
-  const { amount, paymentType } = location.state;
   const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
   const { amount, paymentType, date } = location.state;
   const [description, setDescription] = useState("");
@@ -164,7 +163,6 @@ export default function Categories() {
     setDescription(e.target.value);
   };
 
-  const { id } = useParams();
   const navigate = useNavigate();
 
   const goToAccountbook = () => {
