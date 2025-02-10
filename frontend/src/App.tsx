@@ -20,6 +20,7 @@ import Categories from "./pages/Tour/Categories";
 import AccountBook from "./pages/Tour/AccountBook";
 import TourMembers from "./pages/TourMembers/TourMembers";
 import MoneyChart from "./pages/MoneyChart/MoneyChart";
+import RequireAuth from "./components/Common/RequireAuth";
 
 function App() {
   const alertState = useSelector(
@@ -47,54 +48,122 @@ function App() {
         <Routes>
           <Route path="/Login" element={<Login />} />
           <Route path="/Login/Register" element={<Register />} />
-          <Route path="/" element={<MainPage />} />
-          <Route path="/mypage" element={<MyPage />} />
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <MainPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/mypage"
+            element={
+              <RequireAuth>
+                <MyPage />
+              </RequireAuth>
+            }
+          />
           <Route
             path="/Where1"
-            element={<Where1 updateTravelData={updateTravelData} />}
+            element={
+              <RequireAuth>
+                <Where1 updateTravelData={updateTravelData} />
+              </RequireAuth>
+            }
           />
           <Route
             path="/Where2"
             element={
-              <Where2
-                travelData={travelData}
-                updateTravelData={updateTravelData}
-              />
+              <RequireAuth>
+                <Where2
+                  travelData={travelData}
+                  updateTravelData={updateTravelData}
+                />
+              </RequireAuth>
             }
           />
           <Route
             path="/Where3"
             element={
-              <Where3
-                travelData={travelData}
-                updateTravelData={updateTravelData}
-              />
+              <RequireAuth>
+                <Where3
+                  travelData={travelData}
+                  updateTravelData={updateTravelData}
+                />
+              </RequireAuth>
             }
           />
           <Route
             path="/Where4"
             element={
-              <Where4
-                travelData={travelData}
-                updateTravelData={updateTravelData}
-              />
+              <RequireAuth>
+                <Where4
+                  travelData={travelData}
+                  updateTravelData={updateTravelData}
+                />
+              </RequireAuth>
             }
           />
           <Route
             path="/Where5"
             element={
-              <Where5
-                travelData={travelData}
-                updateTravelData={updateTravelData}
-              />
+              <RequireAuth>
+                <Where5
+                  travelData={travelData}
+                  updateTravelData={updateTravelData}
+                />
+              </RequireAuth>
             }
           />
-          <Route path="/Where6" element={<Where6 />} />
-          <Route path="/Tour/:id" element={<Tour />} />
-          <Route path="/Tour/:id/TourMembers" element={<TourMembers />} />
-          <Route path="/Tour/:id/MoneyChart" element={<MoneyChart />} />
-          <Route path="/Tour/:id/accountbook" element={<AccountBook />} />
-          <Route path="/Tour/:id/Categories" element={<Categories />} />
+          <Route
+            path="/Where6"
+            element={
+              <RequireAuth>
+                <Where6 />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/Tour/:id"
+            element={
+              <RequireAuth>
+                <Tour />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/Tour/:id/TourMembers"
+            element={
+              <RequireAuth>
+                <TourMembers />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/Tour/:id/MoneyChart"
+            element={
+              <RequireAuth>
+                <MoneyChart />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/Tour/:id/accountbook"
+            element={
+              <RequireAuth>
+                <AccountBook />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/Tour/:id/Categories"
+            element={
+              <RequireAuth>
+                <Categories />
+              </RequireAuth>
+            }
+          />
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
