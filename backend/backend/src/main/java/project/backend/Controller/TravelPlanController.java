@@ -103,7 +103,7 @@ public class TravelPlanController
         {
             int leftLimit = 48; // numeral '0'
             int rightLimit = 122; // letter 'z'
-            int targetStringLength = 8;
+            int targetStringLength = 6;
             Random random = new Random();
             String generatedString;
               // 16 바이트 키 (AES-128)

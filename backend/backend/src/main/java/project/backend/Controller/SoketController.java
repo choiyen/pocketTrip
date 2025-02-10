@@ -56,7 +56,7 @@ public class SoketController
     }
 
     @MessageMapping("info/{travelCode}/Insert")
-    @SendTo("/Topic/info/{travelCode}")//새로운 데이터가 저장되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
+    @SendTo("/topic/info/{travelCode}")//새로운 데이터가 저장되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
     public ResponseEntity<?> insert(@PathVariable String travelCode, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
     {
          try
