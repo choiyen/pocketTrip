@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
 
 const categories = [
   { id: 1, label: "숙소", icon: "🏠", color: "#A5D8FF" },
@@ -151,15 +150,12 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 
 export default function Categories() {
   const location = useLocation();
-  const { amount, paymentType, date, id: stateId } = location.state;
-  const { id: paramId } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
+  const { amount, paymentType } = location.state;
   const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
-  const [userEmail, setUserEmail] = useState(""); // 사용자 이메일
-  const [isPublic, setIsPublic] = useState(true); // 공개 여부 (예시로 true로 설정)
 
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
@@ -173,40 +169,22 @@ export default function Categories() {
     navigate(-1);
   };
 
-  const handleComplete = async () => {
+  const handleComplete = () => {
     const selectedCategory = categories.find(
       (cat) => cat.id === selectedCategoryId
     );
     const data = {
-      purpose: selectedCategory ? selectedCategory.label : "", // 선택된 카테고리
-      method: paymentType === "cash" ? "현금" : "카드", // 지불 방법
-      isPublic: isPublic, // 공개 여부
-      date: getFormattedDate(), // 현재 날짜
-      KRW: amount, // 원화 금액
-      payer: userEmail, // 사용자 이메일
-      amount: amount, // 지출액
-      currency: "₩", // 통화 (임의로 원화)
-      description: description, // 설명
+      amount,
+      paymentType,
+      description,
+      category: selectedCategory
+        ? {
+            id: selectedCategory.id,
+            label: selectedCategory.label,
+            icon: selectedCategory.icon,
+          }
+        : null,
     };
-
-    try {
-      const token = "your_jwt_token_here"; // JWT 토큰을 실제로 가져오는 방법에 맞게 설정
-
-      const response = await axios.put(
-        `/expenditures/${stateId}`, // travelCode를 사용하여 URL을 동적으로 만듦
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("서버 응답:", response.data); // 서버 응답 확인
-      // 이후에는 원하는 후속 작업을 할 수 있습니다 (예: 화면 전환 등)
-    } catch (error) {
-      console.error("에러 발생:", error);
-    }
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${id}`, { state: data });

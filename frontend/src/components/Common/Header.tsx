@@ -204,11 +204,8 @@ export default function Header({
             </button>
           </Link>
           <OptionButton remove={false} editType="editTour" />
-<<<<<<< HEAD
           {/* </div> */}
           {/* <OptionButton remove={false} /> */}
-=======
->>>>>>> af621af18ea80c9e7fed964c260891048ebecf70
         </ButtonBox>
       )}
 
