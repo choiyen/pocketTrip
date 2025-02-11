@@ -6,10 +6,10 @@ import styled from "styled-components";
 interface TravelData {
   id: string;
   travelCode: string;
-  name: string; // 여행지갑 이름
-  selectedCountry: string; // 여행지 이름
-  budget: number; // 현재 누적 금액 (통화 단위 포함)
-  ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
+  title: string; // 여행지갑 이름
+  location: string; // 여행지 이름
+  expense: number; // 현재 누적 금액 (통화 단위 포함)
+  ImgArr?: string[]; // 참여 인원들의 프로필 이미지 경로 배열
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
   bgImg?: string;
@@ -54,8 +54,8 @@ export default function MoneyInfo({ Tourdata }: TourCardProps) {
     navigate(`/Tour/${Tourdata.id}/accountbook`);
   };
 
-  // budget을 쉼표 구분 형식으로 변환
-  const formattedBudget = new Intl.NumberFormat().format(Tourdata.budget);
+  // expense을 쉼표 구분 형식으로 변환
+  const formattedBudget = new Intl.NumberFormat().format(Tourdata.expense);
 
   return (
     <MoneyInfoWrap>

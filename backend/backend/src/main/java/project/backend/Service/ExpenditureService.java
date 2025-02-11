@@ -20,15 +20,7 @@ public class ExpenditureService {
 
     private final String key = "1234567890123456";
 
-    //암호화 코드 작성
-    public static String encrypt(String data, String key) throws Exception
-    {
-        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedData = cipher.doFinal(data.getBytes());
-        return Base64.getEncoder().encodeToString(encryptedData);
-    }
+
 
     @Autowired
     private ExpendituresRepository expendituresRepository;
@@ -149,6 +141,15 @@ public class ExpenditureService {
         expendituresRepository.deleteByExpenditureId(expenditureId);
 
         return expendituresRepository.findAllByTravelCode(travelCode);
+    }
+    //암호화 코드 작성
+    public static String encrypt(String data, String key) throws Exception
+    {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedData = cipher.doFinal(data.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedData);
     }
 
 }
