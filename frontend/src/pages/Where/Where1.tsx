@@ -22,7 +22,7 @@ const Where1: React.FC<Where1Props> = ({ updateTravelData }) => {
   const goToWhere3 = () => {
     // 국내를 선택했을 때
     updateTravelData({
-      selectedCountry: "대한민국",
+      location: "대한민국",
     });
     navigate("/where3");
   };
