@@ -39,6 +39,23 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
     navigate("/Where4");
   };
 
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+      setStartDate(localDate);
+    }
+  };
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+      setEndDate(localDate);
+    }
+  };
+
   return (
     <div className="where-container3">
       <svg
@@ -65,7 +82,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
         <div className="date-label">여행 시작일</div>
         <DatePicker
           selected={startDate}
-          onChange={(date: Date | null) => setStartDate(date)} // 타입을 명시적으로 지정
+          onChange={handleDateChange} // 타입을 명시적으로 지정
           dateFormat="yyyy/MM/dd"
           placeholderText="시작일 선택"
           className="datepicker"
@@ -77,7 +94,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
         <div className="date-label">여행 종료일</div>
         <DatePicker
           selected={endDate}
-          onChange={(date: Date | null) => setEndDate(date)} // 타입을 명시적으로 지정
+          onChange={handleEndDateChange} // 타입을 명시적으로 지정
           dateFormat="yyyy/MM/dd"
           placeholderText="종료일 선택"
           className="datepicker"
