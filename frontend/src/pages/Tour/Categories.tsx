@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const categories = [
   { id: 1, label: "숙소", icon: "🏠", color: "#A5D8FF" },
@@ -169,14 +170,31 @@ export default function Categories() {
     navigate(-1);
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    if (!selectedCategoryId) {
+      alert("카테고리를 선택해주세요.");
+      return;
+    }
     const selectedCategory = categories.find(
       (cat) => cat.id === selectedCategoryId
     );
+
+    const getFormattedDateForBackend = () => {
+      const today = new Date();
+      return today.toISOString().split("T")[0]; // "YYYY-MM-DD" 형식으로 변환
+    };
+
+    const formattedDate = getFormattedDateForBackend();
+
     const data = {
+      travelId: id,
       amount,
       paymentType,
+      method: paymentType,
+      payer: "userId",
       description,
+      purpose: description,
+      date: formattedDate,
       category: selectedCategory
         ? {
             id: selectedCategory.id,
@@ -185,14 +203,30 @@ export default function Categories() {
           }
         : null,
     };
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://localhost:8080/expenditures/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("데이터 저장 성공:", data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("데이터 저장 실패:", error.response?.data);
+      } else {
+        console.error("알 수 없는 오류:", error);
+      }
+    }
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${id}`, { state: data });
 
-    console.log("지출액:", amount);
-    console.log("지출 방식:", paymentType);
-    console.log("설명:", description);
-    console.log("선택한 카테고리 ID:", selectedCategoryId);
+    // console.log("지출액:", amount);
+    // console.log("지출 방식:", paymentType);
+    // console.log("설명:", description);
+    // console.log("선택한 카테고리 ID:", selectedCategoryId);
   };
 
   const getFormattedDate = () => {

@@ -70,6 +70,7 @@ export default function Tour() {
 
   // 뒤로가기 누를때 메인에서 온거면 메인, 마이페이지에서 온거면 그곳으로 되돌아가야한다.
   const { state } = useLocation(); // 메인 / 마이페이지 어디서 들어온 경로인지 판별
+  console.log("받아온 데이터:", state);
   const fromPage = state.from; // "/" 혹은 "/mypage" 경로 추출
 
   useEffect(() => {
@@ -81,53 +82,40 @@ export default function Tour() {
 
   const { amount, paymentType, description, category } = state || {};
 
-  // 지출 정보 엑시오스 요청 보내는 함수
-  const sendExpenditure = async (data: any) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        console.error("토큰이 없습니다.");
-        return;
+  useEffect(() => {
+    const fetchSpendingLogs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:8080/expenditures/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
+      } catch (error) {
+        console.error("지출 내역 불러오기 실패:", error);
       }
+    };
 
-      const response = await axios.put(
-        `/expenditures/${data.category.id}`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.resultType === "success") {
-        console.log("지출 추가 성공:", response.data);
-        // 성공적인 응답 처리
-      } else {
-        console.error("지출 추가 실패:", response.data.message);
-      }
-    } catch (error) {
-      console.error("엑시오스 요청 실패:", error);
-    }
-  };
+    fetchSpendingLogs();
+  }, [id]);
 
   useEffect(() => {
     if (category) {
-      const expenditureData = {
-        purpose: category.label,
-        method: paymentType === "cash" ? "현금" : "카드",
-        isPublic: true,
-        date: new Date().toISOString().split("T")[0], // 현재 날짜
-        KRW: amount, // 환전 금액 (원화로 가정)
-        payer: "example1@email.com", // 지출한 사람의 이메일 (로그인된 사용자 정보로 교체 가능)
-        amount: amount,
-        currency: "元", // 사용된 통화 (여기서는 예시로 '元' 사용)
-        description: description || "설명 없음",
-        category,
-      };
-
-      // 엑시오스 요청 보내기
-      sendExpenditure(expenditureData);
+      setLogs([
+        {
+          LogState: "minus",
+          title: category.label,
+          detail: description || "설명 없음",
+          profile: "/ProfileImage.png",
+          type: paymentType === "cash" ? "현금" : "카드",
+          money: Number(amount).toLocaleString(),
+        },
+      ]);
     }
   }, [amount, paymentType, description, category]);
 
