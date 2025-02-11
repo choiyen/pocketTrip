@@ -11,6 +11,21 @@ import NextTour from "./NextTour";
 import CodeBanner from "./CodeBanner";
 import InputCodeBox from "../../components/Common/InputCodeBox";
 import RankChart from "./RankChart";
+import axios from "axios";
+import { setTravelData } from "../../slices/SaveTourDataSlice";
+
+interface TravelPlan {
+  id: string;
+  travelCode: string;
+  title: string;
+  founder: string;
+  location: string;
+  startDate: string; // 날짜 문자열
+  endDate: string; // 날짜 문자열
+  expense: number;
+  calculate: boolean;
+  participants: string[]; // 참가자 리스트 (배열)
+}
 
 const H2 = styled.h2`
   font-size: 18px;
@@ -21,11 +36,9 @@ const H2 = styled.h2`
 
 export default function MainPage() {
   const dispatch: AppDispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(ChangeCurrentPage("home"));
-  }, []);
-
+  const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+  const [CurrentTour, setCurrentTour] = useState<TravelPlan>();
+  const [nextTourData, setNextTourData] = useState<TravelPlan>();
   // 알림창 관련 로직
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [InputCodeVisible, setInputCodeVisible] = useState(false);
@@ -33,6 +46,35 @@ export default function MainPage() {
   const [alertType, setAlertType] = useState<"success" | "error" | "info">(
     "success"
   );
+
+  useEffect(() => {
+    dispatch(ChangeCurrentPage("home"));
+    const token = localStorage.getItem("accessToken");
+    getTravelData(token as string); // 여행 정보 요청
+  }, []);
+
+  // 위에서 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
+  useEffect(() => {
+    if (TourDataArr.length > 0) {
+      SelectCurrentTourData();
+      dispatch(setTravelData(TourDataArr));
+    }
+  }, [TourDataArr]);
+
+  // 1. 불러온 데이터들 중 현재 종료일 이후로 출발하는 여행을 추린다.
+  // 2. 추린 여행들을 출발 날짜 기준으로 재 정렬한다.
+  // 3. 제일 빠른 여행 하나를 고른다.
+  useEffect(() => {
+    if (CurrentTour) {
+      const currentEndTime = new Date(CurrentTour.endDate).getTime();
+      const SortingArr =
+        TourDataArr.length >= 2 ? SortingTour(TourDataArr) : TourDataArr;
+      const NextTours = SortingArr.filter(
+        (data) => new Date(data.startDate).getTime() >= currentEndTime
+      );
+      setNextTourData(NextTours[0]);
+    }
+  }, [CurrentTour]);
 
   useEffect(() => {
     if (isAlertVisible) {
@@ -43,6 +85,51 @@ export default function MainPage() {
     }
   }, [isAlertVisible]);
 
+  const getTravelData = async (token: string) => {
+    // 유저의 모든 여행 기록을 받아온다.
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setTourDataArr(response.data.data);
+    console.log(response);
+  };
+
+  const SelectCurrentTourData = () => {
+    const currentTourList: TravelPlan[] = [];
+    const currentTime = new Date().getTime();
+
+    // 현재시간 기준 여행중인 정보들만 뽑아낸다.
+    TourDataArr &&
+      TourDataArr.map((data: TravelPlan, index: number) => {
+        const startTime = new Date(data.startDate).getTime();
+        const endTime = new Date(data.endDate).getTime();
+
+        if (startTime <= currentTime && currentTime <= endTime) {
+          currentTourList.push(data);
+        }
+      });
+
+    // 현재 여행도중인 여행정보들만 대입
+    // 출발순으로 정렬된 여행들 중 첫번째 여행을 지정한다.
+    setCurrentTour(SortingTour(currentTourList)[0]);
+  };
+
+  // 현재 여행중인 정보들을 출발 순서대로 정렬 > 가장 빨리 출발한걸 하나 선택
+  const SortingTour = (currentTourList: TravelPlan[]) => {
+    currentTourList = [...currentTourList].sort(
+      (a: TravelPlan, b: TravelPlan) =>
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+    return currentTourList;
+  };
+
   const handleAction = () => {
     setAlertMessage("작업이 성공적으로 완료되었습니다.");
     setAlertType("success");
@@ -51,12 +138,12 @@ export default function MainPage() {
 
   // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
   // 현재 여행
-  const data = {
-    id: "1",
-    travelCode: "sdfsdfsdf",
-    name: "일본여행지갑", // 여행지갑 이름
-    selectedCountry: "일본", // 여행지 이름
-    budget: 2000000, // 현재 누적 금액
+  const data = CurrentTour && {
+    id: CurrentTour?.id,
+    travelCode: CurrentTour?.travelCode,
+    name: CurrentTour?.title, // 여행지갑 이름
+    location: CurrentTour?.location, // 여행지 이름
+    expense: CurrentTour?.expense, // 현재 누적 금액
     ImgArr: [
       "./ProfileImage.png",
       "./ProfileImage.png",
@@ -66,19 +153,22 @@ export default function MainPage() {
       "./ProfileImage.png",
       "./ProfileImage.png",
     ], // 참여인원들 프로필 이미지 주소
-    startDate: "2025-01-18", // 여행 시작일
-    endDate: "2025-02-20", // 여행 종료일
-    bgImg: "/japan.jpg",
+    startDate: CurrentTour?.startDate, // 여행 시작일
+    endDate: CurrentTour?.endDate, // 여행 종료일
   };
+
   // 현재 여행이 없을 경우
-  // const data = null;
+  // const data = CurrentTour;
+  // console.log(data);
 
   // 다음 여행지 계획
-  const nextTour = {
-    selectedCountry: "태국",
-    startDate: "2025-03-18", // 여행 시작일
-    endDate: "2025-03-20", // 여행 종료일
-  };
+  const nextTour = nextTourData
+    ? {
+        location: nextTourData?.location,
+        startDate: nextTourData?.startDate, // 여행 시작일
+        endDate: nextTourData?.endDate, // 여행 종료일
+      }
+    : false;
   // 다음 여행지 계획이 없을 경우
   // const nextTour = false;
 
