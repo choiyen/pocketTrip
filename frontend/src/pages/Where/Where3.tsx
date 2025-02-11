@@ -8,11 +8,11 @@ import "./Where3.css";
 interface Where3Props {
   travelData: {
     // isDomestic: boolean;
-    selectedCountry: string;
+    location: string;
     startDate: string | null;
     endDate: string | null;
-    name: string;
-    budget: number;
+    title: string;
+    expense: number;
   };
   updateTravelData: (data: any) => void;
 }
@@ -32,13 +32,6 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
   const goToWhere4 = () => {
     // 여행 날짜가 업데이트 되면 travelData를 업데이트
     updateTravelData({
-      startDate: startDate,
-      endDate: endDate,
-    });
-
-    // 로그 출력 (업데이트된 travelData 확인)
-    console.log("업데이트된 travelData:", {
-      ...travelData,
       startDate: startDate,
       endDate: endDate,
     });

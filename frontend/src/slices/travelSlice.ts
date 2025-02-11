@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TravelData {
   name: string;
-  selectedCountry: string;
-  budget: number;
+  location: string;
+  expense: number;
   startDate: string;
   endDate: string;
   ImgArr: string[];
@@ -12,8 +12,8 @@ interface TravelData {
 
 const initialState: TravelData = {
   name: "",
-  selectedCountry: "",
-  budget: 0,
+  location: "",
+  expense: 0,
   startDate: "",
   endDate: "",
   ImgArr: [],

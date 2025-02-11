@@ -15,7 +15,7 @@ interface TravelPlan {
   name: string;
   startDate: string;
   endDate: string;
-  budget: number;
+  expense: number;
   ImgArr: string[];
   bgImg?: string;
 }
@@ -35,7 +35,7 @@ export default function MyPage() {
       name: "일본여행지갑",
       startDate: "2025-01-18",
       endDate: "2025-02-20",
-      budget: 2000000,
+      expense: 2000000,
       ImgArr: [
         "./ProfileImage.png",
         "./ProfileImage.png",
@@ -53,7 +53,7 @@ export default function MyPage() {
       name: "미국 여행의 방",
       startDate: "2024-10-20",
       endDate: "2024-10-25",
-      budget: 1000000,
+      expense: 1000000,
       ImgArr: [
         "./ProfileImage.png",
         "./ProfileImage.png",
@@ -70,7 +70,7 @@ export default function MyPage() {
       name: "프랑스 여행의 방",
       startDate: "2024-05-02",
       endDate: "2024-05-10",
-      budget: 2500000,
+      expense: 2500000,
       ImgArr: [
         "./ProfileImage.png",
         "./ProfileImage.png",
@@ -84,7 +84,7 @@ export default function MyPage() {
   ];
   const formattedBudget: string[] = [];
   travelList.map((item, index) => {
-    formattedBudget.push(new Intl.NumberFormat().format(item.budget));
+    formattedBudget.push(new Intl.NumberFormat().format(item.expense));
   });
   return (
     <div>

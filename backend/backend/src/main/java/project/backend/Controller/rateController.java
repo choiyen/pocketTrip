@@ -33,7 +33,8 @@ public class rateController {
     private String apiKey;
 
 
-    @Scheduled(cron = "0 0 18 * * *")
+    //11시에 환율은행 API가 갱신되므로, 12시에 해당 함수를 스케줄러가 자동 실행
+    @Scheduled(cron = "0 0 12 * * *")
     @PostConstruct
     public void RatePost()
     {
