@@ -3,10 +3,10 @@ import styled from "styled-components";
 import TourDateUi from "../../components/Common/TourDateUi";
 
 interface TravelData {
-  name: string; // 여행지갑 이름
-  selectedCountry: string; // 여행지 이름
-  budget: number; // 현재 누적 금액 (통화 단위 포함)
-  ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
+  title: string; // 여행지갑 이름
+  location: string; // 여행지 이름
+  expense: number; // 현재 누적 금액 (통화 단위 포함)
+  ImgArr?: string[]; // 참여 인원들의 프로필 이미지 경로 배열
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
   bgImg?: string;
@@ -67,7 +67,7 @@ export default function TourInfo({ Tourdata }: TourCardProps) {
   return (
     <TourWrap>
       <h2>여행지</h2>
-      <h3>{Tourdata.selectedCountry}</h3>
+      <h3>{Tourdata.location}</h3>
       <TourDateUi
         $precent={progress ? progress.toFixed(2) + "%" : "0%"}
         startDate={Tourdata.startDate}
