@@ -8,7 +8,7 @@ interface TravelPlan {
   travel: {
     id: string;
     travelCode: string;
-    name: string;
+    title: string;
     startDate: string;
     endDate: string;
     expense: number;
@@ -108,7 +108,7 @@ export default function TourCardList({
             justifyContent: "space-around",
           }}
         >
-          <Title>{travel.name}</Title>
+          <Title>{travel.title}</Title>
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
