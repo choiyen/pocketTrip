@@ -5,8 +5,8 @@ import { useLocation, useParams } from "react-router-dom";
 import MoneyInfo from "./MoneyInfo";
 import Usehistory from "./Usehistory";
 import { io } from "socket.io-client";
-import { AppDispatch } from "../../store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 
 export interface MoneyLogProps {
@@ -22,9 +22,9 @@ const data = [
   {
     id: "1",
     travelCode: "sdsdds",
-    name: "일본여행지갑", // 여행지갑 이름
-    selectedCountry: "일본", // 여행지 이름
-    budget: 2000000, // 현재 누적 금액
+    title: "일본여행지갑", // 여행지갑 이름
+    location: "일본", // 여행지 이름
+    expense: 2000000, // 현재 누적 금액
     ImgArr: [
       "./ProfileImage.png",
       "./ProfileImage.png",
@@ -41,9 +41,9 @@ const data = [
   {
     id: "2",
     travelCode: "ddddddd",
-    name: "미국 여행의 방", // 여행지갑 이름
-    selectedCountry: "미국", // 여행지 이름
-    budget: 1000000,
+    title: "미국 여행의 방", // 여행지갑 이름
+    location: "미국", // 여행지 이름
+    expense: 1000000,
     ImgArr: ["./ProfileImage.png", "./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
     startDate: "2024-10-20",
     endDate: "2024-10-25",
@@ -51,9 +51,9 @@ const data = [
   {
     id: "3",
     travelCode: "sdfsdfdfdfdf",
-    name: "프랑스 여행의 방",
-    selectedCountry: "프랑스", // 여행지 이름
-    budget: 2500000,
+    title: "프랑스 여행의 방",
+    location: "프랑스", // 여행지 이름
+    expense: 2500000,
     ImgArr: ["./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
     startDate: "2024-05-02",
     endDate: "2024-05-10",
@@ -63,6 +63,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER || "";
 
 export default function Tour() {
   const dispatch: AppDispatch = useDispatch();
+  const data = useSelector((state: RootState) => state.saveTourData);
 
   const { id } = useParams<{ id: string }>();
 
@@ -75,7 +76,7 @@ export default function Tour() {
   }, []);
 
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
-  const FilteringData = data.filter((item) => item.id === id);
+  const FilteringData = data.value.filter((item) => item.id === id);
 
   const { amount, paymentType, description, category } = state || {};
 

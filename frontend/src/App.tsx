@@ -30,11 +30,11 @@ function App() {
   // travelData 상태 정의
   const [travelData, setTravelData] = useState({
     // isDomestic: true, // 국내/해외 여부
-    selectedCountry: "", // 선택한 나라
+    location: "", // 선택한 나라
     startDate: null, // 여행 시작 날짜
     endDate: null, // 여행 종료 날짜
-    name: "", // 여행지갑 이름
-    budget: 0, // 예산
+    title: "", // 여행지갑 이름
+    expense: 0, // 예산
   });
 
   // 상태를 업데이트하는 함수
