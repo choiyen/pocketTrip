@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
-@Setter
 @Builder
 public class TravelPlanDTO {
     private String id;
     private String travelCode;
     private String title;
     private String location;
+    private String img;
     private LocalDate startDate;
     private LocalDate endDate;
     private int expense;

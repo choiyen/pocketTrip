@@ -30,6 +30,7 @@ public class TravelPlanEntity
     private String location;
     @NonNull
     private String title;
+    private String img;
     @NonNull
     private LocalDate startDate;
     private LocalDate endDate;
