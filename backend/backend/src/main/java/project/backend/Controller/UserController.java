@@ -91,6 +91,21 @@ public class UserController {
     }
 
 
+    @PostMapping("/userprofile")
+    public ResponseEntity<?> UserProfile(@AuthenticationPrincipal String userid, @RequestBody String password)
+    {
+        try
+        {
+            UserEntity user = userService.getByCredentials(userid);
+            List<Object> list = new ArrayList<>();
+            list.add(user);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "오늘도 저희 서비스에 방문해주셔서 감사드려요!!!", list));
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+
+        }
+    }
     // 로그인
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){

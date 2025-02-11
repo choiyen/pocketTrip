@@ -8,8 +8,8 @@ import OptionButton from "../../components/Common/OptionButton";
 interface TravelData {
   id: string;
   name: string; // 여행지갑 이름
-  selectedCountry: string; // 여행지 이름
-  budget: number; // 현재 누적 금액 (통화 단위 포함)
+  location: string; // 여행지 이름
+  expense: number; // 현재 누적 금액 (통화 단위 포함)
   ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
@@ -69,12 +69,12 @@ export default function TourCard({ Tourdata }: TourCardProps) {
   const {
     id,
     name,
-    selectedCountry,
-    budget,
+    location,
+    expense,
     ImgArr,
     startDate,
     endDate,
-    bgImg = "japan.jpg",
+    bgImg = "/japan.jpg",
   } = Tourdata;
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
   const startedDate = new Date(startDate);
@@ -91,14 +91,14 @@ export default function TourCard({ Tourdata }: TourCardProps) {
       ? Math.min(100, Math.max(0, (progressDuration / totalDuration) * 100))
       : 0;
 
-  const formattedBudget = new Intl.NumberFormat().format(budget);
+  const formattedBudget = new Intl.NumberFormat().format(expense);
 
   return (
     <Container>
       <Card to={`/Tour/${Tourdata.id}`} state={{ from: "/" }} $bgImg={bgImg}>
         <div>
           <TitleWrap>
-            <h2>{selectedCountry}</h2>
+            <h2>{location}</h2>
             <CardUserList user={ImgArr} $size="L" />
           </TitleWrap>
           <p>{formattedBudget} ₩</p>
