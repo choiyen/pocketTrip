@@ -37,10 +37,9 @@ const LoginPage: React.FC = () => {
   // 로그인 함수
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    console.log(formData);
     axios
       .post<LoginResponse>(
-        "http://localhost:8080/auth/signin",
+        `${process.env.REACT_APP_API_BASE_URL}/auth/signin`,
         { email: formData.email, password: formData.password },
         {
           headers: {

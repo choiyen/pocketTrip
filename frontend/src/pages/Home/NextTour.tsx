@@ -4,7 +4,7 @@ import styled from "styled-components";
 interface nextTourProps {
   nextTour:
     | {
-        selectedCountry: string;
+        location: string;
         startDate: string;
         endDate: string;
       }
@@ -86,7 +86,7 @@ export default function NextTour({ nextTour }: nextTourProps) {
       <img src="/package.png" alt="여행가방" />
       {typeof nextTour !== "boolean" ? (
         <div>
-          <h2>{nextTour.selectedCountry}</h2>
+          <h2>{nextTour.location}</h2>
           <strong>D - {leftDate}</strong>
           <p>
             {nextTour.startDate} - {nextTour.endDate}

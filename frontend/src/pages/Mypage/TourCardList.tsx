@@ -11,7 +11,7 @@ interface TravelPlan {
     name: string;
     startDate: string;
     endDate: string;
-    budget: number;
+    expense: number;
     ImgArr: string[];
     bgImg?: string;
   };
