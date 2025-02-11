@@ -32,11 +32,11 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
     // travelData를 업데이트하고, state에 담아서 Where6으로 전달
     const updatedTravelData = {
       ...travelData,
-      expense: expense,
+      expense: Number(expense),
+      isCalculate: false,
     };
-
     updateTravelData(updatedTravelData); // 상태 업데이트
-    updatedTravelData.isCalculate = false;
+    console.log(updatedTravelData);
 
     try {
       const response = await axios.post(
