@@ -8,6 +8,12 @@ import { io } from "socket.io-client";
 import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
+const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
+
+const decrypt = (ciphertext: string): string => {
+  const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
 
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -65,7 +71,7 @@ export default function Tour() {
   const dispatch: AppDispatch = useDispatch();
   const data = useSelector((state: RootState) => state.saveTourData);
 
-  const { id } = useParams<{ id: string }>();
+  const { encrypted } = useParams<{ encrypted: string }>();
 
   // 뒤로가기 누를때 메인에서 온거면 메인, 마이페이지에서 온거면 그곳으로 되돌아가야한다.
   const { state } = useLocation(); // 메인 / 마이페이지 어디서 들어온 경로인지 판별
@@ -76,7 +82,9 @@ export default function Tour() {
   }, []);
 
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
-  const FilteringData = data.value.filter((item) => item.id === id);
+  const FilteringData = data.value.filter(
+    (item) => item.encryptCode === encrypted
+  );
 
   const { amount, paymentType, description, category } = state || {};
 
@@ -98,7 +106,7 @@ export default function Tour() {
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
     const newSocket = io(SERVER_URL, {
-      query: { tourId: id },
+      query: { travelCode: encrypted },
       reconnectionAttempts: 1,
       timeout: 500,
     });
@@ -123,11 +131,11 @@ export default function Tour() {
         newSocket.disconnect();
       }
     };
-  }, [id]);
+  }, [encrypted]);
 
   return (
     <div>
-      <Header $bgColor={"white"} id={id} fromPage={fromPage} />
+      <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
       <TourInfo Tourdata={FilteringData[0]} />
       <MoneyInfo Tourdata={FilteringData[0]} />
       <Usehistory logs={logs} />

@@ -30,6 +30,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
   };
 
   const goToWhere4 = () => {
+    console.log(startDate);
     // 여행 날짜가 업데이트 되면 travelData를 업데이트
     updateTravelData({
       startDate: startDate,
@@ -40,10 +41,12 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
   };
 
   const handleDateChange = (date: Date | null) => {
+    console.log(date);
     if (date) {
       const localDate = new Date(
         date.getTime() - date.getTimezoneOffset() * 60000
       );
+
       setStartDate(localDate);
     }
   };
@@ -52,6 +55,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
       const localDate = new Date(
         date.getTime() - date.getTimezoneOffset() * 60000
       );
+
       setEndDate(localDate);
     }
   };
