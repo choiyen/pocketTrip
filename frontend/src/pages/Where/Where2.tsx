@@ -9,11 +9,11 @@ import styled from "styled-components";
 interface Where2Props {
   travelData: {
     // isDomestic: boolean;
-    selectedCountry: string;
+    location: string;
     startDate: string | null;
     endDate: string | null;
-    name: string;
-    budget: number;
+    title: string;
+    expense: number;
   };
   updateTravelData: (data: any) => void;
 }
@@ -38,9 +38,9 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
   const navigate = useNavigate();
   const [countries, setCountries] = useState<string[]>([]); // 나라 목록
   const [search, setSearch] = useState<string>(""); // 검색어
-  const [selectedCountry, setSelectedCountry] = useState<string>(""); // 선택된 나라
+  const [location, setSelectedCountry] = useState<string>(""); // 선택된 나라
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
-  const isButtonDisabled = !selectedCountry;
+  const isButtonDisabled = !location;
 
   // 페이지 이동 함수
   const goToWhere1 = () => {
@@ -49,13 +49,7 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
   const goToWhere3 = () => {
     // 나라가 선택되면 travelData 업데이트
     updateTravelData({
-      selectedCountry: selectedCountry,
-    });
-
-    // 업데이트된 travelData 로그 출력
-    console.log("업데이트된 travelData:", {
-      ...travelData,
-      selectedCountry: selectedCountry,
+      location: location,
     });
 
     navigate("/Where3");
@@ -134,11 +128,11 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
           ) : (
             <span
               style={{
-                fontWeight: selectedCountry ? "bold" : "normal",
-                color: selectedCountry ? "black" : "#b0b0b0",
+                fontWeight: location ? "bold" : "normal",
+                color: location ? "black" : "#b0b0b0",
               }}
             >
-              {selectedCountry || "나라 선택"}
+              {location || "나라 선택"}
             </span>
           )}
         </div>
@@ -189,7 +183,7 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
           name="확인"
           $bgColor="blue"
           onClick={goToWhere3}
-          disabled={!selectedCountry}
+          disabled={!location}
         />
       </div>
     </div>

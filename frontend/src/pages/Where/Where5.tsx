@@ -1,43 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Common/Button";
+import { setTravelData } from "../../slices/travelSlice";
 import "./Where5.css";
+import axios from "axios";
 
 interface Where5Props {
   travelData: {
     // isDomestic: boolean;
-    selectedCountry: string;
+    location: string;
     startDate: string | null;
     endDate: string | null;
-    name: string;
-    budget: number;
+    title: string;
+    expense: number;
+    isCalculate?: boolean;
   };
   updateTravelData: (data: any) => void;
 }
 
 const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
-  const [budget, setBudget] = useState<number>(travelData.budget); // 예산 상태
+  const [expense, setBudget] = useState<number>(travelData.expense); // 예산 상태
   const navigate = useNavigate();
 
   const goToWhere4 = () => {
     navigate("/where4");
   };
 
-  const goToWhere6 = () => {
+  const goToWhere6 = async () => {
+    const token = localStorage.getItem("accessToken");
+
     // travelData를 업데이트하고, state에 담아서 Where6으로 전달
     const updatedTravelData = {
       ...travelData,
-      budget: budget,
+      expense: expense,
     };
 
     updateTravelData(updatedTravelData); // 상태 업데이트
-    console.log("업데이트된 travelData:", updatedTravelData);
+    updatedTravelData.isCalculate = false;
 
-    // Where6 페이지로 이동하면서 데이터 전달
-    navigate("/Where6", { state: updatedTravelData });
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/plan/insert`,
+        updatedTravelData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // Where6 페이지로 이동하면서 데이터 전달
+      navigate("/Where6", { state: response.data.data[0] });
+    } catch (error) {
+      console.error("여행 정보 전송간 에러 발생", error);
+    }
   };
 
-  const isButtonDisabled = budget <= 0; // 예산이 0 이하이면 버튼 비활성화
+  const isButtonDisabled = expense <= 0; // 예산이 0 이하이면 버튼 비활성화
 
   return (
     <div className="where-container5">
@@ -62,7 +81,7 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
       <input
         type="text"
         className="input"
-        value={budget.toLocaleString()} // 숫자 포맷으로 표시
+        value={expense.toLocaleString()} // 숫자 포맷으로 표시
         placeholder="숫자만 입력해주세요."
         onChange={(e) => {
           const rawValue = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 추출
