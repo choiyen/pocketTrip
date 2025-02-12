@@ -13,6 +13,27 @@ import InputCodeBox from "../../components/Common/InputCodeBox";
 import RankChart from "./RankChart";
 import axios from "axios";
 import { setTravelData } from "../../slices/SaveTourDataSlice";
+import CryptoJS from "crypto-js";
+const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
+const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
+
+const encrypt = (data: string) => {
+  const encrypted = CryptoJS.AES.encrypt(data, SECRET_KEY, {
+    iv: IV,
+  }).toString();
+  return encodeURIComponent(encrypted); // URL-safe 변환
+};
+
+const decrypt = (encrypted: string) => {
+  try {
+    const decoded = decodeURIComponent(encrypted); // URL-safe 복원
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY, { iv: IV });
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    console.error("복호화 오류:", error);
+    return "";
+  }
+};
 
 interface TravelPlan {
   id: string;
@@ -25,6 +46,15 @@ interface TravelPlan {
   expense: number;
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
+  encryptCode: string;
+}
+
+interface User {
+  id: string; // MongoDB ObjectId 형식
+  name: string; // 사용자 이름
+  email: string; // 이메일 (형식 검증 필요)
+  password: string; // 암호화된 비밀번호 (bcrypt 해싱됨)
+  phone: string; // 전화번호 (형식 검증 필요)
 }
 
 const H2 = styled.h2`
@@ -43,6 +73,7 @@ export default function MainPage() {
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [InputCodeVisible, setInputCodeVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [userDatas, setUserDatas] = useState<User>();
   const [alertType, setAlertType] = useState<"success" | "error" | "info">(
     "success"
   );
@@ -51,6 +82,7 @@ export default function MainPage() {
     dispatch(ChangeCurrentPage("home"));
     const token = localStorage.getItem("accessToken");
     getTravelData(token as string); // 여행 정보 요청
+    getUserProfile(token as string); // 유저 정보 요청
   }, []);
 
   // 위에서 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
@@ -97,8 +129,27 @@ export default function MainPage() {
         },
       }
     );
-    setTourDataArr(response.data.data);
-    console.log(response);
+    const TourData = response.data.data;
+    const updatedTourData = TourData.map((item: TravelPlan, index: number) => ({
+      ...item,
+      encryptCode: encrypt(item.travelCode),
+    }));
+    console.log(updatedTourData);
+    setTourDataArr(updatedTourData);
+  };
+
+  const getUserProfile = async (token: string) => {
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setUserDatas(response.data.data[0]);
   };
 
   const SelectCurrentTourData = () => {
@@ -155,6 +206,13 @@ export default function MainPage() {
     ], // 참여인원들 프로필 이미지 주소
     startDate: CurrentTour?.startDate, // 여행 시작일
     endDate: CurrentTour?.endDate, // 여행 종료일
+    encryptCode: CurrentTour.encryptCode,
+  };
+
+  // 유저 데이터
+  const userData = userDatas && {
+    name: userDatas.name,
+    profile: "ProfileImage.png",
   };
 
   // 현재 여행이 없을 경우
@@ -171,12 +229,6 @@ export default function MainPage() {
     : false;
   // 다음 여행지 계획이 없을 경우
   // const nextTour = false;
-
-  // 유저 데이터
-  const userData = {
-    name: "황종현",
-    profile: "ProfileImage.png",
-  };
 
   // 순위 데이터
   const popularCountry = {

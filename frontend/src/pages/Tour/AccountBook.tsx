@@ -115,7 +115,7 @@ const ActionButton = styled.button<{ $bgColor: string }>`
 export default function AccountBook() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("KRW");
-  const { id } = useParams<{ id: string }>();
+  const { encrypted } = useParams<{ encrypted: string }>();
   const navigate = useNavigate();
 
   const handleKeyPress = (key: string) => {
@@ -145,7 +145,7 @@ export default function AccountBook() {
     };
     const formattedDate = today.toLocaleDateString("ko-KR", options);
 
-    navigate(`/Tour/${id}/categories`, {
+    navigate(`/Tour/${encrypted}/categories`, {
       state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
     });
   };
@@ -154,7 +154,7 @@ export default function AccountBook() {
 
   return (
     <>
-      <Header id={id} />
+      <Header encrypted={encrypted} />
       <Container>
         <CurrencyButton onClick={toggleCurrency}>{currency} ▼</CurrencyButton>
 
