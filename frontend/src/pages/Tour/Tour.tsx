@@ -5,6 +5,8 @@ import { useLocation, useParams } from "react-router-dom";
 import MoneyInfo from "./MoneyInfo";
 import Usehistory from "./Usehistory";
 import { io } from "socket.io-client";
+import SockJS from "sockjs-client"; // SockJS 추가
+
 import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
@@ -126,25 +128,24 @@ export default function Tour() {
   // const SOCKET_URL = travelCodes
   //   ? `${process.env.REACT_APP_SOCKET_BASE_URL}/${travelCodes}`
   //   : null;
-  const SOCKET_URL = travelCodes
-    ? `${process.env.REACT_APP_SOCKET_BASE_URL}`
-    : null;
+  const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
 
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
-    if (!SOCKET_URL || !travelCodes) return; // 주소 없을시 종료
+    if (!SOCKET_URL) return; // 주소 없을시 종료
+    console.log("소켓 연결 시도:");
 
-    console.log("소켓 연결 시도:", SOCKET_URL);
-
+    const socket = new SockJS(SOCKET_URL);
     const client = new Client({
-      brokerURL: SOCKET_URL,
-      connectHeaders: { travelCode: travelCodes },
+      webSocketFactory: () => socket,
+      debug: (msg) => console.log("[STOMP DEBUG]:", msg),
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
       onConnect: () => {
         console.log("연결 성공!");
-        client.subscribe("/topic/moneyLogs", (message) => {
-          setLogs(JSON.parse(message.body));
-        });
       },
+
       onStompError: (frame) => {
         console.error("STOMP 오류 발생:", frame);
       },
@@ -181,7 +182,7 @@ export default function Tour() {
       // }
       client.deactivate();
     };
-  }, [travelCodes]);
+  }, []);
 
   return (
     <div>
