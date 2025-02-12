@@ -28,9 +28,9 @@ export default function MyPage() {
 
   useEffect(() => {
     dispatch(ChangeCurrentPage("mypage"));
-      const token = localStorage.getItem("accessToken");
-      getTravelData(token as string); // 여행 정보 요청
-    }, []);
+    const token = localStorage.getItem("accessToken");
+    getTravelData(token as string); // 여행 정보 요청
+  }, []);
 
   const getTravelData = async (token: string) => {
     // 유저의 모든 여행 기록을 받아온다.
