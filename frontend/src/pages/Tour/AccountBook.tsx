@@ -146,7 +146,7 @@ export default function AccountBook() {
   const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
-  const { id } = useParams<{ id: string }>(); // URL에서 id(나라) 가져오기
+  const { encrypted } = useParams<{ encrypted: string }>(); // URL에서 id(나라) 가져오기
   const navigate = useNavigate(); // 페이지 이동 함수
   const location = useLocation(); // state로 전달된 location 정보
   const country = location.state?.location; // state에서 location을 가져옴
