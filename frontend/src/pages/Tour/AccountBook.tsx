@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Common/Header";
+import { countryCurrencies } from "../../pages/Data/countryMoney"; // 데이터 불러오기
+import { countryNamesInKorean } from "../../pages/Data/countryNames"; // 한글 국가명
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +49,32 @@ const CurrencyButton = styled.button`
   margin-top: 20%;
   cursor: pointer;
   height: 40px;
+`;
+
+const CurrencyDropdown = styled.div`
+  margin-top: 110px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  position: absolute;
+  padding: 10px 0;
+  text-align: center;
+`;
+
+const CurrencyItem = styled.div`
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;
 
 const Display = styled.div<{ $hasAmount: boolean }>`
@@ -113,10 +141,52 @@ const ActionButton = styled.button<{ $bgColor: string }>`
 `;
 
 export default function AccountBook() {
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("KRW");
-  const { encrypted } = useParams<{ encrypted: string }>();
-  const navigate = useNavigate();
+  const [amount, setAmount] = useState(""); // 입력한 금액
+  const [currency, setCurrency] = useState("KRW"); // 선택된 통화 코드
+  const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
+  const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
+  const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
+  const { id } = useParams<{ id: string }>(); // URL에서 id(나라) 가져오기
+  const navigate = useNavigate(); // 페이지 이동 함수
+  const location = useLocation(); // state로 전달된 location 정보
+  const country = location.state?.location; // state에서 location을 가져옴
+
+  useEffect(() => {
+    if (country) {
+      console.log("현재 국가:", country);
+
+      // 1. 한글 국가명으로 영어 국가명 찾기
+      const englishCountryName = Object.keys(countryNamesInKorean).find(
+        (key) => countryNamesInKorean[key] === country
+      );
+      console.log("영어 국가명:", englishCountryName);
+
+      if (englishCountryName) {
+        // 2. 영어 국가명으로 통화 정보 가져오기
+        const countryCurrency = countryCurrencies[englishCountryName];
+        console.log("가져온 국가 통화 정보:", countryCurrency);
+
+        if (countryCurrency) {
+          const [currencyCode, symbol] = countryCurrency.split(", ");
+          setCurrency(currencyCode); // 통화 코드 설정
+          setCurrencySymbol(symbol); // 통화 기호 설정
+          //통화 리스트에 국가 통화 코드 추가
+          setCurrencyList((prevList) => {
+            if (!prevList.includes(currencyCode)) {
+              return [...prevList, currencyCode];
+            }
+            return prevList;
+          });
+        } else {
+          console.log("해당 국가의 통화 정보가 없습니다.");
+        }
+      } else {
+        console.log("해당 국가의 영어 이름을 찾을 수 없습니다.");
+      }
+    } else {
+      console.log("country 값이 전달되지 않았습니다.");
+    }
+  }, [country]);
 
   const handleKeyPress = (key: string) => {
     if (key === "delete") {
@@ -128,8 +198,34 @@ export default function AccountBook() {
     }
   };
 
-  const toggleCurrency = () => {
-    setCurrency((prev) => (prev === "KRW" ? "USD" : "KRW"));
+  const toggleCurrencyList = () => {
+    setIsCurrencyListVisible((prev) => !prev); // 통화 목록 보이기/숨기기
+  };
+
+  useEffect(() => {
+    if (currency === "KRW") {
+      setCurrencySymbol("₩");
+    } else if (currency) {
+      // currency가 설정된 경우 불러온 통화 심볼 사용
+      const selectedSymbol =
+        Object.entries(countryCurrencies)
+          .find(([, value]) => value.startsWith(currency))?.[1]
+          .split(", ")[1] || "$"; // 기본값은 $로 설정
+      setCurrencySymbol(selectedSymbol);
+    }
+  }, [currency]);
+
+  const handleCurrencySelect = (selectedCurrency: string) => {
+    setCurrency(selectedCurrency); // 선택된 통화 코드 업데이트
+
+    // 선택된 통화에 따라 심볼 설정
+    const selectedSymbol =
+      Object.entries(countryCurrencies)
+        .find(([, value]) => value.startsWith(selectedCurrency))?.[1]
+        .split(", ")[1] || "₩"; // 기본값 KRW(₩)
+
+    setCurrencySymbol(selectedSymbol);
+    setIsCurrencyListVisible(false); // 드롭다운 닫기
   };
 
   const handleNavigation = (paymentType: string) => {
@@ -150,13 +246,26 @@ export default function AccountBook() {
     });
   };
 
-  const currencySymbol = currency === "KRW" ? "₩" : "$";
-
   return (
     <>
       <Header encrypted={encrypted} />
       <Container>
-        <CurrencyButton onClick={toggleCurrency}>{currency} ▼</CurrencyButton>
+        <CurrencyButton onClick={toggleCurrencyList}>
+          {currency} ▼
+        </CurrencyButton>
+
+        {isCurrencyListVisible && (
+          <CurrencyDropdown>
+            {currencyList.map((cur, index) => (
+              <CurrencyItem
+                key={index}
+                onClick={() => handleCurrencySelect(cur)}
+              >
+                {cur}
+              </CurrencyItem>
+            ))}
+          </CurrencyDropdown>
+        )}
 
         <Display $hasAmount={!!amount}>
           {amount
