@@ -51,7 +51,9 @@ export default function MoneyInfo({ Tourdata }: TourCardProps) {
   const navigate = useNavigate();
 
   const goToAccountBook = () => {
-    navigate(`/Tour/${Tourdata.id}/accountbook`);
+    navigate(`/Tour/${Tourdata.id}/accountbook`, {
+      state: { location: Tourdata.location }, // location을 state로 전달
+    });
   };
 
   // expense을 쉼표 구분 형식으로 변환
