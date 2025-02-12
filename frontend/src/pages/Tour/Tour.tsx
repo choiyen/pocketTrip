@@ -8,13 +8,26 @@ import { io } from "socket.io-client";
 import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
+import CryptoJS from "crypto-js";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
+const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
-const decrypt = (ciphertext: string): string => {
-  const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
-  return bytes.toString(CryptoJS.enc.Utf8);
+const decrypt = (encryptedData: string) => {
+  // URL-safe Base64 복구
+  const base64 = encryptedData.replace(/-/g, "+").replace(/_/g, "/");
+
+  const decrypted = CryptoJS.AES.decrypt(
+    base64,
+    CryptoJS.enc.Utf8.parse(SECRET_KEY),
+    {
+      iv: IV,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }
+  );
+
+  return decrypted.toString(CryptoJS.enc.Utf8); // 복호화된 문자열 반환
 };
-
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
   title: string;
@@ -65,9 +78,9 @@ export interface MoneyLogProps {
 //     endDate: "2024-05-10",
 //   },
 // ];
-const SERVER_URL = process.env.REACT_APP_SERVER || "";
 
 export default function Tour() {
+  const [travelCodes, setTravelCodes] = useState<string>();
   const dispatch: AppDispatch = useDispatch();
   const data = useSelector((state: RootState) => state.saveTourData);
 
@@ -81,11 +94,16 @@ export default function Tour() {
     dispatch(savePath(fromPage));
   }, []);
 
+  useEffect(() => {
+    const decode = decrypt(encrypted!);
+    setTravelCodes(decode);
+  }, [encrypted]);
+  travelCodes && console.log(travelCodes);
+
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const FilteringData = data.value.filter(
     (item) => item.encryptCode === encrypted
   );
-  console.log(data.value, encrypted);
 
   const { amount, paymentType, description, category } = state || {};
 
@@ -104,10 +122,20 @@ export default function Tour() {
     }
   }, [amount, paymentType, description, category]);
 
+  const SOCKET_URL = travelCodes
+    ? `${process.env.REACT_APP_SOCKET_BASE_URL}/${travelCodes}`
+    : null;
+
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
-    const newSocket = io(SERVER_URL, {
-      query: { travelCode: encrypted },
+    if (!SOCKET_URL) return; // 주소 없을시 종료
+
+    console.log("소켓 연결 시도:", SOCKET_URL);
+
+    const newSocket = io(SOCKET_URL, {
+      path: "/socket.io",
+      query: { travelCode: travelCodes },
+      transports: ["websocket"],
       reconnectionAttempts: 1,
       timeout: 500,
     });
@@ -132,7 +160,7 @@ export default function Tour() {
         newSocket.disconnect();
       }
     };
-  }, [encrypted]);
+  }, [travelCodes]);
 
   return (
     <div>

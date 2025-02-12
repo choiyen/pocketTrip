@@ -32,23 +32,6 @@ const encrypt = (data: string) => {
   return encrypted.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 };
 
-const decrypt = (encryptedData: string) => {
-  // URL-safe Base64 복구
-  const base64 = encryptedData.replace(/-/g, "+").replace(/_/g, "/");
-
-  const decrypted = CryptoJS.AES.decrypt(
-    base64,
-    CryptoJS.enc.Utf8.parse(SECRET_KEY),
-    {
-      iv: IV,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    }
-  );
-
-  return decrypted.toString(CryptoJS.enc.Utf8); // 복호화된 문자열 반환
-};
-
 interface TravelPlan {
   id: string;
   travelCode: string;
