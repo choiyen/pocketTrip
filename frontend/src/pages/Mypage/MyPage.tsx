@@ -14,6 +14,7 @@ interface TravelPlan {
   id: string;
   travelCode: string;
   title: string;
+  location: string;
   startDate: string;
   endDate: string;
   expense: number;
