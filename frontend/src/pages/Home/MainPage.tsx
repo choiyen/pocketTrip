@@ -18,21 +18,18 @@ const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
 const encrypt = (data: string) => {
-  const encrypted = CryptoJS.AES.encrypt(data, SECRET_KEY, {
-    iv: IV,
-  }).toString();
-  return encodeURIComponent(encrypted); // URL-safe 변환
-};
+  const encrypted = CryptoJS.AES.encrypt(
+    data,
+    CryptoJS.enc.Utf8.parse(SECRET_KEY),
+    {
+      iv: IV,
+      mode: CryptoJS.mode.CBC, // CBC 모드를 명시적으로 지정
+      padding: CryptoJS.pad.Pkcs7,
+    }
+  ).toString();
 
-const decrypt = (encrypted: string) => {
-  try {
-    const decoded = decodeURIComponent(encrypted); // URL-safe 복원
-    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY, { iv: IV });
-    return bytes.toString(CryptoJS.enc.Utf8);
-  } catch (error) {
-    console.error("복호화 오류:", error);
-    return "";
-  }
+  // Base64 → URL-safe 변환
+  return encrypted.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 };
 
 interface TravelPlan {
@@ -134,7 +131,6 @@ export default function MainPage() {
       ...item,
       encryptCode: encrypt(item.travelCode),
     }));
-    console.log(updatedTourData);
     setTourDataArr(updatedTourData);
   };
 
