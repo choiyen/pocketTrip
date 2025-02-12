@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 import CryptoJS from "crypto-js";
 import { Client } from "@stomp/stompjs";
+
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
@@ -102,6 +103,8 @@ export default function Tour() {
     setTravelCodes(decode);
   }, [encrypted]);
 
+  travelCodes && console.log(travelCodes);
+
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const FilteringData = data.value.filter(
     (item) => item.encryptCode === encrypted
@@ -154,6 +157,7 @@ export default function Tour() {
       onStompError: (frame) => {
         console.error("STOMP 오류 발생:", frame);
       },
+
     });
     client.activate();
 
@@ -161,6 +165,7 @@ export default function Tour() {
       client.deactivate();
     };
   }, []);
+
 
   return (
     <div>
