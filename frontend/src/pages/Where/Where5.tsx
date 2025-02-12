@@ -9,8 +9,8 @@ interface Where5Props {
   travelData: {
     // isDomestic: boolean;
     location: string;
-    startDate: string | null;
-    endDate: string | null;
+    startDate: Date | null;
+    endDate: Date | null;
     title: string;
     expense: number;
     isCalculate?: boolean;
