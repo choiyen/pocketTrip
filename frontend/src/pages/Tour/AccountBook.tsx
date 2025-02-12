@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Common/Header";
 import { countryCurrencies } from "../../pages/Data/countryMoney"; // 데이터 불러오기
+import { countryNamesInKorean } from "../../pages/Data/countryNames"; // 한글 국가명
 
 const Container = styled.div`
   display: flex;
@@ -55,7 +56,7 @@ const CurrencyDropdown = styled.div`
   background-color: white;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  width: 25%;
+  width: auto;
   max-height: 200px;
   overflow-y: auto;
   z-index: 10;
@@ -140,34 +141,52 @@ const ActionButton = styled.button<{ $bgColor: string }>`
 `;
 
 export default function AccountBook() {
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("KRW");
-  const [currencySymbol, setCurrencySymbol] = useState("₩");
-  const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 기본 통화 목록
-  const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 목록 표시 여부
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const [amount, setAmount] = useState(""); // 입력한 금액
+  const [currency, setCurrency] = useState("KRW"); // 선택된 통화 코드
+  const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
+  const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
+  const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
+  const { id } = useParams<{ id: string }>(); // URL에서 id(나라) 가져오기
+  const navigate = useNavigate(); // 페이지 이동 함수
+  const location = useLocation(); // state로 전달된 location 정보
+  const country = location.state?.location; // state에서 location을 가져옴
 
   useEffect(() => {
-    if (id) {
-      const location = id; // id 값을 로케이션으로 사용
-      const countryCurrency = countryCurrencies[location]; // countryCurrencies 객체에서 해당 로케이션의 데이터를 찾음
+    if (country) {
+      console.log("현재 국가:", country);
 
-      if (countryCurrency) {
-        const [currencyCode, symbol] = countryCurrency.split(", ");
-        setCurrency(currencyCode); // 통화 코드 설정
-        setCurrencySymbol(symbol); // 통화 기호 설정
+      // 1. 한글 국가명으로 영어 국가명 찾기
+      const englishCountryName = Object.keys(countryNamesInKorean).find(
+        (key) => countryNamesInKorean[key] === country
+      );
+      console.log("영어 국가명:", englishCountryName);
 
-        // currencyList 업데이트
-        setCurrencyList((prev) => {
-          if (!prev.includes(currencyCode)) {
-            return [...prev, currencyCode];
-          }
-          return prev;
-        });
+      if (englishCountryName) {
+        // 2. 영어 국가명으로 통화 정보 가져오기
+        const countryCurrency = countryCurrencies[englishCountryName];
+        console.log("가져온 국가 통화 정보:", countryCurrency);
+
+        if (countryCurrency) {
+          const [currencyCode, symbol] = countryCurrency.split(", ");
+          setCurrency(currencyCode); // 통화 코드 설정
+          setCurrencySymbol(symbol); // 통화 기호 설정
+          //통화 리스트에 국가 통화 코드 추가
+          setCurrencyList((prevList) => {
+            if (!prevList.includes(currencyCode)) {
+              return [...prevList, currencyCode];
+            }
+            return prevList;
+          });
+        } else {
+          console.log("해당 국가의 통화 정보가 없습니다.");
+        }
+      } else {
+        console.log("해당 국가의 영어 이름을 찾을 수 없습니다.");
       }
+    } else {
+      console.log("country 값이 전달되지 않았습니다.");
     }
-  }, [id]);
+  }, [country]);
 
   const handleKeyPress = (key: string) => {
     if (key === "delete") {
@@ -183,99 +202,115 @@ export default function AccountBook() {
     setIsCurrencyListVisible((prev) => !prev); // 통화 목록 보이기/숨기기
   };
 
+  useEffect(() => {
+    if (currency === "KRW") {
+      setCurrencySymbol("₩");
+    } else if (currency) {
+      // currency가 설정된 경우 불러온 통화 심볼 사용
+      const selectedSymbol =
+        Object.entries(countryCurrencies)
+          .find(([, value]) => value.startsWith(currency))?.[1]
+          .split(", ")[1] || "$"; // 기본값은 $로 설정
+      setCurrencySymbol(selectedSymbol);
+    }
+  }, [currency]);
+
   const handleCurrencySelect = (selectedCurrency: string) => {
-    setCurrency(selectedCurrency); // 선택된 통화로 변경
-    setIsCurrencyListVisible(false); // 통화 목록 닫기
+    setCurrency(selectedCurrency); // 선택된 통화 코드 업데이트
 
-    const toggleCurrency = () => {
-      setCurrency((prev) => (prev === "KRW" ? "USD" : "KRW"));
-    };
+    // 선택된 통화에 따라 심볼 설정
+    const selectedSymbol =
+      Object.entries(countryCurrencies)
+        .find(([, value]) => value.startsWith(selectedCurrency))?.[1]
+        .split(", ")[1] || "₩"; // 기본값 KRW(₩)
 
-    const handleNavigation = (paymentType: string) => {
-      if (!amount) {
-        alert("금액을 입력해주세요.");
-        return;
-      }
-      const today = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        month: "2-digit",
-        day: "2-digit",
-        weekday: "short",
-      };
-      const formattedDate = today.toLocaleDateString("ko-KR", options);
-
-      navigate(`/Tour/${id}/categories`, {
-        state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
-      });
-    };
-
-    return (
-      <>
-        <Header id={id} />
-        <Container>
-          <CurrencyButton onClick={toggleCurrencyList}>
-            {currency} ▼
-          </CurrencyButton>
-
-          {isCurrencyListVisible && (
-            <CurrencyDropdown>
-              {currencyList.map((cur, index) => (
-                <CurrencyItem
-                  key={index}
-                  onClick={() => handleCurrencySelect(cur)}
-                >
-                  {cur}
-                </CurrencyItem>
-              ))}
-            </CurrencyDropdown>
-          )}
-          <CurrencyButton onClick={toggleCurrency}>{currency} ▼</CurrencyButton>
-
-          <Display $hasAmount={!!amount}>
-            {amount
-              ? `${parseFloat(amount).toLocaleString()} ${currencySymbol}`
-              : "얼마를 사용하셨나요"}
-          </Display>
-
-          <Keypad>
-            {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0"].map(
-              (key) => (
-                <Key key={key} onClick={() => handleKeyPress(key)}>
-                  {key}
-                </Key>
-              )
-            )}
-            <DeleteKey onClick={() => handleKeyPress("delete")}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-backspace"
-                viewBox="0 0 16 16"
-              >
-                <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z" />
-                <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" />
-              </svg>
-            </DeleteKey>
-          </Keypad>
-
-          <Footer>
-            <ActionButton
-              $bgColor="#4CAF50"
-              onClick={() => handleNavigation("cash")}
-            >
-              현금
-            </ActionButton>
-            <ActionButton
-              $bgColor="#007BFF"
-              onClick={() => handleNavigation("card")}
-            >
-              카드
-            </ActionButton>
-          </Footer>
-        </Container>
-      </>
-    );
+    setCurrencySymbol(selectedSymbol);
+    setIsCurrencyListVisible(false); // 드롭다운 닫기
   };
+
+  const handleNavigation = (paymentType: string) => {
+    if (!amount) {
+      alert("금액을 입력해주세요.");
+      return;
+    }
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short",
+    };
+    const formattedDate = today.toLocaleDateString("ko-KR", options);
+
+    navigate(`/Tour/${id}/categories`, {
+      state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
+    });
+  };
+
+  return (
+    <>
+      <Header id={id} />
+      <Container>
+        <CurrencyButton onClick={toggleCurrencyList}>
+          {currency} ▼
+        </CurrencyButton>
+
+        {isCurrencyListVisible && (
+          <CurrencyDropdown>
+            {currencyList.map((cur, index) => (
+              <CurrencyItem
+                key={index}
+                onClick={() => handleCurrencySelect(cur)}
+              >
+                {cur}
+              </CurrencyItem>
+            ))}
+          </CurrencyDropdown>
+        )}
+
+        <Display $hasAmount={!!amount}>
+          {amount
+            ? `${parseFloat(amount).toLocaleString()} ${currencySymbol}`
+            : "얼마를 사용하셨나요"}
+        </Display>
+
+        <Keypad>
+          {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0"].map(
+            (key) => (
+              <Key key={key} onClick={() => handleKeyPress(key)}>
+                {key}
+              </Key>
+            )
+          )}
+          <DeleteKey onClick={() => handleKeyPress("delete")}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-backspace"
+              viewBox="0 0 16 16"
+            >
+              <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z" />
+              <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" />
+            </svg>
+          </DeleteKey>
+        </Keypad>
+
+        <Footer>
+          <ActionButton
+            $bgColor="#4CAF50"
+            onClick={() => handleNavigation("cash")}
+          >
+            현금
+          </ActionButton>
+          <ActionButton
+            $bgColor="#007BFF"
+            onClick={() => handleNavigation("card")}
+          >
+            카드
+          </ActionButton>
+        </Footer>
+      </Container>
+    </>
+  );
 }
