@@ -9,6 +9,7 @@ import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 import CryptoJS from "crypto-js";
+import { Client } from "@stomp/stompjs";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
@@ -122,43 +123,63 @@ export default function Tour() {
     }
   }, [amount, paymentType, description, category]);
 
+  // const SOCKET_URL = travelCodes
+  //   ? `${process.env.REACT_APP_SOCKET_BASE_URL}/${travelCodes}`
+  //   : null;
   const SOCKET_URL = travelCodes
-    ? `${process.env.REACT_APP_SOCKET_BASE_URL}/${travelCodes}`
+    ? `${process.env.REACT_APP_SOCKET_BASE_URL}`
     : null;
 
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
-    if (!SOCKET_URL) return; // 주소 없을시 종료
+    if (!SOCKET_URL || !travelCodes) return; // 주소 없을시 종료
 
     console.log("소켓 연결 시도:", SOCKET_URL);
 
-    const newSocket = io(SOCKET_URL, {
-      path: "/socket.io",
-      query: { travelCode: travelCodes },
-      transports: ["websocket"],
-      reconnectionAttempts: 1,
-      timeout: 500,
+    const client = new Client({
+      brokerURL: SOCKET_URL,
+      connectHeaders: { travelCode: travelCodes },
+      onConnect: () => {
+        console.log("연결 성공!");
+        client.subscribe("/topic/moneyLogs", (message) => {
+          setLogs(JSON.parse(message.body));
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP 오류 발생:", frame);
+      },
     });
 
-    newSocket.on("connect", () => {
-      console.log("소켓 연결됨!");
-    });
+    client.activate();
 
-    newSocket.on("moneyLogs", (data) => {
-      setLogs(data);
-    });
+    // const newSocket = io(SOCKET_URL, {
+    //   path: "/socket.io",
+    //   query: { travelCode: travelCodes },
+    //   transports: ["websocket"],
+    //   reconnectionAttempts: 1,
+    //   timeout: 500,
+    // });
 
-    newSocket.on("connect_error", (error) => {
-      console.error("소켓 연결 오류:", error.message);
-    });
+    // newSocket.on("connect", () => {
+    //   console.log("소켓 연결됨!");
+    // });
+
+    // newSocket.on("moneyLogs", (data) => {
+    //   setLogs(data);
+    // });
+
+    // newSocket.on("connect_error", (error) => {
+    //   console.error("소켓 연결 오류:", error.message);
+    // });
 
     return () => {
-      if (newSocket) {
-        newSocket.off("connect");
-        newSocket.off("moneyLogs");
-        newSocket.off("connect_error");
-        newSocket.disconnect();
-      }
+      // if (newSocket) {
+      //   newSocket.off("connect");
+      //   newSocket.off("moneyLogs");
+      //   newSocket.off("connect_error");
+      //   newSocket.disconnect();
+      // }
+      client.deactivate();
     };
   }, [travelCodes]);
 
