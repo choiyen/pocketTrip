@@ -4,6 +4,7 @@ import TourDateUi from "../../components/Common/TourDateUi";
 import CardUserList from "./CardUserList";
 import { Link } from "react-router-dom";
 import OptionButton from "../../components/Common/OptionButton";
+const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 
 interface TravelData {
   id: string;
@@ -14,6 +15,8 @@ interface TravelData {
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
   bgImg?: string;
+  travelCode: string;
+  encryptCode: string;
 }
 interface TourCardProps {
   Tourdata: TravelData; // props 타입 정의
@@ -75,6 +78,8 @@ export default function TourCard({ Tourdata }: TourCardProps) {
     startDate,
     endDate,
     bgImg = "/japan.jpg",
+    travelCode,
+    encryptCode,
   } = Tourdata;
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
   const startedDate = new Date(startDate);
@@ -95,7 +100,7 @@ export default function TourCard({ Tourdata }: TourCardProps) {
 
   return (
     <Container>
-      <Card to={`/Tour/${Tourdata.id}`} state={{ from: "/" }} $bgImg={bgImg}>
+      <Card to={`/Tour/${encryptCode}`} state={{ from: "/" }} $bgImg={bgImg}>
         <div>
           <TitleWrap>
             <h2>{location}</h2>

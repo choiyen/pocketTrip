@@ -188,6 +188,7 @@ const List = ({ list }: { list: any[] }) => {
 const MoneyChart = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { id } = useParams();
+  const { encrypted } = useParams<{ encrypted: string }>();
 
   const dataSets = [
     categoryList.map((item) => ({
@@ -224,7 +225,7 @@ const MoneyChart = () => {
         paddingBottom: "60px",
       }}
     >
-      <Header $bgColor="transparent" id={id} />
+      <Header $bgColor="transparent" encrypted={encrypted} />
       <TabMenu activeTab={activeTab} setActiveTab={setActiveTab} />
       <PieChartComponent data={dataSets[activeTab]} />
       <List

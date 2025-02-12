@@ -241,14 +241,14 @@ export default function AccountBook() {
     };
     const formattedDate = today.toLocaleDateString("ko-KR", options);
 
-    navigate(`/Tour/${id}/categories`, {
+    navigate(`/Tour/${encrypted}/categories`, {
       state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
     });
   };
 
   return (
     <>
-      <Header id={id} />
+      <Header encrypted={encrypted} />
       <Container>
         <CurrencyButton onClick={toggleCurrencyList}>
           {currency} ▼
