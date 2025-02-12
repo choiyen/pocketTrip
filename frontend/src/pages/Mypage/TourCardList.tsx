@@ -8,7 +8,8 @@ interface TravelPlan {
   travel: {
     id: string;
     travelCode: string;
-    name: string;
+    title: string;
+    location: string;
     startDate: string;
     endDate: string;
     expense: number;
@@ -57,7 +58,7 @@ const Travel = styled(Link)<{ $bgImg?: string }>`
   /* position: relative; */
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   color: white;
 `;
 
@@ -81,6 +82,10 @@ const Expense = styled.strong`
   font-size: 20px;
   font-weight: 500;
   margin-top: 10px;
+`;
+
+const Location = styled.div`
+  padding: 20px;
 `;
 
 const SmallUserBox = styled(CardUserList)`
@@ -108,12 +113,15 @@ export default function TourCardList({
             justifyContent: "space-around",
           }}
         >
-          <Title>{travel.name}</Title>
+          <Title>{travel.title}</Title>
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
           <SmallUserBox user={travel.ImgArr} $size={"S"} />
           <Expense>₩ {formattedBudget[index]}</Expense>
+        </div>
+        <div>
+          <Location>{travel.location}</Location>
         </div>
       </Travel>
       <OptionButton className="travelButton" editType="editTourCardList" />

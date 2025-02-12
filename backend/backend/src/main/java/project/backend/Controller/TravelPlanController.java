@@ -15,10 +15,7 @@ import project.backend.Entity.ApplicantsEntity;
 import project.backend.Entity.TravelPlanEntity;
 import project.backend.Entity.UserTravelsEntity;
 import project.backend.Security.TokenProvider;
-import project.backend.Service.AppllicantsService;
-import project.backend.Service.S3ImageService;
-import project.backend.Service.TravelPlanService;
-import project.backend.Service.UserTravelsService;
+import project.backend.Service.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -44,6 +41,9 @@ public class TravelPlanController
     private TravelPlanService travelPlanService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private AppllicantsService appllicantsService;
 
     @Value("${encrypt.key}")
@@ -64,27 +64,30 @@ public class TravelPlanController
     @PostMapping("/find")
     public ResponseEntity<?> TravelDTO(@AuthenticationPrincipal String userId)
     {
-        try
-        {
+        //find는 복호화를 시키지 않고 TravelCode를 복호화시키지 않고 보냄.
+        //프론트 엔드가 복호화 함수로 그 TravelCode를 복호화시켜서 보여준다.
+        try {
             Flux<TravelPlanEntity> travelPlan = travelPlanService.travelPlanEntityAll(userId);
             Flux<TravelPlanEntity> travelPlanAll = travelPlan.map(travelPlanEntity -> {
-                try
-                {
+                try {
 
                     TravelPlanEntity travelPlan1 = ConvertToMain(decrypt(travelPlanEntity.getTravelCode(), key), travelPlanEntity);
                     return travelPlan1;
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
 
-            Flux<TravelPlanDTO> travelPlanAll2 = travelPlanAll.map(travelPlanEntity -> {
-               TravelPlanDTO travelPlanDTO = ConvertTo(travelPlanEntity.getTravelCode(), travelPlanEntity, travelPlanEntity.getImg());
-               return  travelPlanDTO;
+            Flux<TravelPlanDTO> travelPlanAll2 = travelPlanAll.map(travelPlanEntity ->
+            {
+                TravelPlanDTO travelPlanDTO = ConvertTo(travelPlanEntity.getTravelCode(), travelPlanEntity, travelPlanEntity.getImg());
+                List<String> list = new ArrayList<>();
+                list.add(travelPlanEntity.getFounder());
+                list.addAll(travelPlanEntity.getParticipants());
+                List<String> profilelist = userService.getprofileByEmail(list);
+                TravelPlanDTO travelPlanDTO1 = ConvertTo(profilelist, travelPlanDTO);
+                return travelPlanDTO1;
             });
-
             List<TravelPlanDTO> resultList = travelPlanAll2.collectList().block();
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", resultList));
         }
@@ -94,6 +97,8 @@ public class TravelPlanController
         }
 
     }
+
+
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
     @CacheEvict(value = "travelCode", allEntries = true)
@@ -202,7 +207,12 @@ public class TravelPlanController
         {
             TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanSelect(encrypt(travelCode, key)).block();
             Thread.sleep(2000);
-            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlan1)));
+            List<String> parts = new ArrayList<>();
+            parts.addAll(travelPlan1.getParticipants());
+            parts.add(travelPlan1.getFounder());
+            List<String> profileurl = userService.getprofileByEmail(parts);
+            TravelPlanDTO travelPlanDTO = ConvertTo(profileurl, travelPlan1);
+            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlanDTO)));
             return ResponseEntity.ok().body(responseDTO.Response("info", "데이터 전송 알림!!", list));
         }
         catch (Exception e)
@@ -210,6 +220,7 @@ public class TravelPlanController
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+
     //여행 신청 정보에 대해 개별 승인
     @PostMapping("/check/{travelCode}")
     @CacheEvict(value = "travelCode", key = "#travelCode")
@@ -383,9 +394,9 @@ public class TravelPlanController
 
         return travelPlan;
     }
-    private TravelPlanEntity ConvertTo(String travelCode, TravelPlanEntity travelPlan)
+    private TravelPlanDTO ConvertTo(String travelCode, TravelPlanDTO travelPlan)
     {
-        TravelPlanEntity travelPlans = TravelPlanEntity.builder()
+        TravelPlanDTO travelPlans = TravelPlanDTO.builder()
                 .travelCode(travelCode)
                 .location(travelPlan.getLocation())
                 .startDate(travelPlan.getStartDate())
@@ -401,6 +412,48 @@ public class TravelPlanController
 
         return travelPlans;
     }
+
+    private TravelPlanDTO ConvertTo(List<String> profilelist, TravelPlanDTO travelPlanDTO)
+    {
+        TravelPlanDTO travelPlanDTO1 = TravelPlanDTO.builder()
+                                        .travelCode(travelPlanDTO.getTravelCode())
+                                        .location(travelPlanDTO.getLocation())
+                                        .startDate(travelPlanDTO.getStartDate())
+                                        .endDate(travelPlanDTO.getEndDate())
+                                        .expense(travelPlanDTO.getExpense())
+                                        .founder(travelPlanDTO.getFounder())
+                                        .title(travelPlanDTO.getTitle())
+                                        .participants(travelPlanDTO.getParticipants())
+                                        .isCalculate(travelPlanDTO.isCalculate())
+                                        .id(travelPlanDTO.getId())
+                                        .img(travelPlanDTO.getImg())
+                                        .profiles(profilelist)
+                                        .build();
+
+        return travelPlanDTO1;
+    }
+
+    private TravelPlanDTO ConvertTo(List<String> profilelist, TravelPlanEntity travelPlan1)
+    {
+        TravelPlanDTO travelPlanDTO1 = TravelPlanDTO.builder()
+                .travelCode(travelPlan1.getTravelCode())
+                .location(travelPlan1.getLocation())
+                .startDate(travelPlan1.getStartDate())
+                .endDate(travelPlan1.getEndDate())
+                .expense(travelPlan1.getExpense())
+                .founder(travelPlan1.getFounder())
+                .title(travelPlan1.getTitle())
+                .participants(travelPlan1.getParticipants())
+                .isCalculate(travelPlan1.isCalculate())
+                .id(travelPlan1.getId())
+                .img(travelPlan1.getImg())
+                .profiles(profilelist)
+                .build();
+
+        return travelPlanDTO1;
+    }
+
+
 
     private TravelPlanEntity ConvertTo(TravelPlanEntity OldEntity, TravelPlanDTO NewDTO)
     {
