@@ -125,7 +125,7 @@ function App() {
             }
           />
           <Route
-            path="/Tour/:id"
+            path="/Tour/:encrypted"
             element={
               <RequireAuth>
                 <Tour />
@@ -133,7 +133,7 @@ function App() {
             }
           />
           <Route
-            path="/Tour/:id/TourMembers"
+            path="/Tour/:encrypted/TourMembers"
             element={
               <RequireAuth>
                 <TourMembers />
@@ -141,7 +141,7 @@ function App() {
             }
           />
           <Route
-            path="/Tour/:id/MoneyChart"
+            path="/Tour/:encrypted/MoneyChart"
             element={
               <RequireAuth>
                 <MoneyChart />
@@ -149,7 +149,7 @@ function App() {
             }
           />
           <Route
-            path="/Tour/:id/accountbook"
+            path="/Tour/:encrypted/accountbook"
             element={
               <RequireAuth>
                 <AccountBook />
@@ -157,7 +157,7 @@ function App() {
             }
           />
           <Route
-            path="/Tour/:id/Categories"
+            path="/Tour/:encrypted/Categories"
             element={
               <RequireAuth>
                 <Categories />

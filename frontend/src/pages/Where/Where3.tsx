@@ -30,6 +30,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
   };
 
   const goToWhere4 = () => {
+    console.log(startDate);
     // 여행 날짜가 업데이트 되면 travelData를 업데이트
     updateTravelData({
       startDate: startDate,
@@ -37,6 +38,26 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
     });
 
     navigate("/Where4");
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    console.log(date);
+    if (date) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+
+      setStartDate(localDate);
+    }
+  };
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+
+      setEndDate(localDate);
+    }
   };
 
   return (
@@ -65,8 +86,8 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
         <div className="date-label">여행 시작일</div>
         <DatePicker
           selected={startDate}
-          onChange={(date: Date | null) => setStartDate(date)} // 타입을 명시적으로 지정
-          dateFormat="yyyy/MM/dd"
+          onChange={handleDateChange} // 타입을 명시적으로 지정
+          dateFormat="yyyy-MM-dd"
           placeholderText="시작일 선택"
           className="datepicker"
         />
@@ -77,8 +98,8 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
         <div className="date-label">여행 종료일</div>
         <DatePicker
           selected={endDate}
-          onChange={(date: Date | null) => setEndDate(date)} // 타입을 명시적으로 지정
-          dateFormat="yyyy/MM/dd"
+          onChange={handleEndDateChange} // 타입을 명시적으로 지정
+          dateFormat="yyyy-MM-dd"
           placeholderText="종료일 선택"
           className="datepicker"
           minDate={startDate ? startDate : undefined} // startDate가 null이면 undefined로 처리
