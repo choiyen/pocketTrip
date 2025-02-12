@@ -171,30 +171,13 @@ export default function Categories() {
   };
 
   const handleComplete = async () => {
-    if (!selectedCategoryId) {
-      alert("카테고리를 선택해주세요.");
-      return;
-    }
     const selectedCategory = categories.find(
       (cat) => cat.id === selectedCategoryId
     );
-
-    const getFormattedDateForBackend = () => {
-      const today = new Date();
-      return today.toISOString().split("T")[0]; // "YYYY-MM-DD" 형식으로 변환
-    };
-
-    const formattedDate = getFormattedDateForBackend();
-
     const data = {
-      travelId: id,
       amount,
       paymentType,
-      method: paymentType,
-      payer: "userId",
       description,
-      purpose: description,
-      date: formattedDate,
       category: selectedCategory
         ? {
             id: selectedCategory.id,
@@ -223,10 +206,10 @@ export default function Categories() {
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${id}`, { state: data });
 
-    // console.log("지출액:", amount);
-    // console.log("지출 방식:", paymentType);
-    // console.log("설명:", description);
-    // console.log("선택한 카테고리 ID:", selectedCategoryId);
+    console.log("지출액:", amount);
+    console.log("지출 방식:", paymentType);
+    console.log("설명:", description);
+    console.log("선택한 카테고리 ID:", selectedCategoryId);
   };
 
   const getFormattedDate = () => {
