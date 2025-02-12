@@ -24,47 +24,47 @@ export interface MoneyLogProps {
   money: string;
 }
 
-const data = [
-  {
-    id: "1",
-    travelCode: "sdsdds",
-    title: "일본여행지갑", // 여행지갑 이름
-    location: "일본", // 여행지 이름
-    expense: 2000000, // 현재 누적 금액
-    ImgArr: [
-      "./ProfileImage.png",
-      "./ProfileImage.png",
-      "./ProfileImage.png",
-      "./ProfileImage.png",
-      "./ProfileImage.png",
-      "./ProfileImage.png",
-      "./ProfileImage.png",
-    ], // 참여인원들 프로필 이미지 주소
-    startDate: "2025-01-18", // 여행 시작일
-    endDate: "2025-02-20", // 여행 종료일
-    bgImg: "./japan.jpg",
-  },
-  {
-    id: "2",
-    travelCode: "ddddddd",
-    title: "미국 여행의 방", // 여행지갑 이름
-    location: "미국", // 여행지 이름
-    expense: 1000000,
-    ImgArr: ["./ProfileImage.png", "./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
-    startDate: "2024-10-20",
-    endDate: "2024-10-25",
-  },
-  {
-    id: "3",
-    travelCode: "sdfsdfdfdfdf",
-    title: "프랑스 여행의 방",
-    location: "프랑스", // 여행지 이름
-    expense: 2500000,
-    ImgArr: ["./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
-    startDate: "2024-05-02",
-    endDate: "2024-05-10",
-  },
-];
+// const data = [
+//   {
+//     id: "1",
+//     travelCode: "sdsdds",
+//     title: "일본여행지갑", // 여행지갑 이름
+//     location: "일본", // 여행지 이름
+//     expense: 2000000, // 현재 누적 금액
+//     ImgArr: [
+//       "./ProfileImage.png",
+//       "./ProfileImage.png",
+//       "./ProfileImage.png",
+//       "./ProfileImage.png",
+//       "./ProfileImage.png",
+//       "./ProfileImage.png",
+//       "./ProfileImage.png",
+//     ], // 참여인원들 프로필 이미지 주소
+//     startDate: "2025-01-18", // 여행 시작일
+//     endDate: "2025-02-20", // 여행 종료일
+//     bgImg: "./japan.jpg",
+//   },
+//   {
+//     id: "2",
+//     travelCode: "ddddddd",
+//     title: "미국 여행의 방", // 여행지갑 이름
+//     location: "미국", // 여행지 이름
+//     expense: 1000000,
+//     ImgArr: ["./ProfileImage.png", "./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
+//     startDate: "2024-10-20",
+//     endDate: "2024-10-25",
+//   },
+//   {
+//     id: "3",
+//     travelCode: "sdfsdfdfdfdf",
+//     title: "프랑스 여행의 방",
+//     location: "프랑스", // 여행지 이름
+//     expense: 2500000,
+//     ImgArr: ["./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
+//     startDate: "2024-05-02",
+//     endDate: "2024-05-10",
+//   },
+// ];
 const SERVER_URL = process.env.REACT_APP_SERVER || "";
 
 export default function Tour() {
@@ -85,6 +85,7 @@ export default function Tour() {
   const FilteringData = data.value.filter(
     (item) => item.encryptCode === encrypted
   );
+  console.log(data.value, encrypted);
 
   const { amount, paymentType, description, category } = state || {};
 
