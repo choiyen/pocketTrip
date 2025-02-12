@@ -2,12 +2,13 @@ package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.UserEntity;
-import project.backend.Entity.UserTravelsEntity;
 import project.backend.Repository.UserRepository;
-import project.backend.Repository.UserTravelsRepository;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -15,6 +16,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
     // 회원가입
     public UserEntity createUser(UserEntity userEntity) {
         if(userEntity == null || userEntity.getEmail() == null) {
@@ -72,5 +76,10 @@ public class UserService {
         UserEntity updatedUser = userRepository.save(originalUser);
 
         return updatedUser;
+    }
+
+    public List<String> getprofileByEmail(List<String> emails)
+    {
+       return userRepository.findProfileUrlByEmailIn(emails);
     }
 }

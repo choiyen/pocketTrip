@@ -2,16 +2,16 @@ package project.backend.DTO;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 @Getter
 @Builder
-public class TravelPlanDTO {
+public class TravelPlanDTO
+{
+
     private String id;
     private String travelCode;
     private String title;
@@ -23,5 +23,6 @@ public class TravelPlanDTO {
     private String founder;
     private Set<String> participants;
     private boolean isCalculate;
+    private List<String> profiles;
 }
 //소켓으로 알림으로 보냄

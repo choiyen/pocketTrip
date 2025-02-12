@@ -13,7 +13,7 @@ import OptionButton from "./OptionButton";
 interface HeaderState {
   $bgColor?: string;
   userData?: { name: string; profile: string };
-  id?: string;
+  encrypted?: string;
   fromPage?: string;
   logs?: MoneyLogProps[];
 }
@@ -110,7 +110,7 @@ const ButtonBox = styled.div`
 export default function Header({
   $bgColor = "transparent",
   userData,
-  id,
+  encrypted,
   fromPage,
   logs = [],
 }: HeaderState) {
@@ -131,7 +131,7 @@ export default function Header({
   );
 
   const handleGoToMoneyChart = () => {
-    navigate(`/Tour/${id}/MoneyChart`, { state: { logs } });
+    navigate(`/Tour/${encrypted}/MoneyChart`, { state: { logs } });
   };
 
   // 오늘 날짜 계산
@@ -156,17 +156,17 @@ export default function Header({
 
   const navPath = () => {
     switch (pathName) {
-      case `/Tour/${id}`:
+      case `/Tour/${encrypted}`:
         fromPage === "/" ? navigate("/") : navigate("/mypage");
         break;
-      case `/Tour/${id}/accountbook`:
-        navigate(`/Tour/${id}`, { state: { from: savePath } });
+      case `/Tour/${encrypted}/accountbook`:
+        navigate(`/Tour/${encrypted}`, { state: { from: savePath } });
         break;
-      case `/Tour/${id}/TourMembers`:
-        navigate(`/Tour/${id}`, { state: { from: savePath } });
+      case `/Tour/${encrypted}/TourMembers`:
+        navigate(`/Tour/${encrypted}`, { state: { from: savePath } });
         break;
-      case `/Tour/${id}/MoneyChart`:
-        navigate(`/Tour/${id}`, { state: { from: savePath } });
+      case `/Tour/${encrypted}/MoneyChart`:
+        navigate(`/Tour/${encrypted}`, { state: { from: savePath } });
         break;
     }
   };
@@ -191,14 +191,14 @@ export default function Header({
       )}
 
       {/* 경로가 지갑페이지일때 */}
-      {pathName === `/Tour/${id}` && (
+      {pathName === `/Tour/${encrypted}` && (
         <ButtonBox>
-          <Link to={`/Tour/${id}/MoneyChart`}>
+          <Link to={`/Tour/${encrypted}/MoneyChart`}>
             <button className="optionButton" onClick={handleGoToMoneyChart}>
               <FaChartPie size={"25px"} />
             </button>
           </Link>
-          <Link to={`/Tour/${id}/TourMembers`}>
+          <Link to={`/Tour/${encrypted}/TourMembers`}>
             <button className="optionButton">
               <BsPersonSquare size={"25px"} />
             </button>
@@ -246,14 +246,14 @@ export default function Header({
       )}
 
       {/* 경로가 가계부일때 */}
-      {pathName === `/Tour/${id}/accountbook` && (
-        <AccountHeader id={id}>
+      {pathName === `/Tour/${encrypted}/accountbook` && (
+        <AccountHeader id={encrypted}>
           <span>{getFormattedDate()}</span>
         </AccountHeader>
       )}
 
       {/* 네비바를 숨기고 싶을 때 */}
-      {pathName !== `/Tour/${id}/accountbook` && <Nav />}
+      {pathName !== `/Tour/${encrypted}/accountbook` && <Nav />}
 
       {/* 필요에 따라 모달창 활성화 */}
       {modalState && <Modal />}
