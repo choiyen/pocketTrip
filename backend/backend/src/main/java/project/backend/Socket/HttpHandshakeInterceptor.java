@@ -1,36 +1,52 @@
 package project.backend.Socket;
 
-import jakarta.servlet.http.HttpSession;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import project.backend.Security.TokenProvider;
 
 import java.util.Map;
-
-import static org.springframework.messaging.simp.stomp.StompHeaders.SESSION;
 
 public class HttpHandshakeInterceptor implements HandshakeInterceptor
 {
 
+    @Autowired
+    TokenProvider tokenProvider;
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        if(request instanceof ServletServerHttpRequest)
-        {
-            ServletServerHttpRequest servletServerHttpRequest = (ServletServerHttpRequest) request;
-            HttpSession session = servletServerHttpRequest.getServletRequest().getSession();
-            attributes.put(SESSION,session);
+        // 헤더에서 JWT 토큰을 추출
+        String authHeader = request.getHeaders().getFirst("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // "Bearer " 이후의 JWT 토큰만 추출
+            String token = authHeader.substring(7);
+
+            try {
+                // JWT 토큰 검증 및 사용자 정보 추출
+                String userId = tokenProvider.validateAndGetUserId(token);
+
+                // WebSocket 연결에 userId를 attributes에 추가
+                attributes.put("userId", userId);
+
+                return true; // 인증 성공
+            } catch (Exception e) {
+                // 토큰이 유효하지 않거나 검증에 실패한 경우 연결을 거부
+                return false; // 인증 실패 시 연결을 거부
+            }
         }
 
-        return true;
+        // Authorization 헤더가 없거나 Bearer로 시작하지 않는 경우 연결을 거부
+        return false;
     }
 
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex)
-    {
-
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex) {
+        // 필요에 따라 후처리 작업 (예: 로깅 등)
     }
-    //https://hyeooona825.tistory.com/89
-    //웹소켓 관련 설명
+
 }
