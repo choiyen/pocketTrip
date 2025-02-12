@@ -18,6 +18,7 @@ public class UserEntity
     private String id;
     @NonNull
     private String email;
+    private String profile;
     @NonNull
     private String password;
     @NonNull
