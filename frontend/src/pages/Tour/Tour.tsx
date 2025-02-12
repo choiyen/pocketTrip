@@ -18,7 +18,6 @@ import { Client } from "@stomp/stompjs";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
-
 const decrypt = (encryptedData: string) => {
   // URL-safe Base64 복구
   const base64 = encryptedData.replace(/-/g, "+").replace(/_/g, "/");
@@ -121,7 +120,7 @@ export default function Tour() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/expenditures/${id}`,
+          `http://localhost:8080/expenditures/${encrypted}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -136,7 +135,7 @@ export default function Tour() {
     };
 
     fetchSpendingLogs();
-  }, [id]);
+  }, [encrypted]);
 
   useEffect(() => {
     if (category) {
@@ -183,7 +182,6 @@ export default function Tour() {
       onStompError: (frame) => {
         console.error("STOMP 오류 발생:", frame);
       },
-
     });
     client.activate();
 
@@ -191,7 +189,6 @@ export default function Tour() {
       client.deactivate();
     };
   }, []);
-
 
   return (
     <div>
