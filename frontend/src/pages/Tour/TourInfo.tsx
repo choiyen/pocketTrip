@@ -69,7 +69,7 @@ export default function TourInfo({ Tourdata }: TourCardProps) {
       <h2>여행지</h2>
       <h3>{Tourdata.location}</h3>
       <TourDateUi
-        $precent={progress ? progress.toFixed(2) + "%" : "0%"}
+        $precent={progress ? progress.toFixed(2) + "%" : "10%"}
         startDate={Tourdata.startDate}
         endDate={Tourdata.endDate}
         $bgColor="black"
