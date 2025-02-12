@@ -101,7 +101,6 @@ export default function Tour() {
     const decode = decrypt(encrypted!);
     setTravelCodes(decode);
   }, [encrypted]);
-  travelCodes && console.log(travelCodes);
 
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const FilteringData = data.value.filter(
@@ -125,61 +124,40 @@ export default function Tour() {
     }
   }, [amount, paymentType, description, category]);
 
-  // const SOCKET_URL = travelCodes
-  //   ? `${process.env.REACT_APP_SOCKET_BASE_URL}/${travelCodes}`
-  //   : null;
   const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
 
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
-    if (!SOCKET_URL) return; // 주소 없을시 종료
+    const token = localStorage.getItem("accessToken");
+    if (!SOCKET_URL || !token) return; // 주소 없을시 종료
     console.log("소켓 연결 시도:");
 
-    const socket = new SockJS(SOCKET_URL);
+    const socket = new SockJS(`${SOCKET_URL}`);
     const client = new Client({
       webSocketFactory: () => socket,
       debug: (msg) => console.log("[STOMP DEBUG]:", msg),
+
+      // 연결 시도 간격 설정
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
+      connectHeaders: {
+        Authorization: `Bearer ${token}`, // 헤더에 JWT 포함
+      },
+
+      // 연결 시
       onConnect: () => {
         console.log("연결 성공!");
       },
 
+      // 에러 시
       onStompError: (frame) => {
         console.error("STOMP 오류 발생:", frame);
       },
     });
-
     client.activate();
 
-    // const newSocket = io(SOCKET_URL, {
-    //   path: "/socket.io",
-    //   query: { travelCode: travelCodes },
-    //   transports: ["websocket"],
-    //   reconnectionAttempts: 1,
-    //   timeout: 500,
-    // });
-
-    // newSocket.on("connect", () => {
-    //   console.log("소켓 연결됨!");
-    // });
-
-    // newSocket.on("moneyLogs", (data) => {
-    //   setLogs(data);
-    // });
-
-    // newSocket.on("connect_error", (error) => {
-    //   console.error("소켓 연결 오류:", error.message);
-    // });
-
     return () => {
-      // if (newSocket) {
-      //   newSocket.off("connect");
-      //   newSocket.off("moneyLogs");
-      //   newSocket.off("connect_error");
-      //   newSocket.disconnect();
-      // }
       client.deactivate();
     };
   }, []);
