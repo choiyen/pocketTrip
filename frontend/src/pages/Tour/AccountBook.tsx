@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Common/Header";
+import { countryCurrencies } from "../../pages/Data/countryMoney"; // 데이터 불러오기
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +48,32 @@ const CurrencyButton = styled.button`
   margin-top: 20%;
   cursor: pointer;
   height: 40px;
+`;
+
+const CurrencyDropdown = styled.div`
+  margin-top: 110px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 25%;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  position: absolute;
+  padding: 10px 0;
+  text-align: center;
+`;
+
+const CurrencyItem = styled.div`
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;
 
 const Display = styled.div<{ $hasAmount: boolean }>`
@@ -115,8 +142,32 @@ const ActionButton = styled.button<{ $bgColor: string }>`
 export default function AccountBook() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("KRW");
+  const [currencySymbol, setCurrencySymbol] = useState("₩");
+  const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 기본 통화 목록
+  const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 목록 표시 여부
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      const location = id; // id 값을 로케이션으로 사용
+      const countryCurrency = countryCurrencies[location]; // countryCurrencies 객체에서 해당 로케이션의 데이터를 찾음
+
+      if (countryCurrency) {
+        const [currencyCode, symbol] = countryCurrency.split(", ");
+        setCurrency(currencyCode); // 통화 코드 설정
+        setCurrencySymbol(symbol); // 통화 기호 설정
+
+        // currencyList 업데이트
+        setCurrencyList((prev) => {
+          if (!prev.includes(currencyCode)) {
+            return [...prev, currencyCode];
+          }
+          return prev;
+        });
+      }
+    }
+  }, [id]);
 
   const handleKeyPress = (key: string) => {
     if (key === "delete") {
@@ -128,8 +179,13 @@ export default function AccountBook() {
     }
   };
 
-  const toggleCurrency = () => {
-    setCurrency((prev) => (prev === "KRW" ? "USD" : "KRW"));
+  const toggleCurrencyList = () => {
+    setIsCurrencyListVisible((prev) => !prev); // 통화 목록 보이기/숨기기
+  };
+
+  const handleCurrencySelect = (selectedCurrency: string) => {
+    setCurrency(selectedCurrency); // 선택된 통화로 변경
+    setIsCurrencyListVisible(false); // 통화 목록 닫기
   };
 
   const handleNavigation = (paymentType: string) => {
@@ -150,13 +206,26 @@ export default function AccountBook() {
     });
   };
 
-  const currencySymbol = currency === "KRW" ? "₩" : "$";
-
   return (
     <>
       <Header id={id} />
       <Container>
-        <CurrencyButton onClick={toggleCurrency}>{currency} ▼</CurrencyButton>
+        <CurrencyButton onClick={toggleCurrencyList}>
+          {currency} ▼
+        </CurrencyButton>
+
+        {isCurrencyListVisible && (
+          <CurrencyDropdown>
+            {currencyList.map((cur, index) => (
+              <CurrencyItem
+                key={index}
+                onClick={() => handleCurrencySelect(cur)}
+              >
+                {cur}
+              </CurrencyItem>
+            ))}
+          </CurrencyDropdown>
+        )}
 
         <Display $hasAmount={!!amount}>
           {amount
