@@ -11,6 +11,7 @@ interface TravelPlan {
   expense: number;
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
+  encryptCode: string;
 }
 
 const initialState: { value: TravelPlan[] } = {

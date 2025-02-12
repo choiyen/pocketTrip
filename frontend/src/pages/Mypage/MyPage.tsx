@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Common/Header";
 import { useDispatch } from "react-redux";
 import OptionButton from "../../components/Common/OptionButton";
 import { AppDispatch } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
+import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
 import TourCardList from "./TourCardList";
@@ -12,7 +13,8 @@ import TourCardList from "./TourCardList";
 interface TravelPlan {
   id: string;
   travelCode: string;
-  name: string;
+  title: string;
+  location: string;
   startDate: string;
   endDate: string;
   expense: number;
@@ -23,67 +25,88 @@ interface TravelPlan {
 export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
+  const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
 
   useEffect(() => {
     dispatch(ChangeCurrentPage("mypage"));
+    const token = localStorage.getItem("accessToken");
+    getTravelData(token as string); // 여행 정보 요청
   }, []);
 
-  const travelList: TravelPlan[] = [
-    {
-      id: "1",
-      travelCode: "sdsdds",
-      name: "일본여행지갑",
-      startDate: "2025-01-18",
-      endDate: "2025-02-20",
-      expense: 2000000,
-      ImgArr: [
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-      ], // 참여인원들 프로필 이미지 주소
-      bgImg: "/japan.jpg",
-    },
-    {
-      id: "2",
-      travelCode: "ddddddd",
-      name: "미국 여행의 방",
-      startDate: "2024-10-20",
-      endDate: "2024-10-25",
-      expense: 1000000,
-      ImgArr: [
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-      ], // 참여인원들 프로필 이미지 주소
-    },
-    {
-      id: "3",
-      travelCode: "sdfsdfdfdfdf",
-      name: "프랑스 여행의 방",
-      startDate: "2024-05-02",
-      endDate: "2024-05-10",
-      expense: 2500000,
-      ImgArr: [
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-        "./ProfileImage.png",
-      ], // 참여인원들 프로필 이미지 주소
-    },
-  ];
+  const getTravelData = async (token: string) => {
+    // 유저의 모든 여행 기록을 받아온다.
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    setTourDataArr(response.data.data);
+    console.log(response);
+  };
+
+  // const travelList: TravelPlan[] = [
+  //   {
+  //     id: "1",
+  //     travelCode: "sdsdds",
+  //     name: "일본여행지갑",
+  //     startDate: "2025-01-18",
+  //     endDate: "2025-02-20",
+  //     expense: 2000000,
+  //     ImgArr: [
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //     ], // 참여인원들 프로필 이미지 주소
+  //     bgImg: "/japan.jpg",
+  //   },
+  //   {
+  //     id: "2",
+  //     travelCode: "ddddddd",
+  //     name: "미국 여행의 방",
+  //     startDate: "2024-10-20",
+  //     endDate: "2024-10-25",
+  //     expense: 1000000,
+  //     ImgArr: [
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //     ], // 참여인원들 프로필 이미지 주소
+  //   },
+  //   {
+  //     id: "3",
+  //     travelCode: "sdfsdfdfdfdf",
+  //     name: "프랑스 여행의 방",
+  //     startDate: "2024-05-02",
+  //     endDate: "2024-05-10",
+  //     expense: 2500000,
+  //     ImgArr: [
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //       "./ProfileImage.png",
+  //     ], // 참여인원들 프로필 이미지 주소
+  //   },
+  // ];
+
   const formattedBudget: string[] = [];
-  travelList.map((item, index) => {
+  TourDataArr.map((item, index) => {
     formattedBudget.push(new Intl.NumberFormat().format(item.expense));
   });
   return (
@@ -105,10 +128,10 @@ export default function MyPage() {
           <span>name</span>
         </Profile>
       </ProfileContainer>
-      {travelList.length != 0 ? (
+      {TourDataArr.length != 0 ? (
         <TravelListContainer>
           <TravelList>
-            {travelList.map((travel, index) => {
+            {TourDataArr.map((travel, index) => {
               return (
                 <TourCardList
                   key={index}

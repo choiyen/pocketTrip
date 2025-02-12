@@ -72,7 +72,7 @@ const UserContainer = styled.ul`
 `;
 
 export default function TourMembers() {
-  const { id } = useParams<{ id: string }>();
+  const { encrypted } = useParams<{ encrypted: string }>();
   const userData = [
     {
       name: "홍길동",
@@ -89,7 +89,7 @@ export default function TourMembers() {
   ];
   return (
     <TourMembersWrap>
-      <Header id={id} />
+      <Header encrypted={encrypted} />
       <ContentBox>
         <CodeWrap>
           <h2 className="TourMemberTitle">초대코드</h2>
