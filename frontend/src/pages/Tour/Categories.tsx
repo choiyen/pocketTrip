@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const categories = [
   { id: 1, label: "숙소", icon: "🏠", color: "#A5D8FF" },
@@ -150,8 +151,8 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 
 export default function Categories() {
   const location = useLocation();
+  const { amount, paymentType } = location.state;
   const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
-  const { amount, paymentType, date } = location.state;
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
@@ -169,7 +170,7 @@ export default function Categories() {
     navigate(-1);
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     const selectedCategory = categories.find(
       (cat) => cat.id === selectedCategoryId
     );
@@ -185,6 +186,22 @@ export default function Categories() {
           }
         : null,
     };
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://localhost:8080/expenditures/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("데이터 저장 성공:", data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("데이터 저장 실패:", error.response?.data);
+      } else {
+        console.error("알 수 없는 오류:", error);
+      }
+    }
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${id}`, { state: data });

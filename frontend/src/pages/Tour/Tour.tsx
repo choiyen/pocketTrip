@@ -8,9 +8,12 @@ import { io } from "socket.io-client";
 import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
+
+import axios from "axios";
 import CryptoJS from "crypto-js";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
+
 
 const decrypt = (encryptedData: string) => {
   // URL-safe Base64 복구
@@ -88,6 +91,7 @@ export default function Tour() {
 
   // 뒤로가기 누를때 메인에서 온거면 메인, 마이페이지에서 온거면 그곳으로 되돌아가야한다.
   const { state } = useLocation(); // 메인 / 마이페이지 어디서 들어온 경로인지 판별
+  console.log("받아온 데이터:", state);
   const fromPage = state.from; // "/" 혹은 "/mypage" 경로 추출
 
   useEffect(() => {
@@ -106,6 +110,28 @@ export default function Tour() {
   );
 
   const { amount, paymentType, description, category } = state || {};
+
+  useEffect(() => {
+    const fetchSpendingLogs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:8080/expenditures/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
+      } catch (error) {
+        console.error("지출 내역 불러오기 실패:", error);
+      }
+    };
+
+    fetchSpendingLogs();
+  }, [id]);
 
   useEffect(() => {
     if (category) {
