@@ -87,7 +87,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
         <DatePicker
           selected={startDate}
           onChange={handleDateChange} // 타입을 명시적으로 지정
-          dateFormat="yyyy/MM/dd"
+          dateFormat="yyyy-MM-dd"
           placeholderText="시작일 선택"
           className="datepicker"
         />
@@ -99,7 +99,7 @@ const Where3: React.FC<Where3Props> = ({ travelData, updateTravelData }) => {
         <DatePicker
           selected={endDate}
           onChange={handleEndDateChange} // 타입을 명시적으로 지정
-          dateFormat="yyyy/MM/dd"
+          dateFormat="yyyy-MM-dd"
           placeholderText="종료일 선택"
           className="datepicker"
           minDate={startDate ? startDate : undefined} // startDate가 null이면 undefined로 처리
