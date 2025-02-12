@@ -170,6 +170,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+    //로그아웃
     @DeleteMapping("/signout")
     @CacheEvict(value = "email")
     public ResponseEntity<?> signout(HttpServletResponse response)
@@ -184,4 +185,19 @@ public class UserController {
 
         return ResponseEntity.ok("로그아웃 성공");
     } // 프론트엔드 연결 후 기능 정상 동작 여부 확인해야 함.
+
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> signprofile(@RequestBody List<String> emails)
+    {
+        try
+        {
+            List<String> emailprofile = userService.getprofileByEmail(emails);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 수정 완료!", emailprofile));
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
 }
