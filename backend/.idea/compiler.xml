@@ -10,6 +10,6 @@
         <module name="backend.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="23" />
   </component>
 </project>
