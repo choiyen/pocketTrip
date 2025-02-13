@@ -113,6 +113,8 @@ public class TravelPlanController
             String generatedString;
               // 16 바이트 키 (AES-128)
 
+            System.out.println(travelPlanDTO);
+
             while (true)
             {
 
@@ -419,7 +421,7 @@ public class TravelPlanController
                 .title(travelPlanDTO.getTitle())
                 .founder(userid)
                 .participants(userset)
-                .img(travelPlanDTO.getImg())
+                .img("/japan.jpg")
                 .isCalculate(travelPlanDTO.isCalculate())
                 .build();
 

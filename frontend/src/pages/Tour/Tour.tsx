@@ -18,7 +18,6 @@ import { Client } from "@stomp/stompjs";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
-
 const decrypt = (encryptedData: string) => {
   // URL-safe Base64 복구
   const base64 = encryptedData.replace(/-/g, "+").replace(/_/g, "/");
@@ -63,31 +62,12 @@ export interface MoneyLogProps {
 //     startDate: "2025-01-18", // 여행 시작일
 //     endDate: "2025-02-20", // 여행 종료일
 //     bgImg: "./japan.jpg",
-//   },
-//   {
-//     id: "2",
-//     travelCode: "ddddddd",
-//     title: "미국 여행의 방", // 여행지갑 이름
-//     location: "미국", // 여행지 이름
-//     expense: 1000000,
-//     ImgArr: ["./ProfileImage.png", "./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
-//     startDate: "2024-10-20",
-//     endDate: "2024-10-25",
-//   },
-//   {
-//     id: "3",
-//     travelCode: "sdfsdfdfdfdf",
-//     title: "프랑스 여행의 방",
-//     location: "프랑스", // 여행지 이름
-//     expense: 2500000,
-//     ImgArr: ["./ProfileImage.png"], // 참여인원들 프로필 이미지 주소
-//     startDate: "2024-05-02",
-//     endDate: "2024-05-10",
-//   },
+//   }
 // ];
 
 export default function Tour() {
   const [travelCodes, setTravelCodes] = useState<string>();
+  const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const dispatch: AppDispatch = useDispatch();
   const data = useSelector((state: RootState) => state.saveTourData);
 
@@ -95,33 +75,35 @@ export default function Tour() {
 
   // 뒤로가기 누를때 메인에서 온거면 메인, 마이페이지에서 온거면 그곳으로 되돌아가야한다.
   const { state } = useLocation(); // 메인 / 마이페이지 어디서 들어온 경로인지 판별
-  console.log("받아온 데이터:", state);
   const fromPage = state.from; // "/" 혹은 "/mypage" 경로 추출
 
+  // 홈 혹은 마이페이지 중 어느 경로로 들어온건지 저장 (뒤로가기 기능)
   useEffect(() => {
     dispatch(savePath(fromPage));
   }, []);
 
+  // url의 암호화 여행코드 복호화해서 저장
   useEffect(() => {
     const decode = decrypt(encrypted!);
     setTravelCodes(decode);
   }, [encrypted]);
 
-  travelCodes && console.log(travelCodes);
-
-  const [logs, setLogs] = useState<MoneyLogProps[]>([]);
+  // 여행 정보들 중 여행코드가 일치하는 데이터만 고른다.
   const FilteringData = data.value.filter(
     (item) => item.encryptCode === encrypted
   );
 
   const { amount, paymentType, description, category } = state || {};
 
+  // 여행 코드에 맞는 비용 내역 불러오는 코드
   useEffect(() => {
+    if (!travelCodes) return;
+
     const fetchSpendingLogs = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/expenditures/${id}`,
+          `http://localhost:8080/expenditures/${travelCodes}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -136,7 +118,7 @@ export default function Tour() {
     };
 
     fetchSpendingLogs();
-  }, [id]);
+  }, [travelCodes]);
 
   useEffect(() => {
     if (category) {
@@ -159,12 +141,11 @@ export default function Tour() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!SOCKET_URL || !token) return; // 주소 없을시 종료
-    console.log("소켓 연결 시도:");
 
     const socket = new SockJS(`${SOCKET_URL}`);
     const client = new Client({
       webSocketFactory: () => socket,
-      debug: (msg) => console.log("[STOMP DEBUG]:", msg),
+      // debug: (msg) => console.log("[STOMP DEBUG]:", msg),
 
       // 연결 시도 간격 설정
       reconnectDelay: 5000,
@@ -183,7 +164,6 @@ export default function Tour() {
       onStompError: (frame) => {
         console.error("STOMP 오류 발생:", frame);
       },
-
     });
     client.activate();
 
@@ -191,7 +171,6 @@ export default function Tour() {
       client.deactivate();
     };
   }, []);
-
 
   return (
     <div>
