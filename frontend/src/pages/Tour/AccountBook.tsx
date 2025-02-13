@@ -51,7 +51,7 @@ const CurrencyButton = styled.button`
   height: 40px;
 `;
 
-const CurrencyDropdown = styled.div`
+const CurrencyDropdown = styled.ul`
   margin-top: 110px;
   background-color: white;
   border-radius: 10px;
@@ -65,7 +65,14 @@ const CurrencyDropdown = styled.div`
   text-align: center;
 `;
 
-const CurrencyItem = styled.div`
+const SelectUserDropDown = styled(CurrencyDropdown)`
+  margin-top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+`;
+
+const CurrencyItem = styled.li`
   padding: 10px 20px;
   font-size: 16px;
   color: #333;
@@ -146,25 +153,39 @@ export default function AccountBook() {
   const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
-  const { id } = useParams<{ id: string }>(); // URL에서 id(나라) 가져오기
+  const [selected, setSelected] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const { encrypted } = useParams<{ encrypted: string }>(); // URL에서 id(나라) 가져오기
   const navigate = useNavigate(); // 페이지 이동 함수
   const location = useLocation(); // state로 전달된 location 정보
   const country = location.state?.location; // state에서 location을 가져옴
 
+  const toggleDropDown = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleSelected = (option: { name: string; email: string }) => {
+    setSelected(option.name);
+    setIsOpen(false);
+  };
+
+  const members = [
+    { name: "황종현", email: "email1@naver.com" },
+    { name: "김철수", email: "email2@naver.com" },
+    { name: "김영희", email: "email3@naver.com" },
+    { name: "홍길동", email: "email4@naver.com" },
+  ];
+
   useEffect(() => {
     if (country) {
-      console.log("현재 국가:", country);
-
       // 1. 한글 국가명으로 영어 국가명 찾기
       const englishCountryName = Object.keys(countryNamesInKorean).find(
         (key) => countryNamesInKorean[key] === country
       );
-      console.log("영어 국가명:", englishCountryName);
 
       if (englishCountryName) {
         // 2. 영어 국가명으로 통화 정보 가져오기
         const countryCurrency = countryCurrencies[englishCountryName];
-        console.log("가져온 국가 통화 정보:", countryCurrency);
 
         if (countryCurrency) {
           const [currencyCode, symbol] = countryCurrency.split(", ");
@@ -272,6 +293,24 @@ export default function AccountBook() {
             ? `${parseFloat(amount).toLocaleString()} ${currencySymbol}`
             : "얼마를 사용하셨나요"}
         </Display>
+
+        <div>
+          <CurrencyButton onClick={toggleDropDown}>
+            {selected ? selected : "유저를 선택해주세요"} ▼
+          </CurrencyButton>
+          {isOpen && (
+            <SelectUserDropDown>
+              {members.map((option) => (
+                <CurrencyItem
+                  key={option.email}
+                  onClick={() => handleSelected(option)}
+                >
+                  {option.name}
+                </CurrencyItem>
+              ))}
+            </SelectUserDropDown>
+          )}
+        </div>
 
         <Keypad>
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0"].map(
