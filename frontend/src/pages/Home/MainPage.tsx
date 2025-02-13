@@ -55,6 +55,7 @@ interface User {
   email: string; // 이메일 (형식 검증 필요)
   password: string; // 암호화된 비밀번호 (bcrypt 해싱됨)
   phone: string; // 전화번호 (형식 검증 필요)
+  profile: string;
 }
 
 const H2 = styled.h2`
