@@ -53,6 +53,7 @@ interface User {
   email: string; // 이메일 (형식 검증 필요)
   password: string; // 암호화된 비밀번호 (bcrypt 해싱됨)
   phone: string; // 전화번호 (형식 검증 필요)
+  profile: string;
 }
 
 const H2 = styled.h2`
@@ -135,9 +136,8 @@ export default function MainPage() {
   };
 
   const getUserProfile = async (token: string) => {
-    const response = await axios.post(
+    const response = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
-      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
