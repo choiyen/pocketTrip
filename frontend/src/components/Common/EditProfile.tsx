@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Button from "./Button";
 import { useDispatch } from "react-redux";
@@ -10,31 +10,54 @@ import {
 } from "../../slices/ModalControlSlice";
 import Alert from "./Alert";
 
-const initialData = {
-  name: "user1",
-  email: "user1@example.com",
-  password: "12345678",
-  phone: "01012341234",
-  profileImage: "/japan.jpg",
-};
+// const initialData = {
+//   name: "user1",
+//   email: "user1@example.com",
+//   password: "12345678",
+//   phone: "01012341234",
+//   profile: "/ProfileImage.jpg",
+// };
 
 export default function EditProfile() {
   //   const [formData, setFormData] = useState(initialData);
-  const [username, setUsername] = useState(initialData.name);
-  const [userId, setUserId] = useState(initialData.email);
-  const [userPhoneNumber, setUserPhoneNumber] = useState(initialData.phone);
+  const [username, setUsername] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPhoneNumber, setUserPhoneNumber] = useState("");
   const [userPassword, setuserPassword] = useState("");
-  const [previewImage, setPreviewImage] = useState(initialData.profileImage); // 임시 미리보기 이미지
+  const [previewImage, setPreviewImage] = useState("/ProfileImage.png"); // 임시 미리보기 이미지
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch: AppDispatch = useDispatch();
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", 
+        },
+      }
+    ).then((res) => {
+      if(res.data.data[0] != null){
+        setUsername(res.data.data[0].name);
+        setUserEmail(res.data.data[0].email);
+        setUserPhoneNumber(res.data.data[0].phone);
+        // setuserPassword(res.data.data[0].password);
+        setPreviewImage(res.data.data[0].profile);
+      }
+
+      console.log(res);
+    }).catch((e) => {
+      console.error(e);
+    })
+  }, [])
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
   };
   const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserId(e.target.value);
+    setUserEmail(e.target.value);
   };
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserPhoneNumber(e.target.value);
@@ -80,14 +103,14 @@ export default function EditProfile() {
     try {
       const updatedData = {
         name: username,
-        email: userId,
+        email: userEmail,
         phone: userPhoneNumber,
         password: userPassword, // 비밀번호 포함
-        profileImage: previewImage, // 변경된 이미지 적용
+        profile: previewImage, // 변경된 이미지 적용
       };
       console.log(updatedData);
       const response = await axios.put(
-        "http://localhost:8080/auth/edit",
+        `${process.env.REACT_APP_API_BASE_URL}/auth/edit`,
         updatedData,
         {
           headers: {
@@ -150,7 +173,7 @@ export default function EditProfile() {
           <InputText
             id="userid"
             type="text"
-            value={userId}
+            value={userEmail}
             onChange={handleIdChange}
           />
           <Label htmlFor="userPassword">비밀번호</Label>

@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 interface TravelData {
   id: string;
+  encryptCode: string;
   travelCode: string;
   title: string; // 여행지갑 이름
   location: string; // 여행지 이름
@@ -49,9 +50,8 @@ const MoneyInfoWrap = styled.div`
 
 export default function MoneyInfo({ Tourdata }: TourCardProps) {
   const navigate = useNavigate();
-
   const goToAccountBook = () => {
-    navigate(`/Tour/${Tourdata.id}/accountbook`, {
+    navigate(`/Tour/${Tourdata.encryptCode}/accountbook`, {
       state: { location: Tourdata.location }, // location을 state로 전달
     });
   };
