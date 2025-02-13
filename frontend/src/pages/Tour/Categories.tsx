@@ -152,7 +152,7 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 export default function Categories() {
   const location = useLocation();
   const { amount, paymentType } = location.state;
-  const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
+  const { encrypted } = useParams<{ encrypted: string }>(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
@@ -188,12 +188,16 @@ export default function Categories() {
     };
     try {
       const token = localStorage.getItem("token");
-      await axios.post(`http://localhost:8080/expenditures/${id}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await axios.post(
+        `http://localhost:8080/expenditures/${encrypted}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log("데이터 저장 성공:", data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -204,7 +208,7 @@ export default function Categories() {
     }
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
-    navigate(`/Tour/${id}`, { state: data });
+    navigate(`/Tour/${encrypted}`, { state: data });
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
@@ -222,8 +226,8 @@ export default function Categories() {
     return today.toLocaleDateString("ko-KR", options);
   };
 
-  const handleCategoryClick = (id: number) => {
-    setSelectedCategoryId(id); // 카테고리 클릭 시 선택된 카테고리 ID를 상태로 설정
+  const handleCategoryClick = (encrypted: number) => {
+    setSelectedCategoryId(encrypted); // 카테고리 클릭 시 선택된 카테고리 ID를 상태로 설정
   };
 
   return (
