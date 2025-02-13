@@ -14,6 +14,7 @@ import RankChart from "./RankChart";
 import axios from "axios";
 import { setTravelData } from "../../slices/SaveTourDataSlice";
 import CryptoJS from "crypto-js";
+import { saveUser } from "../../slices/userDataSlice";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
@@ -82,17 +83,15 @@ export default function MainPage() {
     getUserProfile(token as string); // 유저 정보 요청
   }, []);
 
-  // 위에서 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
+  // 위에서 필요한 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
   useEffect(() => {
     if (TourDataArr.length > 0) {
       SelectCurrentTourData();
-      dispatch(setTravelData(TourDataArr));
+      dispatch(setTravelData(TourDataArr)); // 암호화 코드 추가된 여행 정보 저장
     }
   }, [TourDataArr]);
 
-  // 1. 불러온 데이터들 중 현재 종료일 이후로 출발하는 여행을 추린다.
-  // 2. 추린 여행들을 출발 날짜 기준으로 재 정렬한다.
-  // 3. 제일 빠른 여행 하나를 고른다.
+  // 현재 여행중인 여행정보를 하나만 선정한다.
   useEffect(() => {
     if (CurrentTour) {
       const currentEndTime = new Date(CurrentTour.endDate).getTime();
@@ -114,8 +113,8 @@ export default function MainPage() {
     }
   }, [isAlertVisible]);
 
+  // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
   const getTravelData = async (token: string) => {
-    // 유저의 모든 여행 기록을 받아온다.
     const response = await axios.post(
       `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
       {},
@@ -127,6 +126,7 @@ export default function MainPage() {
       }
     );
     const TourData = response.data.data;
+    // 암호화 코드 저장
     const updatedTourData = TourData.map((item: TravelPlan, index: number) => ({
       ...item,
       encryptCode: encrypt(item.travelCode),
@@ -146,6 +146,7 @@ export default function MainPage() {
       }
     );
     setUserDatas(response.data.data[0]);
+    dispatch(saveUser(response.data.data[0]));
   };
 
   const SelectCurrentTourData = () => {
