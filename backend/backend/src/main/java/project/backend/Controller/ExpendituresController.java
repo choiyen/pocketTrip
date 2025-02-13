@@ -130,7 +130,6 @@ public class ExpendituresController {
             ExpenditureEntity updateExpenditure = expenditureService.updateExpenditure(email, expenditureId, expenditure).block();
 
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
-                    .id(updateExpenditure.getId())
                     .travelCode(updateExpenditure.getTravelCode())
                     .expenditureId(updateExpenditure.getExpenditureId())
                     .purpose(updateExpenditure.getPurpose())
