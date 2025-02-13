@@ -36,14 +36,14 @@ public class UserService {
     }
 
 
-    // 로그인
-    public UserEntity getByCredentials(String email) {
+    // 유저 정보 불러오기
+    public UserEntity getUserInfo(String email) {
         UserEntity originalUser = userRepository.findByEmail(email);
-        if(originalUser != null)
-        {
-            return originalUser;
+        if(originalUser == null) {
+            log.warn("User with email {} does not exist", email);
         }
-        return null;
+        System.out.println(originalUser);
+        return originalUser;
     }
 
     // 로그인

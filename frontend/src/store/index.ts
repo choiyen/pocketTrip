@@ -7,6 +7,7 @@ import travelReducer from "../slices/travelSlice";
 import RoutePathReducer from "../slices/RoutePathSlice";
 import editReducer from "../slices/editSlice";
 import SaveTourDataReducer from "../slices/SaveTourDataSlice";
+import UserDataReducer from "../slices/userDataSlice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     prevPath: RoutePathReducer,
     edit: editReducer,
     saveTourData: SaveTourDataReducer,
+    userData: UserDataReducer,
   },
 });
 

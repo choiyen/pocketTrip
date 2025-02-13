@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class UserTravelsDTO {
-    private String id;
+
     private String email;
     private ArrayList<String> travelList;
 }

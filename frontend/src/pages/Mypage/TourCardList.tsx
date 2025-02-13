@@ -13,7 +13,7 @@ interface TravelPlan {
     startDate: string;
     endDate: string;
     expense: number;
-    ImgArr: string[];
+    profiles: string[];
     bgImg?: string;
   };
   formattedBudget: string[];
@@ -117,7 +117,7 @@ export default function TourCardList({
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
-          <SmallUserBox user={travel.ImgArr} $size={"S"} />
+          <SmallUserBox user={travel.profiles} $size={"S"} />
           <Expense>₩ {formattedBudget[index]}</Expense>
         </div>
         <div>

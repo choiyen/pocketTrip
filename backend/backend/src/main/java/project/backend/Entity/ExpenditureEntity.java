@@ -26,7 +26,6 @@ public class ExpenditureEntity
     private String purpose;
     @NonNull
     private String method;
-    @NonNull
     private boolean isPublic;
     @NonNull
     private String payer;

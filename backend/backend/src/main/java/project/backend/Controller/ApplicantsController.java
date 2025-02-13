@@ -143,7 +143,6 @@ public class ApplicantsController
         ApplicantsEntity Applicantsed = ApplicantsEntity.builder()
                 .travelCode(Applicants.getTravelcode())
                 .userList(Applicants.getUserList())
-                .id(Applicants.getId())
                 .build();
 
         return  Mono.just(Applicantsed);
@@ -153,7 +152,6 @@ public class ApplicantsController
         ApplicantsDTO applicantsDTO = ApplicantsDTO.builder()
                 .travelcode(applicants.block().getTravelCode())
                 .userList(applicants.block().getUserList())
-                .id(applicants.block().getId())
                 .build();
 
         return  Mono.just(applicantsDTO);
