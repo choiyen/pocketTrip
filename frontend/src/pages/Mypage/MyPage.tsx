@@ -18,7 +18,7 @@ interface TravelPlan {
   startDate: string;
   endDate: string;
   expense: number;
-  ImgArr: string[];
+  profiles: string[];
   bgImg?: string;
 }
 
