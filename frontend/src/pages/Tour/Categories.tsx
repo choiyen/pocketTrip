@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { countryNamesInKorean } from "../Data/countryNames";
 
 const categories = [
   { id: 1, label: "숙소", icon: "🏠", color: "#A5D8FF" },
@@ -152,11 +155,37 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 export default function Categories() {
   const location = useLocation();
   const { amount, paymentType } = location.state;
-  const { id } = useParams(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
+  const { encrypted } = useParams<{ encrypted: string }>();
   const [description, setDescription] = useState("");
+  const [travel, setTravel] = useState({ travelCode: "", location: "" });
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
+  const TourDataArr = useSelector(
+    (state: RootState) => state.saveTourData.value
+  );
+  const userData = useSelector((state: RootState) => state.userData);
+
+  const findKeyByValue = (obj: { [key: string]: string }, value: string) => {
+    return Object.keys(obj).find((key) => obj[key] === value);
+  };
+
+  console.log(findKeyByValue(countryNamesInKorean, "가나"));
+
+  // 현재 다루는 여행 데이터의 여행 코드를 찾는다.
+  useEffect(() => {
+    const currentTourData = TourDataArr.filter(
+      (data) => data.encryptCode === encrypted
+    );
+    const location = findKeyByValue(
+      countryNamesInKorean,
+      currentTourData[0].location
+    );
+    setTravel({
+      location: location!,
+      travelCode: currentTourData[0].travelCode,
+    });
+  }, [encrypted]);
 
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
@@ -171,29 +200,33 @@ export default function Categories() {
   };
 
   const handleComplete = async () => {
+    console.log(travel);
     const selectedCategory = categories.find(
       (cat) => cat.id === selectedCategoryId
     );
     const data = {
-      amount,
-      paymentType,
+      travelCode: travel.travelCode,
+      currency: travel.location,
+      amount: Number(amount),
+      date: new Date(),
+      payer: userData.user.email,
+      method: paymentType,
       description,
-      category: selectedCategory
-        ? {
-            id: selectedCategory.id,
-            label: selectedCategory.label,
-            icon: selectedCategory.icon,
-          }
-        : null,
+      purpose: selectedCategory ? selectedCategory.label : "데이터 없음",
     };
+    console.log(data);
     try {
       const token = localStorage.getItem("token");
-      await axios.post(`http://localhost:8080/expenditures/${id}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await axios.post(
+        `http://localhost:8080/expenditures/${travel.travelCode}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log("데이터 저장 성공:", data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -204,12 +237,7 @@ export default function Categories() {
     }
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
-    navigate(`/Tour/${id}`, { state: data });
-
-    console.log("지출액:", amount);
-    console.log("지출 방식:", paymentType);
-    console.log("설명:", description);
-    console.log("선택한 카테고리 ID:", selectedCategoryId);
+    navigate(`/Tour/${encrypted}`, { state: data });
   };
 
   const getFormattedDate = () => {
