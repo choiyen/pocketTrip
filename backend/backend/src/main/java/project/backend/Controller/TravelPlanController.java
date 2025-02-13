@@ -134,13 +134,17 @@ public class TravelPlanController
             UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
 
             List<Object> list = new ArrayList<>();
-            list.add(userTravels);
             if (image != null && !image.isEmpty())
             {
                 // 이미지가 있는 경우에만 처리
                 String ImageUrl = s3ImageService.upload(image);
                 list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1, ImageUrl)));
             }
+            else
+            {
+                list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
+            }
+            list.add(userTravels);
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
         }
         catch (Exception e)
@@ -149,6 +153,9 @@ public class TravelPlanController
         }
 
     }
+
+
+
     //유출되도 상관 없을 것 같은 데이터(기능 동작 확인)
     @PutMapping("/update/{travelcode}")
     @CacheEvict(value = "travelCode", key = "#travelcode")
@@ -165,24 +172,44 @@ public class TravelPlanController
                 {
                     TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
                     TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
-                    if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                    List<Object> list = new ArrayList<>();
+                    if (image != null && !image.isEmpty())
                     {
-                        s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+                        // 이미지가 있는 경우에만 처리
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                        {
+                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+                        }
+                        String ImageUrl = s3ImageService.upload(image);
+                        list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
+
                     }
-                    String ImageUrl = s3ImageService.upload(image);
-                    List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
+                    else
+                    {
+                        list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
+                    }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
                 else if(Oldtravelplan.getParticipants().contains(userId) == true)
                 {
                     TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
                     TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
-                    if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                    List<Object> list = new ArrayList<>();
+                    if (image != null && !image.isEmpty())
                     {
-                        s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+                        // 이미지가 있는 경우에만 처리
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                        {
+                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+                        }
+                        String ImageUrl = s3ImageService.upload(image);
+                        list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
+
                     }
-                    String ImageUrl = s3ImageService.upload(image);
-                    List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
+                    else
+                    {
+                        list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
+                    }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
                 else
@@ -394,11 +421,28 @@ public class TravelPlanController
                 .participants(userset)
                 .img(travelPlanDTO.getImg())
                 .isCalculate(travelPlanDTO.isCalculate())
-                .id(travelPlanDTO.getId())
                 .build();
 
         return travelPlan;
     }
+    private TravelPlanDTO ConvertTo(String generatedString, TravelPlanEntity travelPlan1)
+    {
+        TravelPlanDTO travelPlanDTO = TravelPlanDTO.builder()
+                .travelCode(generatedString)
+                .location(travelPlan1.getLocation())
+                .startDate(travelPlan1.getStartDate())
+                .endDate(travelPlan1.getEndDate())
+                .expense(travelPlan1.getExpense())
+                .founder(travelPlan1.getFounder())
+                .title(travelPlan1.getTitle())
+                .participants(travelPlan1.getParticipants())
+                .isCalculate(travelPlan1.isCalculate())
+                .img(travelPlan1.getImg())
+                .build();
+
+        return travelPlanDTO;
+    }
+
     private TravelPlanDTO ConvertTo(String travelCode, TravelPlanDTO travelPlan)
     {
         TravelPlanDTO travelPlans = TravelPlanDTO.builder()
@@ -411,7 +455,6 @@ public class TravelPlanController
                 .title(travelPlan.getTitle())
                 .participants(travelPlan.getParticipants())
                 .isCalculate(travelPlan.isCalculate())
-                .id(travelPlan.getId())
                 .img(travelPlan.getImg())
                 .build();
 
@@ -430,7 +473,6 @@ public class TravelPlanController
                                         .title(travelPlanDTO.getTitle())
                                         .participants(travelPlanDTO.getParticipants())
                                         .isCalculate(travelPlanDTO.isCalculate())
-                                        .id(travelPlanDTO.getId())
                                         .img(travelPlanDTO.getImg())
                                         .profiles(profilelist)
                                         .build();
@@ -450,7 +492,6 @@ public class TravelPlanController
                 .title(travelPlan1.getTitle())
                 .participants(travelPlan1.getParticipants())
                 .isCalculate(travelPlan1.isCalculate())
-                .id(travelPlan1.getId())
                 .img(travelPlan1.getImg())
                 .profiles(profilelist)
                 .build();
@@ -511,7 +552,6 @@ public class TravelPlanController
                 .title(travelPlanEntity.getTitle())
                 .participants(travelPlanEntity.getParticipants())
                 .isCalculate(travelPlanEntity.isCalculate())
-                .id(travelPlanEntity.getId())
                 .img(imgUri)
                 .build();
 

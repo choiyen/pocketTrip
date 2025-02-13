@@ -12,7 +12,6 @@ import java.util.Set;
 public class TravelPlanDTO
 {
 
-    private String id;
     private String travelCode;
     private String title;
     private String location;
