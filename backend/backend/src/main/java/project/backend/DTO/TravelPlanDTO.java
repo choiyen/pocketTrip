@@ -25,5 +25,6 @@ public class TravelPlanDTO
     private Set<String> participants;
     private boolean isCalculate;
     private List<String> profiles;
+    private int currentCurrency;
 }
 //소켓으로 알림으로 보냄

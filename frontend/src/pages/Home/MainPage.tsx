@@ -140,9 +140,8 @@ export default function MainPage() {
   };
 
   const getUserProfile = async (token: string) => {
-    const response = await axios.post(
+    const response = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
-      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
