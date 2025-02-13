@@ -103,11 +103,7 @@ export default function Tour() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-<<<<<<< HEAD
-          `http://localhost:8080/expenditures/${encrypted}`,
-=======
           `http://localhost:8080/expenditures/${travelCodes}`,
->>>>>>> c41963910754eb8165872cbed2e51af75d84b62a
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -120,13 +116,7 @@ export default function Tour() {
         console.error("지출 내역 불러오기 실패:", error);
       }
     };
-
-    fetchSpendingLogs();
-<<<<<<< HEAD
-  }, [encrypted]);
-=======
   }, [travelCodes]);
->>>>>>> c41963910754eb8165872cbed2e51af75d84b62a
 
   useEffect(() => {
     if (category) {
