@@ -32,6 +32,7 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
                 attributes.put("userId", userId);
 
                 return true; // 인증 성공
+
             } catch (Exception e) {
                 // 토큰이 유효하지 않거나 검증에 실패한 경우 연결을 거부
                 return false; // 인증 실패 시 연결을 거부
