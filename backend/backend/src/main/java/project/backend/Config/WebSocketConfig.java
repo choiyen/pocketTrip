@@ -14,9 +14,6 @@ import project.backend.Socket.HttpHandshakeInterceptor;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
 {
 
-    @Autowired
-    private HttpHandshakeInterceptor handshakeInterceptor;
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/queue");  // 메시지 브로커를 "/topic"으로 설정
@@ -26,7 +23,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-
                 .addInterceptors(new HttpHandshakeInterceptor())
                 .setAllowedOrigins("*")  // CORS 설정: 모든 출처에서 접속 허용
                 .withSockJS();
