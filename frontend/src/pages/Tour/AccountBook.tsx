@@ -140,12 +140,20 @@ const ActionButton = styled.button<{ $bgColor: string }>`
   }
 `;
 
+const ExchangeRateText = styled.div`
+  font-size: 12px;
+  color: gray;
+  margin-top: 10px;
+  text-align: center;
+`;
+
 export default function AccountBook() {
   const [amount, setAmount] = useState(""); // 입력한 금액
   const [currency, setCurrency] = useState("KRW"); // 선택된 통화 코드
   const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const { encrypted } = useParams<{ encrypted: string }>(); // URL에서 id(나라) 가져오기
   const navigate = useNavigate(); // 페이지 이동 함수
   const location = useLocation(); // state로 전달된 location 정보
@@ -188,6 +196,27 @@ export default function AccountBook() {
     }
   }, [country]);
 
+  const fetchExchangeRate = async (selectedCurrency: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/rate?currency=${selectedCurrency}`
+      );
+      console.log("API 응답 상태:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`환율 API 호출 실패: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("받은 데이터:", data);
+      console.log("받은 데이터2:", data?.rate);
+      setExchangeRate(data?.rate);
+    } catch (error) {
+      console.error("환율 API 호출 오류:", error);
+    }
+  };
+
   const handleKeyPress = (key: string) => {
     if (key === "delete") {
       setAmount((prev) => prev.slice(0, -1));
@@ -218,6 +247,9 @@ export default function AccountBook() {
   const handleCurrencySelect = (selectedCurrency: string) => {
     setCurrency(selectedCurrency); // 선택된 통화 코드 업데이트
 
+    // 환율 정보 요청
+    fetchExchangeRate(selectedCurrency);
+
     // 선택된 통화에 따라 심볼 설정
     const selectedSymbol =
       Object.entries(countryCurrencies)
@@ -226,6 +258,12 @@ export default function AccountBook() {
 
     setCurrencySymbol(selectedSymbol);
     setIsCurrencyListVisible(false); // 드롭다운 닫기
+    // 환율 정보 가져오기
+    // if (selectedCurrency !== "KRW") {
+    //   fetchExchangeRate("KRW", selectedCurrency);
+    // } else {
+    //   setExchangeRate(null); // KRW를 선택하면 환율 정보 없애기
+    // }
   };
 
   const handleNavigation = (paymentType: string) => {
@@ -272,6 +310,13 @@ export default function AccountBook() {
             ? `${parseFloat(amount).toLocaleString()} ${currencySymbol}`
             : "얼마를 사용하셨나요"}
         </Display>
+
+        {exchangeRate && currency !== "KRW" && amount && (
+          <ExchangeRateText>
+            {parseFloat(amount).toLocaleString()} {currency} ={" "}
+            {(parseFloat(amount) * exchangeRate).toLocaleString()} KRW
+          </ExchangeRateText>
+        )}
 
         <Keypad>
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0"].map(
