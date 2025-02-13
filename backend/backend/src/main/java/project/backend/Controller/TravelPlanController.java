@@ -132,10 +132,15 @@ public class TravelPlanController
             TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
 
             UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
-            String ImageUrl = s3ImageService.upload(image);
-            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(generatedString, travelPlan1, ImageUrl)));
+
+            List<Object> list = new ArrayList<>();
             list.add(userTravels);
-            list.add(ImageUrl);
+            if (image != null && !image.isEmpty())
+            {
+                // 이미지가 있는 경우에만 처리
+                String ImageUrl = s3ImageService.upload(image);
+                list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1, ImageUrl)));
+            }
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
         }
         catch (Exception e)
