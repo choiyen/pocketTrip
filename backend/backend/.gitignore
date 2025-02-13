@@ -43,4 +43,3 @@ out/
 # AWS 키 제거 후 빈 값 설정 또는 환경 변수 사용
 cloud.aws.credentials.access-key=
 cloud.aws.credentials.secret-key=
-
