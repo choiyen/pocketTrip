@@ -71,11 +71,9 @@ public class UserController {
                     .password(registerUser.getPassword())
                     .phone(registerUser.getPhone())
                     .profile(registerUser.getProfile())
-                    .id(registerUser.getId())
                     .build();
 
             UserTravelsDTO responsedUserTravelsDTO = UserTravelsDTO.builder()
-                    .id(registerUserTravels.getId())
                     .email(registerUserTravels.getEmail())
                     .travelList(registerUserTravels.getTravelList())
                     .build();
@@ -83,6 +81,7 @@ public class UserController {
             List<Object> list = new ArrayList<>();
             list.add(responsedUserDTO);
             list.add(responsedUserTravelsDTO);
+
             return ResponseEntity.ok().body(responseDTO.Response("success", "우리 앱을 이용해주셔서 감사합니다. 여러분의 기입을 환영합니다.", list));
 
         }
@@ -131,7 +130,6 @@ public class UserController {
                         .email(user.getEmail())
                         .password(user.getPassword())
                         .phone(user.getPhone())
-                        .id(user.getId())
                         .token(token)
                         .build();
                 List<Object> list = new ArrayList<>();
