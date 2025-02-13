@@ -155,11 +155,7 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 export default function Categories() {
   const location = useLocation();
   const { amount, paymentType } = location.state;
-<<<<<<< HEAD
   const { encrypted } = useParams<{ encrypted: string }>(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
-=======
-  const { encrypted } = useParams<{ encrypted: string }>();
->>>>>>> c41963910754eb8165872cbed2e51af75d84b62a
   const [description, setDescription] = useState("");
   const [travel, setTravel] = useState({ travelCode: "", location: "" });
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
@@ -222,11 +218,7 @@ export default function Categories() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-<<<<<<< HEAD
-        `http://localhost:8080/expenditures/${encrypted}`,
-=======
         `http://localhost:8080/expenditures/${travel.travelCode}`,
->>>>>>> c41963910754eb8165872cbed2e51af75d84b62a
         data,
         {
           headers: {
@@ -246,14 +238,11 @@ export default function Categories() {
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${encrypted}`, { state: data });
-<<<<<<< HEAD
 
     console.log("지출액:", amount);
     console.log("지출 방식:", paymentType);
     console.log("설명:", description);
     console.log("선택한 카테고리 ID:", selectedCategoryId);
-=======
->>>>>>> c41963910754eb8165872cbed2e51af75d84b62a
   };
 
   const getFormattedDate = () => {
