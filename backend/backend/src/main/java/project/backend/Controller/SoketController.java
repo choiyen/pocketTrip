@@ -25,6 +25,7 @@ import java.util.List;
 @Controller
 public class SoketController
 {
+
     private ResponseDTO responseDTO = new ResponseDTO<>();
 
     RestTemplate restTemplate = new RestTemplate();
@@ -81,6 +82,7 @@ public class SoketController
              return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
          }
     }
+
     @MessageMapping("/travelPlan/{travelCode}/Update")
     @SendTo("/topic/{travelCode}/{expenditureId}/Update")//데이터가 수정되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
     public ResponseEntity<?> Update(@PathVariable String travelCode,@PathVariable String expenditureId, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
@@ -99,6 +101,7 @@ public class SoketController
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+
     @MessageMapping("/travelPlan/{travelCode}/{expenditureId}/Delete")
     @SendTo("/Topic/{travelCode}/{expenditureId}/Delete")//데이터가 삭제되었으니, 해당 채팅방에 속한 사람 모두에게 변경된 지출 DB를 보낸다.
     public ResponseEntity<?> Delete(@PathVariable String travelCode, @PathVariable String expenditureId, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
