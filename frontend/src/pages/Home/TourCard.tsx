@@ -43,8 +43,9 @@ const Card = styled(Link)<{ $bgImg: string }>`
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.09);
 
   h2 {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: bold;
+    margin-bottom: 10px;
   }
   p {
     font-size: 24px;
@@ -55,6 +56,15 @@ const Card = styled(Link)<{ $bgImg: string }>`
 const TitleWrap = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
+  .location {
+    /* font-size: 32px; 
+    font-weight: 900;; */
+    font-size: 25px;
+    font-weight: 500;
+    color: #c5c5c5;
+  }
 `;
 
 const Container = styled.div`
@@ -85,6 +95,7 @@ export default function TourCard({ Tourdata }: TourCardProps) {
   const startedDate = new Date(startDate);
   const endedDate = new Date(endDate);
   const today = new Date();
+  console.log(Tourdata);
 
   // 시작 종료일 시간 차이 계산
   const totalDuration = endedDate.getTime() - startedDate.getTime();
@@ -102,8 +113,9 @@ export default function TourCard({ Tourdata }: TourCardProps) {
     <Container>
       <Card to={`/Tour/${encryptCode}`} state={{ from: "/" }} $bgImg={bgImg}>
         <div>
+          <h2>{name}</h2>
           <TitleWrap>
-            <h2>{location}</h2>
+            <h3 className="location">{location}</h3>
             <CardUserList user={ImgArr} $size="L" />
           </TitleWrap>
           <p>{formattedBudget} ₩</p>
