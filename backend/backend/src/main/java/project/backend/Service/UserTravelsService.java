@@ -4,13 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.TravelPlanEntity;
-import project.backend.Entity.UserEntity;
 import project.backend.Entity.UserTravelsEntity;
 import project.backend.Repository.TravelPlanRepository;
 import project.backend.Repository.UserTravelsRepository;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -49,6 +47,12 @@ public class UserTravelsService {
         return travelPlans;
     }
 
+    public UserTravelsEntity findUserTravels(String userId)
+    {
+        UserTravelsEntity userTravels = userTravelsRepository.findByEmail(userId);
+        return  userTravels;
+    }
+
     public UserTravelsEntity insertUserTravels(String userId, String travelCode)
     {
         UserTravelsEntity userTravels = userTravelsRepository.findByEmail(userId);
@@ -63,5 +67,26 @@ public class UserTravelsService {
                 .build();
 
         return userTravelsRepository.save(userTravels1);
+    }
+
+    public  UserTravelsEntity DeleteUserTravels(String userId, String travelCode)
+    {
+        UserTravelsEntity userTravels = userTravelsRepository.findByEmail(userId);
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(userTravels.getTravelList());
+        list.remove(travelCode);
+        UserTravelsEntity userTravels1 = UserTravelsEntity.builder()
+                .id(userTravels.getId())
+                .email(userId)
+                .travelList(list)
+                .build();
+
+        return userTravelsRepository.save(userTravels1);
+
+    }
+
+    public void DeleteUser(String userId)
+    {
+        userTravelsRepository.deleteByEmail(userId);
     }
 }
