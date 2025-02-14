@@ -7,15 +7,27 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.CloseStatus;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class CustomWebSocketHandler implements WebSocketHandler {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;  // 메시지 전송을 위한 템플릿
 
+    private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // 연결 수립 시 처리할 로직 (예: 사용자 정보를 attributes에 저장)
-        System.out.println("WebSocket 연결 수립됨: " + session.getId());
+        String userId = (String) session.getAttributes().get("userId");
+        if (userId != null)
+        {
+            sessions.put(session.getId(), session); // ConcurrentHashMap에 세션 정보 저장
+            System.out.println("WebSocket 연결 수립됨: " + session.getId() + " - User: " + userId);
+        }
+
     }
 
     @Override
@@ -28,12 +40,15 @@ public class CustomWebSocketHandler implements WebSocketHandler {
         // WebSocket 연결이 종료될 때 호출됩니다.
         String userId = (String) session.getAttributes().get("userId");  // 세션에서 userId 추출
         if (userId != null) {
+            sessions.remove(session.getId());
             // 연결 종료 시 해당 사용자에게 메시지를 전송합니다.
             try {
                 // 연결 종료 메시지를 해당 사용자에게 전송
                 messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", "Your connection has been lost.");
                 System.out.println("Connection closed for user: " + userId);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
