@@ -240,7 +240,10 @@ export default function AccountBook() {
       console.log("받은 데이터:", data);
 
       // 🔥 selectedCurrency에서 괄호 안의 통화 코드만 추출 (정규식)
-      const currencyCode = selectedCurrency.match(/\((.*?)\)/)?.[1]; // 예: "MYR"
+      const currencyCode =
+        selectedCurrency === "KRW" || selectedCurrency === "USD"
+          ? selectedCurrency
+          : selectedCurrency.match(/\((.*?)\)/)?.[1]; // 예: "MYR"
 
       console.log("검색할 통화 코드:", currencyCode);
 
@@ -374,7 +377,7 @@ export default function AccountBook() {
         {exchangeRate && currency !== "KRW" && amount && (
           <ExchangeRateText>
             {parseFloat(amount).toLocaleString()} {currency} ={" "}
-            {(parseFloat(amount) * exchangeRate).toLocaleString()} KRW
+            {(parseFloat(amount) * exchangeRate).toLocaleString()} ₩
           </ExchangeRateText>
         )}
 
