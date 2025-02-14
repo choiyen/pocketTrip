@@ -43,6 +43,8 @@ public class TravelPlanController
     @Autowired
     private UserService userService;
 
+
+
     @Autowired
     private AppllicantsService appllicantsService;
 
@@ -50,12 +52,10 @@ public class TravelPlanController
     private String key;
 
     private  ResponseDTO responseDTO = new ResponseDTO<>();
+
     @Autowired
     private UserTravelsService userTravelsService;
 
-
-    @Autowired
-    private TokenProvider tokenProvider;
 
 
     //https://innovation123.tistory.com/197
@@ -155,6 +155,54 @@ public class TravelPlanController
         }
 
     }
+
+
+    @PostMapping("/Delete/tour/{travelcode}")
+    public ResponseEntity<?> TravelTourDelete(@AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode)
+    {
+        try
+        {
+            TravelPlanEntity travelPlan = travelPlanService.TravelPlanSelect(encrypt(travelcode, key)).block();
+            if(travelPlan.getFounder().equals(userId) == true)
+            {
+                throw new IllegalArgumentException("주최자는 여행에서 빠질 수 없습니다. 빠지고 싶으시면 주최자를 변경 후, 시도해주세요.");
+            }
+            else
+            {
+                if(travelPlan.getParticipants().contains(userId) == true)
+                {
+                    Set<String> set = new HashSet<>();
+                    set.addAll(travelPlan.getParticipants());
+                    set.remove(userId);
+                    TravelPlanEntity travelPlan1 = ConvertTo(travelPlan, set);
+                    TravelPlanEntity travelPlan2 = travelPlanService.TravelPlanUpdate(travelPlan1).block();
+                    UserTravelsEntity userTravelsEntity1 = userTravelsService.DeleteUserTravels(userId, encrypt(travelcode,key));
+                    List<Object> list = new ArrayList<>();
+                    list.add(travelPlan2);
+                    if(userTravelsEntity1.getTravelList().isEmpty() == true)
+                    {
+                        userTravelsService.DeleteUser(userId);
+                    }
+                    else
+                    {
+                        list.add(userTravelsEntity1);
+                    }
+                    return ResponseEntity.ok().body(responseDTO.Response("success", "여행에 참여하지 못해 아쉬우시죠?", list));
+                }
+                else
+                {
+                    throw new IllegalArgumentException("참여자 목록에 존재하지 않은 회원입니다.");
+
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            return  ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+
+    }
+
 
 
 
@@ -502,6 +550,23 @@ public class TravelPlanController
     }
 
 
+    private TravelPlanEntity ConvertTo(TravelPlanEntity travelPlan, Set<String> set)
+    {
+        TravelPlanEntity travelPlan1 = TravelPlanEntity.builder()
+                .travelCode(travelPlan.getTravelCode())
+                .location(travelPlan.getLocation())
+                .startDate(travelPlan.getStartDate())
+                .endDate(travelPlan.getEndDate())
+                .founder(travelPlan.getFounder())
+                .title(travelPlan.getTitle())
+                .participants(set)
+                .isCalculate(travelPlan.isCalculate())
+                .id(travelPlan.getId())
+                .img(travelPlan.getImg())
+                .build();
+
+        return  travelPlan1;
+    }
 
     private TravelPlanEntity ConvertTo(TravelPlanEntity OldEntity, TravelPlanDTO NewDTO)
     {
