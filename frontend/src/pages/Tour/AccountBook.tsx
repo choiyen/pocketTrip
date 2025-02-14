@@ -69,7 +69,7 @@ const SelectUserDropDown = styled(CurrencyDropdown)`
   margin-top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
+  width: 200px;
 `;
 
 const CurrencyItem = styled.li`
@@ -141,10 +141,16 @@ const ActionButton = styled.button<{ $bgColor: string }>`
   border-radius: 20px;
   padding: 10px 30px;
   cursor: pointer;
-
-  &:hover {
+  x &:hover {
     opacity: 0.9;
   }
+`;
+
+const ExchangeRateText = styled.div`
+  font-size: 12px;
+  color: gray;
+  margin-top: 10px;
+  text-align: center;
 `;
 
 export default function AccountBook() {
@@ -153,6 +159,11 @@ export default function AccountBook() {
   const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
+  const [selectedUser, setSelectedUser] = useState<{
+    name: string;
+    email: string;
+  } | null>(null);
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const [selected, setSelected] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const { encrypted } = useParams<{ encrypted: string }>(); // URL에서 id(나라) 가져오기
@@ -165,12 +176,12 @@ export default function AccountBook() {
   };
 
   const handleSelected = (option: { name: string; email: string }) => {
-    setSelected(option.name);
+    setSelectedUser(option);
     setIsOpen(false);
   };
 
   const members = [
-    { name: "황종현", email: "email1@naver.com" },
+    { name: "황종현", email: "test@" },
     { name: "김철수", email: "email2@naver.com" },
     { name: "김영희", email: "email3@naver.com" },
     { name: "홍길동", email: "email4@naver.com" },
@@ -209,6 +220,27 @@ export default function AccountBook() {
     }
   }, [country]);
 
+  const fetchExchangeRate = async (selectedCurrency: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/rate?currency=${selectedCurrency}`
+      );
+      console.log("API 응답 상태:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`환율 API 호출 실패: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("받은 데이터:", data);
+      console.log("받은 데이터2:", data?.rate);
+      setExchangeRate(data?.rate);
+    } catch (error) {
+      console.error("환율 API 호출 오류:", error);
+    }
+  };
+
   const handleKeyPress = (key: string) => {
     if (key === "delete") {
       setAmount((prev) => prev.slice(0, -1));
@@ -239,6 +271,9 @@ export default function AccountBook() {
   const handleCurrencySelect = (selectedCurrency: string) => {
     setCurrency(selectedCurrency); // 선택된 통화 코드 업데이트
 
+    // 환율 정보 요청
+    fetchExchangeRate(selectedCurrency);
+
     // 선택된 통화에 따라 심볼 설정
     const selectedSymbol =
       Object.entries(countryCurrencies)
@@ -247,11 +282,17 @@ export default function AccountBook() {
 
     setCurrencySymbol(selectedSymbol);
     setIsCurrencyListVisible(false); // 드롭다운 닫기
+    // 환율 정보 가져오기
+    // if (selectedCurrency !== "KRW") {
+    //   fetchExchangeRate("KRW", selectedCurrency);
+    // } else {
+    //   setExchangeRate(null); // KRW를 선택하면 환율 정보 없애기
+    // }
   };
 
   const handleNavigation = (paymentType: string) => {
-    if (!amount) {
-      alert("금액을 입력해주세요.");
+    if (!amount || !selectedUser) {
+      alert("사용 유저와 금액을 입력해주세요.");
       return;
     }
     const today = new Date();
@@ -263,7 +304,13 @@ export default function AccountBook() {
     const formattedDate = today.toLocaleDateString("ko-KR", options);
 
     navigate(`/Tour/${encrypted}/categories`, {
-      state: { amount, currency, paymentType, date: formattedDate }, // 날짜 추가
+      state: {
+        amount,
+        currency,
+        paymentType,
+        date: formattedDate,
+        selectedUser,
+      }, // 날짜 추가
     });
   };
 
@@ -294,9 +341,16 @@ export default function AccountBook() {
             : "얼마를 사용하셨나요"}
         </Display>
 
+        {exchangeRate && currency !== "KRW" && amount && (
+          <ExchangeRateText>
+            {parseFloat(amount).toLocaleString()} {currency} ={" "}
+            {(parseFloat(amount) * exchangeRate).toLocaleString()} KRW
+          </ExchangeRateText>
+        )}
+
         <div>
           <CurrencyButton onClick={toggleDropDown}>
-            {selected ? selected : "유저를 선택해주세요"} ▼
+            {selectedUser?.name ? selectedUser.name : "유저를 선택해주세요"} ▼
           </CurrencyButton>
           {isOpen && (
             <SelectUserDropDown>
