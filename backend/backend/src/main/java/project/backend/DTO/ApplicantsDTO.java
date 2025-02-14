@@ -9,8 +9,8 @@ import java.util.Set;
 
 @Getter
 @Builder
-public class ApplicantsDTO {
-    private String id;
+public class ApplicantsDTO
+{
     private String travelcode;
     private Set<String> userList;
 }

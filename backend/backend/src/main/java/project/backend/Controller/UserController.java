@@ -52,6 +52,7 @@ public class UserController {
                     .name(userDTO.getName())
                     .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
+                    .profile(userDTO.getProfile())
                     .phone(userDTO.getPhone())
                     .build();
 
@@ -69,11 +70,10 @@ public class UserController {
                     .email(registerUser.getEmail())
                     .password(registerUser.getPassword())
                     .phone(registerUser.getPhone())
-                    .id(registerUser.getId())
+                    .profile(registerUser.getProfile())
                     .build();
 
             UserTravelsDTO responsedUserTravelsDTO = UserTravelsDTO.builder()
-                    .id(registerUserTravels.getId())
                     .email(registerUserTravels.getEmail())
                     .travelList(registerUserTravels.getTravelList())
                     .build();
@@ -81,6 +81,7 @@ public class UserController {
             List<Object> list = new ArrayList<>();
             list.add(responsedUserDTO);
             list.add(responsedUserTravelsDTO);
+
             return ResponseEntity.ok().body(responseDTO.Response("success", "우리 앱을 이용해주셔서 감사합니다. 여러분의 기입을 환영합니다.", list));
 
         }
@@ -91,21 +92,30 @@ public class UserController {
     }
 
 
-    @PostMapping("/userprofile")
-    public ResponseEntity<?> UserProfile(@AuthenticationPrincipal String userid, @RequestBody String password)
-    {
-        try
-        {
-            UserEntity user = userService.getByCredentials(userid);
+    @GetMapping("/userprofile")
+    public ResponseEntity<?> UserProfile(@AuthenticationPrincipal String email) {
+        System.out.println("Authenticated email: " + email);  // 이메일 값 확인
+
+        try {
+            if (email == null) {
+                return ResponseEntity.badRequest().body(responseDTO.Response("error", "인증된 이메일이 없습니다."));
+            }
+
+            UserEntity user = userService.getUserInfo(email);
+            System.out.println("User: " + user);  // 유저 정보 확인
+
+            if (user == null) {
+                return ResponseEntity.badRequest().body(responseDTO.Response("error", "해당 이메일의 유저를 찾을 수 없습니다."));
+            }
+
             List<Object> list = new ArrayList<>();
             list.add(user);
             return ResponseEntity.ok().body(responseDTO.Response("success", "오늘도 저희 서비스에 방문해주셔서 감사드려요!!!", list));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
-
         }
     }
+
     // 로그인
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
@@ -120,7 +130,6 @@ public class UserController {
                         .email(user.getEmail())
                         .password(user.getPassword())
                         .phone(user.getPhone())
-                        .id(user.getId())
                         .token(token)
                         .build();
                 List<Object> list = new ArrayList<>();
