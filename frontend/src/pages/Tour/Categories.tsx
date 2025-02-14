@@ -5,6 +5,8 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { countryNamesInKorean } from "../Data/countryNames";
+import DatePicker from "react-datepicker";
+import "../../styles/calender.css";
 
 const categories = [
   { id: 1, label: "숙소", icon: "🏠", color: "#A5D8FF" },
@@ -88,7 +90,14 @@ const Amount = styled.div<{ $paymentType: string }>`
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 20px;
+`;
+const SelectedUser = styled.span`
   margin-top: 20%;
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #3a3a3a;
+  letter-spacing: 3px;
 `;
 
 const Display = styled.textarea<{ $hasDescription: boolean }>`
@@ -154,23 +163,21 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 
 export default function Categories() {
   const location = useLocation();
-  const { amount, paymentType } = location.state;
+  const { amount, paymentType, selectedUser } = location.state;
   const { encrypted } = useParams<{ encrypted: string }>();
   const [description, setDescription] = useState("");
   const [travel, setTravel] = useState({ travelCode: "", location: "" });
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const TourDataArr = useSelector(
     (state: RootState) => state.saveTourData.value
   );
-  const userData = useSelector((state: RootState) => state.userData);
 
   const findKeyByValue = (obj: { [key: string]: string }, value: string) => {
     return Object.keys(obj).find((key) => obj[key] === value);
   };
-
-  console.log(findKeyByValue(countryNamesInKorean, "가나"));
 
   // 현재 다루는 여행 데이터의 여행 코드를 찾는다.
   useEffect(() => {
@@ -200,7 +207,6 @@ export default function Categories() {
   };
 
   const handleComplete = async () => {
-    console.log(travel);
     const selectedCategory = categories.find(
       (cat) => cat.id === selectedCategoryId
     );
@@ -208,15 +214,16 @@ export default function Categories() {
       travelCode: travel.travelCode,
       currency: travel.location,
       amount: Number(amount),
-      date: new Date(),
-      payer: userData.user.email,
+      KRW: 1000,
+      date: selectedDate,
+      payer: selectedUser.email,
       method: paymentType,
       description,
       purpose: selectedCategory ? selectedCategory.label : "데이터 없음",
     };
     console.log(data);
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("accessToken");
       await axios.post(
         `http://localhost:8080/expenditures/${travel.travelCode}`,
         data,
@@ -274,6 +281,7 @@ export default function Categories() {
         <span>{getFormattedDate()}</span>
       </Header>
       <CompleteButton onClick={handleComplete}>완료</CompleteButton>
+      <SelectedUser>{selectedUser.name}</SelectedUser>
       <Amount $paymentType={paymentType}>{`${Number(
         amount
       ).toLocaleString()} ₩`}</Amount>
@@ -283,6 +291,11 @@ export default function Categories() {
         value={description}
         onChange={handleDescriptionChange}
         placeholder="어디에 사용하셨나요"
+      />
+      <DatePicker
+        selected={selectedDate}
+        onChange={(date) => setSelectedDate(date!)}
+        dateFormat="yyyy-MM-dd"
       />
       <CategoriesGrid>
         {categories.map((category) => (
