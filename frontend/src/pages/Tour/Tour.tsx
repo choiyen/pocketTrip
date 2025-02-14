@@ -116,8 +116,6 @@ export default function Tour() {
         console.error("지출 내역 불러오기 실패:", error);
       }
     };
-
-    fetchSpendingLogs();
   }, [travelCodes]);
 
   useEffect(() => {
