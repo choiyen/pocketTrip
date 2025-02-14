@@ -1,6 +1,7 @@
 package project.backend.Config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -29,6 +30,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
     }
 
     // ChannelInterceptor 등록
-
+    @Bean
+    public CustomWebSocketHandler customWebSocketHandler() {
+        return new CustomWebSocketHandler();  // CustomWebSocketHandler를 Bean으로 등록
+    }
 }
 
