@@ -10,6 +10,7 @@ import project.backend.Repository.TravelPlanRepository;
 import project.backend.Repository.UserTravelsRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -48,11 +49,19 @@ public class UserTravelsService {
         return travelPlans;
     }
 
-    public UserTravelsEntity insertUserTravels(String userId, String travelCode) {
+    public UserTravelsEntity insertUserTravels(String userId, String travelCode)
+    {
         UserTravelsEntity userTravels = userTravelsRepository.findByEmail(userId);
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(userTravels.getTravelList());
+        list.add(travelCode);
 
-        userTravels.getTravelList().add(travelCode);
+        UserTravelsEntity userTravels1 = userTravels.builder()
+                .id(userTravels.getId())
+                .email(userId)
+                .travelList(list)
+                .build();
 
-        return userTravelsRepository.save(userTravels);
+        return userTravelsRepository.save(userTravels1);
     }
 }
