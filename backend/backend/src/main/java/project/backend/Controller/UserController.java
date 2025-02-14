@@ -198,13 +198,13 @@ public class UserController {
     } // 프론트엔드 연결 후 기능 정상 동작 여부 확인해야 함.
 
 
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     public ResponseEntity<?> signprofile(@RequestBody List<String> emails)
     {
         try
         {
             List<String> emailprofile = userService.getprofileByEmail(emails);
-            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 수정 완료!", emailprofile));
+            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
         }
         catch (Exception e)
         {
