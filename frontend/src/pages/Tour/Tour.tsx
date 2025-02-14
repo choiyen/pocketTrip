@@ -138,24 +138,31 @@ export default function Tour() {
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!SOCKET_URL || !token) return; // 주소 없을시 종료
+    if (!SOCKET_URL || !token || !travelCodes) return; // 주소 없을시 종료
 
-    const socket = new SockJS(`${SOCKET_URL}`);
     const client = new Client({
-      webSocketFactory: () => socket,
-      // debug: (msg) => console.log("[STOMP DEBUG]:", msg),
-
+      webSocketFactory: () => new SockJS(SOCKET_URL),
+      connectHeaders: {
+        Authorization: `Bearer ${token}`, // 헤더에 JWT 포함
+      },
+      debug: (msg) => console.log("[STOMP DEBUG]:", msg),
       // 연결 시도 간격 설정
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`, // 헤더에 JWT 포함
-      },
 
       // 연결 시
       onConnect: () => {
         console.log("연결 성공!");
+
+        client.publish({
+          destination: `/travelPlan/${travelCodes}`,
+          body: JSON.stringify({ message: "클라이언트 요청" }),
+        });
+
+        client.subscribe(`/queue/${travelCodes}`, (message) => {
+          console.log("서버 응답:", message.body);
+        });
       },
 
       // 에러 시
@@ -168,7 +175,7 @@ export default function Tour() {
     return () => {
       client.deactivate();
     };
-  }, []);
+  }, [travelCodes]);
 
   return (
     <div>
