@@ -155,7 +155,7 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 export default function Categories() {
   const location = useLocation();
   const { amount, paymentType } = location.state;
-  const { encrypted } = useParams<{ encrypted: string }>();
+  const { encrypted } = useParams<{ encrypted: string }>(); // useParams를 컴포넌트 상단에서 호출하여 id 값을 받아옴
   const [description, setDescription] = useState("");
   const [travel, setTravel] = useState({ travelCode: "", location: "" });
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
@@ -238,6 +238,11 @@ export default function Categories() {
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
     navigate(`/Tour/${encrypted}`, { state: data });
+
+    console.log("지출액:", amount);
+    console.log("지출 방식:", paymentType);
+    console.log("설명:", description);
+    console.log("선택한 카테고리 ID:", selectedCategoryId);
   };
 
   const getFormattedDate = () => {
@@ -250,8 +255,8 @@ export default function Categories() {
     return today.toLocaleDateString("ko-KR", options);
   };
 
-  const handleCategoryClick = (id: number) => {
-    setSelectedCategoryId(id); // 카테고리 클릭 시 선택된 카테고리 ID를 상태로 설정
+  const handleCategoryClick = (encrypted: number) => {
+    setSelectedCategoryId(encrypted); // 카테고리 클릭 시 선택된 카테고리 ID를 상태로 설정
   };
 
   return (
