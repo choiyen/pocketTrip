@@ -5,6 +5,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -25,13 +26,14 @@ import java.util.List;
 @Controller
 public class SoketController
 {
+
     private ResponseDTO responseDTO = new ResponseDTO<>();
 
     RestTemplate restTemplate = new RestTemplate();
 
     @MessageMapping("/travelPlan/{travelCode}")
     @SendToUser("/queue/{travelCode}")//해당 주소를 가진 자기 자신에게 방에 입장했으니, 여행방과 관련된 데이터를 보낸다.
-    public ResponseEntity<?> info(@PathVariable String travelCode, SimpMessageHeaderAccessor messageHeaderAccessor)
+    public ResponseEntity<?> info(@DestinationVariable("travelCode") String travelCode)
     {
         try
         {
@@ -57,7 +59,7 @@ public class SoketController
 
     @MessageMapping("/travelPlan/{travelCode}/Insert")
     @SendTo("/topic/insert/{travelCode}")//새로운 데이터가 저장되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
-    public ResponseEntity<?> insert(@PathVariable String travelCode, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
+    public ResponseEntity<?> insert(@DestinationVariable("travelCode")  String travelCode, @RequestBody ExpendituresDTO expendituresDTO)
     {
          try
          {
@@ -81,9 +83,10 @@ public class SoketController
              return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
          }
     }
-    @MessageMapping("/travelPlan/{travelCode}/Update")
+
+    @MessageMapping("/travelPlan/{travelCode}/{expenditureId}/Update")
     @SendTo("/topic/{travelCode}/{expenditureId}/Update")//데이터가 수정되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
-    public ResponseEntity<?> Update(@PathVariable String travelCode,@PathVariable String expenditureId, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
+    public ResponseEntity<?> Update(@DestinationVariable("travelCode") String travelCode,@DestinationVariable("expenditureId") String expenditureId, @RequestBody ExpendituresDTO expendituresDTO)
     {
         try
         {
@@ -99,9 +102,10 @@ public class SoketController
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+
     @MessageMapping("/travelPlan/{travelCode}/{expenditureId}/Delete")
     @SendTo("/Topic/{travelCode}/{expenditureId}/Delete")//데이터가 삭제되었으니, 해당 채팅방에 속한 사람 모두에게 변경된 지출 DB를 보낸다.
-    public ResponseEntity<?> Delete(@PathVariable String travelCode, @PathVariable String expenditureId, @RequestBody ExpendituresDTO expendituresDTO, SimpMessageHeaderAccessor messageHeaderAccessor)
+    public ResponseEntity<?> Delete(@DestinationVariable("travelCode") String travelCode, @DestinationVariable("expenditureId") String expenditureId, @RequestBody ExpendituresDTO expendituresDTO)
     {
         try
         {
