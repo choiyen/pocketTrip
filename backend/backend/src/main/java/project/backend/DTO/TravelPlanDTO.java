@@ -2,6 +2,7 @@ package project.backend.DTO;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Set;
 public class TravelPlanDTO
 {
 
-    private String id;
     private String travelCode;
     private String title;
     private String location;
@@ -24,5 +24,6 @@ public class TravelPlanDTO
     private Set<String> participants;
     private boolean isCalculate;
     private List<String> profiles;
+    private int currentCurrency;
 }
 //소켓으로 알림으로 보냄
