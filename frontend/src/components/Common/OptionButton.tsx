@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SlOptionsVertical } from "react-icons/sl";
 import { HiMiniPencilSquare } from "react-icons/hi2";
 import { FaTrash } from "react-icons/fa";
@@ -81,6 +81,21 @@ export default function OptionButton({
   const modalState = useSelector(
     (state: RootState) => state.modalControl.modalState
   );
+  const menuRef = useRef<HTMLUListElement>(null);
+
+  // 메뉴 밖을 클릭하면 자동으로 메뉴가 닫힌다.
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setVisibleOption(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // 버튼 동작에 따라서 모달창이 on/off된다.
   const ChangeState = () => {
@@ -112,7 +127,7 @@ export default function OptionButton({
         <SlOptionsVertical />
       </Button>
       {visibleOption && (
-        <OptionMenu>
+        <OptionMenu ref={menuRef}>
           {edit && (
             <li>
               <MenuButton onClick={() => ChangeState()}>
