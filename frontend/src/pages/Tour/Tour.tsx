@@ -141,7 +141,10 @@ export default function Tour() {
     if (!SOCKET_URL || !token || !travelCodes) return; // 주소 없을시 종료
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(SOCKET_URL),
+      webSocketFactory: () =>
+        new SockJS("http://localhost:8080/ws", null, {
+          transports: ["websocket", "xhr-streaming"],
+        }),
       connectHeaders: {
         Authorization: `Bearer ${token}`, // 헤더에 JWT 포함
       },
@@ -175,7 +178,7 @@ export default function Tour() {
     return () => {
       client.deactivate();
     };
-  }, [travelCodes]);
+  }, [travelCodes, SOCKET_URL]);
 
   return (
     <div>
