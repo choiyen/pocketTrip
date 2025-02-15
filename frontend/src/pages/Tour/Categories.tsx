@@ -163,7 +163,7 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
 
 export default function Categories() {
   const location = useLocation();
-  const { amount, paymentType, selectedUser } = location.state;
+  const { amount, paymentType, selectedUser, currencySymbol } = location.state;
   const { encrypted } = useParams<{ encrypted: string }>();
   const [description, setDescription] = useState("");
   const [travel, setTravel] = useState({ travelCode: "", location: "" });
@@ -287,9 +287,9 @@ export default function Categories() {
       </Header>
       <CompleteButton onClick={handleComplete}>완료</CompleteButton>
       <SelectedUser>{selectedUser.name}</SelectedUser>
-      <Amount $paymentType={paymentType}>{`${Number(
-        amount
-      ).toLocaleString()} ₩`}</Amount>
+      <Amount $paymentType={paymentType}>
+        {`${Number(amount).toLocaleString()} ${currencySymbol}`}
+      </Amount>
 
       <Display
         $hasDescription={!!description}
