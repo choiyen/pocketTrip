@@ -17,6 +17,9 @@ public interface UserRepository extends MongoRepository<UserEntity, String> {
     // 주어진 아이디로 사용자 찾아 반환
     UserEntity findByEmail(String userid);
 
-    List<String> findProfileUrlByEmailIn(List<String> emails);
+    @Query("{'email' : ?0}")
+    String findProfileByEmail(String email);
+
+    void  deleteByEmail(String email);
 
 }

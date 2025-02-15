@@ -84,8 +84,12 @@ public class TravelPlanController
                 List<String> list = new ArrayList<>();
                 list.add(travelPlanEntity.getFounder());
                 list.addAll(travelPlanEntity.getParticipants());
-                List<String> profilelist = userService.getprofileByEmail(list);
-                TravelPlanDTO travelPlanDTO1 = ConvertTo(profilelist, travelPlanDTO);
+                List<String> profile = new ArrayList<>();
+                for(int i = 0; i < list.size(); i++)
+                {
+                    profile.add(userService.getprofileByEmail(list.get(i)));
+                }//지금 user 정보 전부가 들어가고 있음.
+                TravelPlanDTO travelPlanDTO1 = ConvertTo(profile, travelPlanDTO);
                 return travelPlanDTO1;
             });
             List<TravelPlanDTO> resultList = travelPlanAll2.collectList().block();
@@ -95,10 +99,7 @@ public class TravelPlanController
         {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
-
     }
-
-
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
     @CacheEvict(value = "travelCode", allEntries = true)
@@ -292,8 +293,12 @@ public class TravelPlanController
             List<String> parts = new ArrayList<>();
             parts.addAll(travelPlan1.getParticipants());
             parts.add(travelPlan1.getFounder());
-            List<String> profileurl = userService.getprofileByEmail(parts);
-            TravelPlanDTO travelPlanDTO = ConvertTo(profileurl, travelPlan1);
+            List<String> profile = new ArrayList<>();
+            for(String email : parts)
+            {
+                profile.add(userService.getprofileByEmail(email));
+            }
+            TravelPlanDTO travelPlanDTO = ConvertTo(profile, travelPlan1);
             List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlanDTO)));
             return ResponseEntity.ok().body(responseDTO.Response("info", "데이터 전송 알림!!", list));
         }
@@ -352,7 +357,8 @@ public class TravelPlanController
                 Mono<TravelPlanEntity> travelPlanEntityMono1 = travelPlanService.TravelPlanUpdate(travelPlan);
                 appllicantsService.TravelPlanAllDelete(travelCode);//전체 승인이 완료되었으므로 데이터 삭제
                 Set<String> applicants = applicantsEntityMono.block().getUserList();
-                for( String applicant : applicants ){
+                for( String applicant : applicants )
+                {
                     userTravelsService.insertUserTravels(applicant, travelCode);
                 }
                 List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));

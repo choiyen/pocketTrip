@@ -3,12 +3,13 @@ package project.backend.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.UserEntity;
 import project.backend.Repository.UserRepository;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -20,14 +21,16 @@ public class UserService {
     @Autowired
     private MongoTemplate mongoTemplate;
     // 회원가입
-    public UserEntity createUser(UserEntity userEntity) {
+    public UserEntity createUser(UserEntity userEntity)
+    {
         if(userEntity == null || userEntity.getEmail() == null) {
             throw new RuntimeException("Invalid arguments");
         }
 
         String userid = userEntity.getEmail();
 
-        if(userRepository.existsByEmail(userid)) {
+        if(userRepository.existsByEmail(userid))
+        {
             log.warn("User with id {} already exists", userid);
             throw new RuntimeException("User with id " + userid + " already exists");
         }
@@ -78,8 +81,29 @@ public class UserService {
         return updatedUser;
     }
 
-    public List<String> getprofileByEmail(List<String> emails)
-    {
-       return userRepository.findProfileUrlByEmailIn(emails);
+    public String getprofileByEmail(String email) {
+
+        // Aggregation pipeline 정의
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("email").is(email)),  // 이메일 필터링
+                Aggregation.project("profile")  // profile만 반환
+        );
+
+        // MongoTemplate을 사용하여 쿼리 실행
+        AggregationResults<UserEntity> result = mongoTemplate.aggregate(aggregation, UserEntity.class, UserEntity.class);
+
+        // 결과에서 profile 반환
+        if (result.getMappedResults().isEmpty())
+        {
+            return null;  // 결과가 없으면 null 반환
+        }
+
+        return result.getMappedResults().get(0).getProfile();  // 첫 번째 사용자 profile 반환
     }
+
+    public void deteleUserID(String userId)
+    {
+        userRepository.deleteByEmail(userId);
+    }
+
 }
