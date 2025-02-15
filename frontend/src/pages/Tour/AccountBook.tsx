@@ -66,7 +66,7 @@ const CurrencyDropdown = styled.ul`
 `;
 
 const SelectUserDropDown = styled(CurrencyDropdown)`
-  margin-top: 0;
+  margin-top: 3px;
   left: 50%;
   transform: translateX(-50%);
   width: 200px;
@@ -259,7 +259,11 @@ export default function AccountBook() {
 
       if (currencyData) {
         console.log("✅ 찾은 환율 데이터:", currencyData);
-        setExchangeRate(currencyData.환전판매환율); // 환전판매환율 설정
+        const exchangeRateValue = parseFloat(
+          currencyData.환전판매환율.replace(/,/g, "")
+        );
+        setExchangeRate(exchangeRateValue);
+        // setExchangeRate(currencyData.환전판매환율); // 환전판매환율 설정
       } else {
         console.error(
           "❌ 해당 통화의 환율 데이터를 찾을 수 없습니다. (검색된 값 없음)"
@@ -340,11 +344,13 @@ export default function AccountBook() {
       state: {
         amount,
         currency,
+        currencySymbol,
         paymentType,
         date: formattedDate,
         selectedUser,
       }, // 날짜 추가
     });
+    console.log(currency);
   };
 
   return (
