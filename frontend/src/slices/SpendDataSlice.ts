@@ -7,6 +7,7 @@ const initialState = {
     paymentType: "",
     date: "",
     selectedUser: { name: "", email: "" },
+    img: "",
   },
 };
 

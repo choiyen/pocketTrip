@@ -38,8 +38,9 @@ public class WebSecurityConfig {
                 .sessionManagement(
                         sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers("/", "/auth/**", "/rate/**", "/expenditures/**", "/plan/**","/ws/**").permitAll().anyRequest().authenticated());
+        출처: https://thuthi.tistory.com/entry/SpringSecurity-항상-403에러가-뜨는-이유 [ThuThi's Tistory:티스토리]
 
-        http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, CorsFilter.class);
 
         return http.build();
     }

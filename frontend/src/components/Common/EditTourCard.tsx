@@ -4,14 +4,37 @@ import { FcAddImage } from "react-icons/fc";
 import SelectLocation from "../ui/SelectLocation";
 import axios from "axios";
 import { countryNamesInKorean } from "../../pages/Data/countryNames";
+import DatePicker from "react-datepicker";
+import Button from "./Button";
+
+interface EditTourCardProps {
+  ChangeState: () => void;
+  travel: TravelPlan;
+}
+
+interface TravelPlan {
+  id: string;
+  img?: string;
+  travelCode: string;
+  title: string;
+  founder: string;
+  location: string;
+  startDate: string; // 날짜 문자열
+  endDate: string; // 날짜 문자열
+  expense: number;
+  calculate: boolean;
+  participants: string[]; // 참가자 리스트 (배열)
+  encryptCode: string;
+}
 /*
 배경이미지 > 파일 인풋
 투어 장소 > 드롭다운 
 방 이름 > 문자열 입력
-
-소비 방식 > 0일경우 누적 > 숫자 입력시 한도 설정
 시작일 > 달력
 종료일  > 달력
+
+소비 방식 > 0일경우 누적 > 숫자 입력시 한도 설정
+
 
 
 처음 열면 기본값이 다 들어있다. 
@@ -22,6 +45,7 @@ import { countryNamesInKorean } from "../../pages/Data/countryNames";
 */
 const Container = styled.div`
   padding: 10px;
+  padding-bottom: 100px;
   .hidden {
     display: none;
     border-radius: 10px;
@@ -57,19 +81,67 @@ const InputText = styled.input`
   border-radius: 0;
   width: 100%;
   max-width: 768px;
+  font-weight: bold;
+  font-size: 18px;
+  padding-left: 15px;
+  margin-bottom: 0;
 `;
 
-const StyledSelection = styled(SelectLocation)`
-  margin: 0 auto;
+const StyledSelection = styled.div`
+  & .where-option2 {
+    background-color: white;
+    box-shadow: none;
+    width: 100%;
+    border-bottom: 1px solid grey;
+    border-radius: 0;
+  }
+  & .dropdown-menu {
+    position: absolute;
+  }
 `;
-export default function EditTourCard() {
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [tourName, setTourName] = useState<string>("");
+
+const DateSection = styled.div`
+  & .react-datepicker-wrapper {
+    width: 100%;
+  }
+  & .datepicker {
+    width: 100%;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid grey;
+    text-align: left;
+    padding-left: 15px;
+  }
+`;
+
+const ButtonWrap = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottm: 100px;
+`;
+
+const StyledButton = styled(Button)`
+  background-color: #e3e3e3;
+  color: #121212;
+`;
+export default function EditTourCard({
+  ChangeState,
+  travel,
+}: EditTourCardProps) {
+  const { img = "japan.jpg" } = travel;
+  const startDateObj = new Date(travel.startDate);
+  const endDateObj = new Date(travel.endDate);
+  const [fileName, setFileName] = useState<string | null>(img); // 썸네일
+  const [location, setSelectedCountry] = useState<string>(travel.location); // 나라 선택
+  const [tourName, setTourName] = useState<string>(travel.title); // 여행 이름
+  const [startDate, setStartDate] = useState<Date | null>(startDateObj); // 여행 시작일
+  const [endDate, setEndDate] = useState<Date | null>(endDateObj); // 여행 종료일
+  const [moneyMethod, setMoneyMethod] = useState<number>(travel.expense); // 여행 예산
+
   const [countries, setCountries] = useState<string[]>([]); // 나라 목록
   const [search, setSearch] = useState<string>(""); // 검색어
-  const [location, setSelectedCountry] = useState<string>(""); // 선택된 나라
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
-
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
     const fetchCountries = async () => {
@@ -108,6 +180,31 @@ export default function EditTourCard() {
     }
   };
 
+  const handleDateChange = (date: Date | null) => {
+    console.log(date);
+    if (date) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+
+      setStartDate(localDate);
+    }
+  };
+
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+
+      setEndDate(localDate);
+    }
+  };
+
+  const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMoneyMethod(e.target.valueAsNumber);
+  };
+
   return (
     <Container>
       <input
@@ -123,24 +220,69 @@ export default function EditTourCard() {
         </div>
       </label>
 
-      <StyledSelection
-        setIsEditing={setIsEditing}
-        setSearch={setSearch}
-        setSelectedCountry={setSelectedCountry}
-        isEditing={isEditing}
-        search={search}
-        filteredCountries={filteredCountries}
-        location={location}
-      />
+      <StyledSelection>
+        <Label>나라 선택</Label>
+        <SelectLocation
+          setIsEditing={setIsEditing}
+          setSearch={setSearch}
+          setSelectedCountry={setSelectedCountry}
+          isEditing={isEditing}
+          search={search}
+          filteredCountries={filteredCountries}
+          location={location}
+        />
+      </StyledSelection>
 
       <Label htmlFor="username">여행 이름</Label>
       <InputText
-        id="TourName"
+        id="username"
         type="text"
         value={tourName}
         onChange={handleNameChange}
         placeholder="여행 이름을 입력하세요"
       />
+
+      <DateSection>
+        <Label>여행 시작일</Label>
+        <DatePicker
+          selected={startDate}
+          onChange={handleDateChange} // 타입을 명시적으로 지정
+          dateFormat="yyyy-MM-dd"
+          placeholderText="시작일 선택"
+          className="datepicker"
+        />
+      </DateSection>
+
+      <DateSection>
+        <Label>여행 종료일</Label>
+        <DatePicker
+          selected={endDate}
+          onChange={handleEndDateChange} // 타입을 명시적으로 지정
+          dateFormat="yyyy-MM-dd"
+          placeholderText="종료일 선택"
+          className="datepicker"
+          minDate={startDate ? startDate : undefined} // startDate가 null이면 undefined로 처리
+        />
+      </DateSection>
+
+      <Label htmlFor="moneyCount">여행 예산</Label>
+      <InputText
+        id="moneyCount"
+        type="number"
+        value={moneyMethod}
+        onChange={handleMoneyChange}
+        placeholder="미기입시 0부터 누적"
+      />
+
+      <ButtonWrap>
+        <StyledButton
+          size="S"
+          name="취소"
+          $bgColor="transparent"
+          onClick={ChangeState}
+        />
+        <Button size="S" name="확인" />
+      </ButtonWrap>
     </Container>
   );
 }

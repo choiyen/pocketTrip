@@ -126,7 +126,7 @@ export default function Tour() {
     const fetchSpendingLogs = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/expenditures/${travelCodes}`,
+          `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -134,11 +134,13 @@ export default function Tour() {
             },
           }
         );
+
         setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
       } catch (error) {
         console.error("지출 내역 불러오기 실패:", error);
       }
     };
+    fetchSpendingLogs();
   }, [travelCodes]);
 
   useEffect(() => {
