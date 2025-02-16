@@ -18,6 +18,7 @@ const Register: React.FC = () => {
     passwordConfirm: "",
     phoneNumber: "",
     profile: "/ProfileImage.png",
+
   });
   const [errors, setErrors] = useState({
     emailAddrError: "",
@@ -43,6 +44,7 @@ const Register: React.FC = () => {
           password: formData.password,
           phone: formData.phoneNumber,
           profile: formData.profile,
+
         },
         {
           headers: {

@@ -10,6 +10,7 @@ import SaveTourDataReducer from "../slices/SaveTourDataSlice";
 import UserDataReducer from "../slices/userDataSlice";
 import SpendDataReducer from "../slices/SpendDataSlice";
 
+
 const store = configureStore({
   reducer: {
     counter: counterReducer,
@@ -22,6 +23,7 @@ const store = configureStore({
     saveTourData: SaveTourDataReducer,
     userData: UserDataReducer,
     SpendData: SpendDataReducer,
+
   },
 });
 
