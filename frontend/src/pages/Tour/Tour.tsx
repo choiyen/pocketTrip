@@ -12,8 +12,8 @@ import { savePath } from "../../slices/RoutePathSlice";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { Client, CompatClient, Stomp } from "@stomp/stompjs";
-
-import { m } from "framer-motion";
+import Modal from "../..//components/Common/Modal";
+import AccountModal from "./AccountModal";
 
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -23,6 +23,26 @@ export interface MoneyLogProps {
   type: "카드" | "현금";
   money: string;
 }
+interface TravelPlan {
+  id: string;
+  travelCode: string;
+  title: string;
+  founder: string;
+  location: string;
+  startDate: string; // 날짜 문자열
+  endDate: string; // 날짜 문자열
+  expense: number;
+  calculate: boolean;
+  participants: string[]; // 참가자 리스트 (배열)
+  encryptCode: string;
+}
+
+interface PaymentState {
+  amount: string | null;
+  selectedUser: selectedUserType | null;
+  paymentType: string | null;
+}
+type selectedUserType = { name: string; email: string };
 
 // const data = [
 //   {
@@ -70,29 +90,32 @@ export default function Tour() {
   };
   const [travelCodes, setTravelCodes] = useState<string>();
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
+  const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+  const [FilteringData, setFilteringData] = useState<TravelPlan[]>([]);
   const dispatch: AppDispatch = useDispatch();
-  const data = useSelector((state: RootState) => state.saveTourData);
   const { encrypted } = useParams<{ encrypted: string }>();
 
-  // 뒤로가기 누를때 메인에서 온거면 메인, 마이페이지에서 온거면 그곳으로 되돌아가야한다.
   const { state } = useLocation(); // 메인 / 마이페이지 어디서 들어온 경로인지 판별
   const fromPage = state.from; // "/" 혹은 "/mypage" 경로 추출
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // 모달 생성
+  const [modalMoving, setModalMoving] = useState<boolean>(false); // 모달 움직임 제어
+  const [accountModalContent, setAccountModalContent] = useState<
+    "AccountBook" | "categories"
+  >("AccountBook");
 
-  // 홈 혹은 마이페이지 중 어느 경로로 들어온건지 저장 (뒤로가기 기능)
   useEffect(() => {
-    dispatch(savePath(fromPage));
+    dispatch(savePath(fromPage)); // 뒤로가기 경로 설정
+    const decode = decrypt(encrypted!); // 여행코드 해독
+    setTravelCodes(decode); // 여행코드 저장
+    getTravelData(token!); // 모든 여행 리스트 요청
   }, []);
 
-  // url의 암호화 여행코드 복호화해서 저장
+  // 여행 리스트와 코드를 기반으로 하나의 여행 선택
   useEffect(() => {
-    const decode = decrypt(encrypted!);
-    setTravelCodes(decode);
-  }, [encrypted]);
-
-  // 여행 정보들 중 여행코드가 일치하는 데이터만 고른다.
-  const FilteringData = data.value.filter(
-    (item) => item.encryptCode === encrypted
-  );
+    setFilteringData(
+      TourDataArr.filter((item) => item.travelCode === travelCodes)
+    );
+  }, [TourDataArr]);
 
   const { amount, paymentType, description, category } = state || {};
 
@@ -102,7 +125,6 @@ export default function Tour() {
 
     const fetchSpendingLogs = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `http://localhost:8080/expenditures/${travelCodes}`,
           {
@@ -192,12 +214,56 @@ export default function Tour() {
     };
   }, []);
 
+  // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
+  const getTravelData = async (token: string) => {
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const TourData = response.data.data;
+    setTourDataArr(TourData);
+  };
+
+  // 버튼 동작에 따라서 모달창이 on/off된다.
+  const ChangeState = () => {
+    // 모달창이 렌더링 되기 전이면 렌더링 후 등장
+    if (modalVisible === false) {
+      setModalVisible(true);
+      setTimeout(() => {
+        setModalMoving(true);
+      }, 50);
+    } else {
+      // // 모달창이 렌더링 되어 있는 상태면 내리는 동작 이후 제거
+      setModalMoving(false);
+      setTimeout(() => {
+        setModalVisible(false);
+      }, 500);
+      setAccountModalContent("AccountBook");
+    }
+  };
   return (
     <div>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
-      <TourInfo Tourdata={FilteringData[0]} />
-      <MoneyInfo Tourdata={FilteringData[0]} />
+      {FilteringData[0] && <TourInfo Tourdata={FilteringData[0]} />}
+      {FilteringData[0] && (
+        <MoneyInfo Tourdata={FilteringData[0]} ChangeState={ChangeState} />
+      )}
       <Usehistory logs={logs} />
+      {modalVisible && (
+        <AccountModal
+          modalMoving={modalMoving}
+          ChangeState={ChangeState}
+          travel={FilteringData[0]}
+          accountModalContent={accountModalContent}
+          setAccountModalContent={setAccountModalContent}
+        />
+      )}
     </div>
   );
 }

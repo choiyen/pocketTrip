@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/Common/Button";
 import styled from "styled-components";
 
@@ -17,6 +17,7 @@ interface TravelData {
 }
 interface TourCardProps {
   Tourdata: TravelData; // props 타입 정의
+  ChangeState: () => void;
 }
 
 const MoneyInfoWrap = styled.div`
@@ -48,11 +49,13 @@ const MoneyInfoWrap = styled.div`
   }
 `;
 
-export default function MoneyInfo({ Tourdata }: TourCardProps) {
+export default function MoneyInfo({ Tourdata, ChangeState }: TourCardProps) {
   const navigate = useNavigate();
+  const { encrypted } = useParams<{ encrypted: string }>();
+
   const goToAccountBook = () => {
-    navigate(`/Tour/${Tourdata.encryptCode}/accountbook`, {
-      state: { location: Tourdata.location }, // location을 state로 전달
+    navigate(`/Tour/${encrypted}/accountbook`, {
+      state: { location: Tourdata.location, encrypted: encrypted }, // location을 state로 전달
     });
   };
 
@@ -63,7 +66,7 @@ export default function MoneyInfo({ Tourdata }: TourCardProps) {
     <MoneyInfoWrap>
       <h2>현재예산</h2>
       <strong>{formattedBudget}</strong>
-      <Button size="M" name="가계부 작성" onClick={goToAccountBook} />
+      <Button size="M" name="가계부 작성" onClick={ChangeState} />
     </MoneyInfoWrap>
   );
 }

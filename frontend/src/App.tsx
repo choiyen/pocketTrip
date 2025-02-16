@@ -148,22 +148,22 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
+          {/* <Route
             path="/Tour/:encrypted/accountbook"
             element={
               <RequireAuth>
                 <AccountBook />
               </RequireAuth>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="/Tour/:encrypted/Categories"
             element={
               <RequireAuth>
                 <Categories />
               </RequireAuth>
             }
-          />
+          /> */}
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
