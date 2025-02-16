@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Common/Header";
@@ -186,6 +186,10 @@ export default function AccountBook() {
     { name: "김영희", email: "email3@naver.com" },
     { name: "홍길동", email: "email4@naver.com" },
   ];
+
+  useEffect(() => {
+    const savedUrl = sessionStorage.getItem("ws");
+  }, []);
 
   useEffect(() => {
     if (country) {

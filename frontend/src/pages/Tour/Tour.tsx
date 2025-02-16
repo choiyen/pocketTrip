@@ -12,8 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 
 import axios from "axios";
-import CryptoJS from "crypto-js";
-import { Client } from "@stomp/stompjs";
+import CryptoJS, { enc } from "crypto-js";
+import { Stomp, Message, Client } from "@stomp/stompjs";
 
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
@@ -135,40 +135,133 @@ export default function Tour() {
 
   const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
 
+  var isConnected = false; //연결이 안되어 있을 떄는 false
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!SOCKET_URL || !token) return; // 주소 없을시 종료
+    if (!SOCKET_URL || !token) return; // 주소나 토큰 없을 시 종료
 
-    const socket = new SockJS(`${SOCKET_URL}`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      // debug: (msg) => console.log("[STOMP DEBUG]:", msg),
+    const socket = new SockJS(`${SOCKET_URL}/ws`);
+    const client = Stomp.over(socket);
 
-      // 연결 시도 간격 설정
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`, // 헤더에 JWT 포함
+    // WebSocket 연결 시 Authorization 헤더에 JWT 토큰 전달
+    client.connect(
+      { Authorization: `Bearer ${token}` }, // 이 부분이 중요
+      function (frame: String) {
+        console.log("소켓 연결 성공", frame);
+        isConnected = true;
+        if (encrypted === undefined) return;
+        console.log(decrypt(encrypted));
+        // // 메시지 전송
+        // client.send("/app/travelPlan", {}, "여행 계획 메시지");
+
+        // // 구독
+        // client.subscribe("/topic/travelPlan", function (response) {
+        //   console.log("서버로부터 받은 메시지: " + response.body);
+        // });
+
+        // Tour 페이지에서 여행 계획 요청
+        // client.send(
+        //   `/app/travelPlan/${decrypt(encrypted)}`, // 경로
+        //   { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+        //   JSON.stringify({
+        //     message: "여행 계획을 요청합니다.",
+        //   }) // 본문
+        // );
+
+        // client.subscribe(
+        //   `/user/queue/${decrypt(encrypted)}`,
+        //   function (response) {
+        //     console.log("나에게 온 메시지: " + response.body);
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log(obj);
+        //   }
+        // );
+        //Tour 페이지에서 여행 계획 추가 요청;
+        // insertAccountBook(expendituresData);
+        // client.subscribe(
+        //   `/topic/insert/${decrypt(encrypted)}`,
+        //   function (response) {
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log("나에게 온 메시지: " + obj);
+        //   }
+        // );
+
+        updateAccountBook(expendituresupdateData);
+        client.subscribe(
+          `/topic/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
+          function (response) {
+            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+            const message = response.body;
+            const obj = JSON.parse(message).body.data;
+            console.log("나에게 온 메시지: " + obj);
+          }
+        );
       },
+      function (error: String) {
+        console.log("소켓 연결 실패", error);
+      }
+    );
 
-      // 연결 시
-      onConnect: () => {
-        console.log("연결 성공!");
-      },
+    const expendituresData = {
+      purpose: "dfsdfdf",
+      method: "dfdff",
+      isPublic: true,
+      payer: "ccc1459@naver.com",
+      date: "2015-10-19",
+      KRW: 555456,
+      amount: 4444,
+      currency: "dfddddff",
+      description: "fdfdf",
+    };
 
-      // 에러 시
-      onStompError: (frame) => {
-        console.error("STOMP 오류 발생:", frame);
-      },
-    });
-    client.activate();
+    function insertAccountBook(expendituresData: any) {
+      // 메시지 전송
+      // 메시지 수신
+      if (encrypted === undefined) return;
+
+      client.send(
+        `/app/travelPlan/${decrypt(encrypted)}/Insert`, // 경로
+        { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+        JSON.stringify(expendituresData) // 객체를 JSON 문자열로 변환하여 본문에 포함
+      );
+    }
+
+    const expendituresupdateData = {
+      purpose: "dfsdfdf11111111111111111111",
+      method: "dfdff111111111111111",
+      isPublic: false,
+      payer: "ccc1459@naver.com",
+      date: "2015-10-11",
+      amount: 4445555,
+      currency: "dfddddffaaa",
+      KRW: 555,
+      description: "fdfdfdddd",
+    };
+
+    const expendituresURL = "oNpoTZYN";
+    //비용 데이터를 수정하기 위한 expenditureID
+    function updateAccountBook(expendituresupdateData: any) {
+      if (encrypted === undefined) return;
+      client.send(
+        `/app/travelPlan/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
+        { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+        JSON.stringify(expendituresupdateData)
+        // 객체를 JSON 문자열로 변환하여 본문에 포함
+      );
+    }
 
     return () => {
-      client.deactivate();
+      // 컴포넌트 언마운트 시 연결 종료
+      client.disconnect(() => {
+        console.log("소켓 연결 종료");
+      });
     };
-  }, []);
+  }, [SOCKET_URL, localStorage.getItem("accessToken")]); // 의존성 배열에 추가
 
   return (
     <div>
