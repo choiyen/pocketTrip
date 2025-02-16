@@ -20,7 +20,7 @@ const ModalBox = styled.div<{ $isActive: boolean }>`
   box-shadow: 0px -1px 3px 3px rgba(0, 0, 0, 0.2);
   position: fixed;
   left: 50%;
-  z-index: 80;
+  z-index: 81;
   transform: ${({ $isActive }) =>
     $isActive ? "translate(-50%, 0vh)" : "translate(-50%, 100vh)"};
   transition-duration: 500ms;

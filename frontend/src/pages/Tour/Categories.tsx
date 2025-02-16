@@ -8,6 +8,24 @@ import { countryNamesInKorean } from "../Data/countryNames";
 import DatePicker from "react-datepicker";
 import "../../styles/calender.css";
 
+interface CategoryState {
+  travel: TravelPlan;
+  setAccountModalContent: (value: "AccountBook" | "categories") => void;
+  ChangeState: () => void;
+}
+type TravelPlan = {
+  id: string;
+  travelCode: string;
+  title: string;
+  founder: string;
+  location: string;
+  startDate: string; // 날짜 문자열
+  endDate: string; // 날짜 문자열
+  expense: number;
+  calculate: boolean;
+  participants: string[]; // 참가자 리스트 (배열)
+  encryptCode: string;
+};
 const categories = [
   { id: 1, label: "숙소", icon: "🏠", color: "#A5D8FF" },
   { id: 2, label: "교통", icon: "🚌", color: "#FFD3B6" },
@@ -26,18 +44,21 @@ const categories = [
   { id: 15, label: "관광", icon: "🎠", color: "#FFEAB6" },
   { id: 16, label: "팁", icon: "💸", color: "#C8E6D8" },
 ];
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  height: 100%;
+  overflow: scroll;
+  padding-bottom: 100px;
+  scrollbar-width: none;
 `;
-
 const Header = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   padding: 10px 20px;
   font-size: 16px;
@@ -54,19 +75,22 @@ const Header = styled.div`
     flex: 1;
   }
 `;
-
 const CompleteButton = styled.button`
   position: absolute;
-  top: 24px;
-  right: 20px;
+  display: block;
+  top: 50%;
+  right: -20px;
+  transform: translate(0, -50%);
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 20px;
-  width: 50px;
-  padding: 5px 10px;
+  border-radius: 10px;
+  width: 70px;
+  white-space: nowrap;
   font-size: 15px;
   font-weight: bold;
+  line-height: 2;
+  padding: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 
@@ -80,7 +104,6 @@ const CompleteButton = styled.button`
     transform: scale(0.95);
   }
 `;
-
 const Amount = styled.div<{ $paymentType: string }>`
   background-color: ${(props) =>
     props.$paymentType === "cash" ? "#4CAF50" : "#007BFF"};
@@ -89,7 +112,6 @@ const Amount = styled.div<{ $paymentType: string }>`
   border-radius: 20px;
   font-size: 20px;
   font-weight: bold;
-  margin-bottom: 20px;
 `;
 const SelectedUser = styled.span`
   margin-top: 20%;
@@ -99,23 +121,21 @@ const SelectedUser = styled.span`
   color: #3a3a3a;
   letter-spacing: 3px;
 `;
-
 const Display = styled.textarea<{ $hasDescription: boolean }>`
   font-size: 24px;
   font-weight: bold;
   color: ${(props) => (props.$hasDescription ? "#333" : "#b0b0b0")};
-  margin: 20px 0;
   text-align: center;
   min-height: 30px;
-  margin-top: 15%;
+  margin-top: 20px;
   background-color: transparent;
   border: none;
   outline: none;
   width: 80%;
   font-family: inherit;
   resize: none;
+  scrollbar-width: none;
 `;
-
 const CategoriesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -124,7 +144,6 @@ const CategoriesGrid = styled.div`
   margin: 20px 0;
   margin-top: 15%;
 `;
-
 const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
@@ -161,12 +180,28 @@ const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
   `}
 `;
 
-export default function Categories() {
-  const location = useLocation();
-  const { amount, paymentType, selectedUser } = location.state;
-  const { encrypted } = useParams<{ encrypted: string }>();
+export default function Categories({
+  travel,
+  setAccountModalContent,
+  ChangeState,
+}: CategoryState) {
+  // const location = useLocation();
+  // const { amount, paymentType, selectedUser } = location.state;
+
+  // 리덕스 데이터 받기
+  const {
+    amount,
+    currency,
+    paymentType,
+    date,
+    selectedUser = { name: "", email: "" },
+  } = useSelector((state: RootState) => {
+    return state.SpendData.value;
+  });
+
+  // const { encrypted } = useParams<{ encrypted: string }>();
   const [description, setDescription] = useState("");
-  const [travel, setTravel] = useState({ travelCode: "", location: "" });
+  // const [travel, setTravel] = useState({ travelCode: "", location: "" });
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -180,19 +215,19 @@ export default function Categories() {
   };
 
   // 현재 다루는 여행 데이터의 여행 코드를 찾는다.
-  useEffect(() => {
-    const currentTourData = TourDataArr.filter(
-      (data) => data.encryptCode === encrypted
-    );
-    const location = findKeyByValue(
-      countryNamesInKorean,
-      currentTourData[0].location
-    );
-    setTravel({
-      location: location!,
-      travelCode: currentTourData[0].travelCode,
-    });
-  }, [encrypted]);
+  // useEffect(() => {
+  //   const currentTourData = TourDataArr.filter(
+  //     (data) => data.encryptCode === encrypted
+  //   );
+  //   const location = findKeyByValue(
+  //     countryNamesInKorean,
+  //     currentTourData[0].location
+  //   );
+  //   setTravel({
+  //     location: location!,
+  //     travelCode: currentTourData[0].travelCode,
+  //   });
+  // }, [encrypted]);
 
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
@@ -202,9 +237,9 @@ export default function Categories() {
 
   const navigate = useNavigate();
 
-  const goToAccountbook = () => {
-    navigate(-1);
-  };
+  // const goToAccountbook = () => {
+  //   navigate(-1);
+  // };
 
   const handleComplete = async () => {
     const selectedCategory = categories.find(
@@ -216,12 +251,11 @@ export default function Categories() {
       amount: Number(amount),
       KRW: 1000,
       date: selectedDate,
-      payer: selectedUser.email,
+      payer: selectedUser?.email,
       method: paymentType,
       description,
       purpose: selectedCategory ? selectedCategory.label : "데이터 없음",
     };
-    console.log(data);
     try {
       const token = localStorage.getItem("accessToken");
       await axios.post(
@@ -234,6 +268,8 @@ export default function Categories() {
           },
         }
       );
+      ChangeState();
+      setAccountModalContent("AccountBook");
       console.log("데이터 저장 성공:", data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -244,12 +280,7 @@ export default function Categories() {
     }
 
     // 동적으로 받아온 id를 URL에 반영하여 이동
-    navigate(`/Tour/${encrypted}`, { state: data });
-
-    console.log("지출액:", amount);
-    console.log("지출 방식:", paymentType);
-    console.log("설명:", description);
-    console.log("선택한 카테고리 ID:", selectedCategoryId);
+    // navigate(`/Tour/${encrypted}`, { state: data });
   };
 
   const getFormattedDate = () => {
@@ -269,7 +300,7 @@ export default function Categories() {
   return (
     <Container>
       <Header>
-        <svg
+        {/* <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
           height="16"
@@ -282,11 +313,16 @@ export default function Categories() {
             fillRule="evenodd"
             d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
           />
-        </svg>
-        <span>{getFormattedDate()}</span>
+        </svg> */}
+        {/* <span>{getFormattedDate()}</span> */}
+        <DatePicker
+          selected={selectedDate}
+          onChange={(date) => setSelectedDate(date!)}
+          dateFormat="yyyy-MM-dd"
+        />
+        <CompleteButton onClick={handleComplete}>완료</CompleteButton>
       </Header>
-      <CompleteButton onClick={handleComplete}>완료</CompleteButton>
-      <SelectedUser>{selectedUser.name}</SelectedUser>
+      <SelectedUser>{selectedUser?.name}</SelectedUser>
       <Amount $paymentType={paymentType}>{`${Number(
         amount
       ).toLocaleString()} ₩`}</Amount>
@@ -297,11 +333,7 @@ export default function Categories() {
         onChange={handleDescriptionChange}
         placeholder="어디에 사용하셨나요"
       />
-      <DatePicker
-        selected={selectedDate}
-        onChange={(date) => setSelectedDate(date!)}
-        dateFormat="yyyy-MM-dd"
-      />
+
       <CategoriesGrid>
         {categories.map((category) => (
           <Category
