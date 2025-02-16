@@ -26,6 +26,7 @@ type TravelPlan = {
   encryptCode: string;
 };
 
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -75,10 +76,41 @@ const CurrencyItem = styled.li`
   cursor: pointer;
   transition: background-color 0.3s ease;
 
+
+
+const CurrencyDropdown = styled.ul`
+  margin-top: 110px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  position: absolute;
+  padding: 10px 0;
+  text-align: center;
+`;
+
+const SelectUserDropDown = styled(CurrencyDropdown)`
+  margin-top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+`;
+
+const CurrencyItem = styled.li`
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
   &:hover {
     background-color: #f0f0f0;
   }
 `;
+
 const Display = styled.div<{ $hasAmount: boolean }>`
   font-size: 24px;
   font-weight: bold;
@@ -182,6 +214,7 @@ export default function AccountBook({
     { name: "홍길동", email: "email4@naver.com" },
   ];
 
+
   useEffect(() => {
     if (travel.location) {
       // 1. 한글 국가명으로 영어 국가명 찾기
@@ -218,6 +251,7 @@ export default function AccountBook({
       console.log("country 값이 전달되지 않았습니다.");
     }
   }, [travel.location]);
+
 
   const fetchExchangeRate = async (selectedCurrency: string) => {
     try {
@@ -356,6 +390,7 @@ export default function AccountBook({
     //   }, // 날짜 추가
     // });
   };
+
   return (
     <>
       <Container>

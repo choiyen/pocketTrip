@@ -15,6 +15,7 @@ import { Client, CompatClient, Stomp } from "@stomp/stompjs";
 import Modal from "../..//components/Common/Modal";
 import AccountModal from "./AccountModal";
 
+
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
   title: string;
@@ -92,6 +93,7 @@ export default function Tour() {
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
   const [FilteringData, setFilteringData] = useState<TravelPlan[]>([]);
+
   const dispatch: AppDispatch = useDispatch();
   const { encrypted } = useParams<{ encrypted: string }>();
 
@@ -103,6 +105,7 @@ export default function Tour() {
     "AccountBook" | "categories"
   >("AccountBook");
 
+  // 홈 혹은 마이페이지 중 어느 경로로 들어온건지 저장 (뒤로가기 기능)
   useEffect(() => {
     dispatch(savePath(fromPage)); // 뒤로가기 경로 설정
     const decode = decrypt(encrypted!); // 여행코드 해독
@@ -117,6 +120,7 @@ export default function Tour() {
     );
   }, [TourDataArr]);
 
+
   const { amount, paymentType, description, category } = state || {};
 
   // 여행 코드에 맞는 비용 내역 불러오는 코드
@@ -127,6 +131,7 @@ export default function Tour() {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -134,13 +139,13 @@ export default function Tour() {
             },
           }
         );
-
         setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
       } catch (error) {
         console.error("지출 내역 불러오기 실패:", error);
       }
     };
     fetchSpendingLogs();
+
   }, [travelCodes]);
 
   useEffect(() => {
@@ -174,6 +179,7 @@ export default function Tour() {
 
     // 소켓 연결 시작
     const socket = new SockJS(SOCKET_URL);
+
 
     const stompClient = new Client({
       webSocketFactory: () => socket,
