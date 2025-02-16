@@ -126,7 +126,11 @@ export default function TourCardList({
           <Location>{travel.location}</Location>
         </div>
       </Travel>
-      <OptionButton className="travelButton" editType="editTourCardList" />
+      <OptionButton
+        className="travelButton"
+        editType="editTourCardList"
+        travelCode={travel.travelCode}
+      />
     </TrvelWrap>
   );
 }

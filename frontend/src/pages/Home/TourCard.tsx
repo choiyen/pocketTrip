@@ -95,7 +95,6 @@ export default function TourCard({ Tourdata }: TourCardProps) {
   const startedDate = new Date(startDate);
   const endedDate = new Date(endDate);
   const today = new Date();
-  console.log(Tourdata);
 
   // 시작 종료일 시간 차이 계산
   const totalDuration = endedDate.getTime() - startedDate.getTime();
@@ -129,7 +128,11 @@ export default function TourCard({ Tourdata }: TourCardProps) {
           {/* 진행률 기입 시 자동 변경 */}
         </div>
       </Card>
-      <StyledOptionButton remove={false} editType="editTourCard" />
+      <StyledOptionButton
+        remove={false}
+        editType="editTourCard"
+        travelCode={travelCode}
+      />
     </Container>
   );
 }
