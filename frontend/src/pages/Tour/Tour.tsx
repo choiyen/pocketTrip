@@ -90,7 +90,19 @@ export default function Tour() {
   };
   const [travelCodes, setTravelCodes] = useState<string>();
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
-  const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+  const [TourData, setTourData] = useState<TravelPlan>({
+    id: "",
+  travelCode: "",
+  title: "",
+  founder: "",
+  location: "",
+  startDate: "", // 날짜 문자열
+  endDate: "", // 날짜 문자열
+  expense: 0,
+  calculate: false,
+  participants: [], // 참가자 리스트 (배열)
+  encryptCode: "",
+  });
   const [FilteringData, setFilteringData] = useState<TravelPlan[]>([]);
 
   const dispatch: AppDispatch = useDispatch();
@@ -109,15 +121,14 @@ export default function Tour() {
     dispatch(savePath(fromPage)); // 뒤로가기 경로 설정
     const decode = decrypt(encrypted!); // 여행코드 해독
     setTravelCodes(decode); // 여행코드 저장
-    getTravelData(token!); // 모든 여행 리스트 요청
   }, []);
 
-  // 여행 리스트와 코드를 기반으로 하나의 여행 선택
-  useEffect(() => {
-    setFilteringData(
-      TourDataArr.filter((item) => item.travelCode === travelCodes)
-    );
-  }, [TourDataArr]);
+  // // 여행 리스트와 코드를 기반으로 하나의 여행 선택
+  // useEffect(() => {
+  //   setFilteringData(
+  //     TourDataArr.filter((item) => item.travelCode === travelCodes)
+  //   );
+  // }, [TourDataArr]);
 
 
   const { amount, paymentType, description, category } = state || {};
@@ -126,23 +137,7 @@ export default function Tour() {
   useEffect(() => {
     if (!travelCodes) return;
 
-    const fetchSpendingLogs = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
-
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
-      } catch (error) {
-        console.error("지출 내역 불러오기 실패:", error);
-      }
-    };
+    getTravelData(); // 모든 여행 리스트 요청
     fetchSpendingLogs();
 
   }, [travelCodes]);
@@ -163,8 +158,6 @@ export default function Tour() {
   }, [amount, paymentType, description, category]);
 
 
-  const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
-
   var isConnected = false; //연결이 안되어 있을 떄는 false
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
@@ -182,33 +175,33 @@ export default function Tour() {
         isConnected = true;
         if (encrypted === undefined) return;
         console.log(decrypt(encrypted));
+
         // // 메시지 전송
         // client.send("/app/travelPlan", {}, "여행 계획 메시지");
-
         // // 구독
         // client.subscribe("/topic/travelPlan", function (response) {
         //   console.log("서버로부터 받은 메시지: " + response.body);
         // });
 
-        // Tour 페이지에서 여행 계획 요청
-        // client.send(
-        //   `/app/travelPlan/${decrypt(encrypted)}`, // 경로
-        //   { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
-        //   JSON.stringify({
-        //     message: "여행 계획을 요청합니다.",
-        //   }) // 본문
-        // );
+        // Tour 페이지에서 여행 계획 요청 : 데이터를 조회하기 위한 코드
+        client.send(
+          `/app/travelPlan/${decrypt(encrypted)}`, // 경로
+          { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+          JSON.stringify({
+            message: "여행 계획을 요청합니다.",
+          }) // 본문
+        );
+        client.subscribe(
+          `/user/queue/${decrypt(encrypted)}`,
+          function (response) {
+            console.log("나에게 온 메시지: " + response.body);
+            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+            const message = response.body;
+            const obj = JSON.parse(message).body.data;
+            console.log(obj);
+          }
+        );
 
-        // client.subscribe(
-        //   `/user/queue/${decrypt(encrypted)}`,
-        //   function (response) {
-        //     console.log("나에게 온 메시지: " + response.body);
-        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
-        //     const message = response.body;
-        //     const obj = JSON.parse(message).body.data;
-        //     console.log(obj);
-        //   }
-        // );
         //Tour 페이지에서 여행 계획 추가 요청;
         // insertAccountBook(expendituresData);
         // client.subscribe(
@@ -221,22 +214,34 @@ export default function Tour() {
         //   }
         // );
 
-        updateAccountBook(expendituresupdateData);
-        client.subscribe(
-          `/topic/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
-          function (response) {
-            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
-            const message = response.body;
-            const obj = JSON.parse(message).body.data;
-            console.log("나에게 온 메시지: " + obj);
-          }
-        );
+        // updateAccountBook(expendituresupdateData);
+        // client.subscribe(
+        //   `/topic/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
+        //   function (response) {
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log("나에게 온 메시지: " + obj);
+        //   }
+        // );
+
+        // deleteAccountBook();
+        // client.subscribe(
+        //   `/topic/${decrypt(encrypted)}/${expendituresURL}/Delete`, // 경로
+        //   function (response) {
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log("나에게 온 메시지: " + obj);
+        //   }
+        // );
       },
       function (error: String) {
         console.log("소켓 연결 실패", error);
       }
     );
 
+    //데이터를 추가하기 위한 코드
     const expendituresData = {
       purpose: "dfsdfdf",
       method: "dfdff",
@@ -261,6 +266,7 @@ export default function Tour() {
       );
     }
 
+    //데이터를 업데이트 하기 위한 코드
     const expendituresupdateData = {
       purpose: "dfsdfdf11111111111111111111",
       method: "dfdff111111111111111",
@@ -273,7 +279,7 @@ export default function Tour() {
       description: "fdfdfdddd",
     };
 
-    const expendituresURL = "oNpoTZYN";
+    const expendituresURL = "lcToW0l1";
     //비용 데이터를 수정하기 위한 expenditureID
     function updateAccountBook(expendituresupdateData: any) {
       if (encrypted === undefined) return;
@@ -282,6 +288,14 @@ export default function Tour() {
         { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
         JSON.stringify(expendituresupdateData)
         // 객체를 JSON 문자열로 변환하여 본문에 포함
+      );
+    }
+
+    function deleteAccountBook() {
+      if (encrypted === undefined) return;
+      client.send(
+        `/app/travelPlan/${decrypt(encrypted)}/${expendituresURL}/Delete`, // 경로
+        { Authorization: `Bearer ${token}` } // 헤더 (Authorization 포함)
       );
     }
 
@@ -294,9 +308,9 @@ export default function Tour() {
   }, [SOCKET_URL, localStorage.getItem("accessToken")]); // 의존성 배열에 추가
 
   // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
-  const getTravelData = async (token: string) => {
+  const getTravelData = async () => {
     const response = await axios.post(
-      `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
+      `${process.env.REACT_APP_API_BASE_URL}/plan/select/${travelCodes}`,
       {},
       {
         headers: {
@@ -305,8 +319,28 @@ export default function Tour() {
         },
       }
     );
-    const TourData = response.data.data;
-    setTourDataArr(TourData);
+
+    console.log(response.data);
+    const TourData = response.data.data[0];
+    setTourData(TourData);
+  };
+
+  const fetchSpendingLogs = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      setLogs(response.data.data); // 서버에서 받은 데이터를 logs에 저장
+    } catch (error) {
+      console.error("지출 내역 불러오기 실패:", error);
+    }
   };
 
   // 버튼 동작에 따라서 모달창이 on/off된다.
@@ -329,16 +363,16 @@ export default function Tour() {
   return (
     <div>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
-      {FilteringData[0] && <TourInfo Tourdata={FilteringData[0]} />}
-      {FilteringData[0] && (
-        <MoneyInfo Tourdata={FilteringData[0]} ChangeState={ChangeState} />
+      {TourData && <TourInfo Tourdata={TourData} />}
+      {TourData && (
+        <MoneyInfo Tourdata={TourData} ChangeState={ChangeState} />
       )}
       <Usehistory logs={logs} />
       {modalVisible && (
         <AccountModal
           modalMoving={modalMoving}
           ChangeState={ChangeState}
-          travel={FilteringData[0]}
+          travel={TourData}
           accountModalContent={accountModalContent}
           setAccountModalContent={setAccountModalContent}
         />
