@@ -67,7 +67,7 @@ type selectedUserType = { name: string; email: string };
 // ];
 
 export default function Tour() {
-  const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
+  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL;
   const token = localStorage.getItem("accessToken");
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
@@ -159,61 +159,69 @@ export default function Tour() {
   }, [amount, paymentType, description, category]);
 
   // 소켓 통신 (필요시 추가)
+  // useEffect(() => {
+  //   if (!token) {
+  //     console.error("❌ AccessToken이 없습니다. WebSocket 연결 불가.");
+  //     return;
+  //   }
+  //   // 재연결 방지
+  //   if (stompClientRef.current && stompClientRef.current.active) {
+  //     console.log("✅ 이미 WebSocket이 활성화되어 있습니다.");
+  //     return;
+  //   }
+
+  //   if (!SOCKET_URL) return;
+
+  //   // 소켓 연결 시작
+  //   const socket = new SockJS(`${SOCKET_URL}/ws`);
+  //   const client = Stomp.over(socket);
+
+  //   const stompClient = new Client({
+  //     webSocketFactory: () => socket,
+  //     connectHeaders: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     debug: (msg) => console.log(msg),
+  //     reconnectDelay: 5000,
+  //     heartbeatIncoming: 4000,
+  //     heartbeatOutgoing: 4000,
+  //   });
+
+  //   stompClient.onConnect = () => {
+  //     console.log("연결 성공");
+
+  //     // ✅ 서버에서 메시지를 받을 구독 경로 설정
+  //     stompClient.subscribe(`/queue/${travelCodes}`, (message) => {
+  //       console.log("📩 받은 메시지:", message.body);
+  //     });
+
+  //     // ✅ 서버로 메시지를 보내기
+  //     stompClient.publish({
+  //       destination: `/travelPlan/${travelCodes}`,
+  //       body: JSON.stringify({ sender: "user1", content: "Hello WebSocket!" }),
+  //     });
+  //   };
+
+  //   stompClient.onStompError = (frame) => {
+  //     console.error("소켓 오류", frame);
+  //   };
+
+  //   // stompClient.activate();
+
+  //   stompClientRef.current = stompClient;
+
+  //   return () => {
+  //     if (stompClientRef.current) {
+  //       stompClientRef.current.deactivate();
+  //     }
+  //   };
+  // }, []);
+
   useEffect(() => {
-    if (!token) {
-      console.error("❌ AccessToken이 없습니다. WebSocket 연결 불가.");
-      return;
-    }
-    // 재연결 방지
-    if (stompClientRef.current && stompClientRef.current.active) {
-      console.log("✅ 이미 WebSocket이 활성화되어 있습니다.");
-      return;
-    }
+    const socket = new SockJS(`${SOCKET_URL}/ws`);
+    const client = Stomp.over(socket);
 
-    if (!SOCKET_URL) return;
-
-    // 소켓 연결 시작
-    const socket = new SockJS(SOCKET_URL);
-
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-      debug: (msg) => console.log(msg),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
-    stompClient.onConnect = () => {
-      console.log("연결 성공");
-
-      // ✅ 서버에서 메시지를 받을 구독 경로 설정
-      stompClient.subscribe(`/queue/${travelCodes}`, (message) => {
-        console.log("📩 받은 메시지:", message.body);
-      });
-
-      // ✅ 서버로 메시지를 보내기
-      stompClient.publish({
-        destination: `/travelPlan/${travelCodes}`,
-        body: JSON.stringify({ sender: "user1", content: "Hello WebSocket!" }),
-      });
-    };
-
-    stompClient.onStompError = (frame) => {
-      console.error("소켓 오류", frame);
-    };
-
-    // stompClient.activate();
-
-    stompClientRef.current = stompClient;
-
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.deactivate();
-      }
-    };
+    client.connect();
   }, []);
 
   // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
