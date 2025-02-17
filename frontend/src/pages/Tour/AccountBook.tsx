@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Common/Header";
@@ -183,6 +183,7 @@ export default function AccountBook({
 
 
   useEffect(() => {
+
     if (travel.location) {
       // 1. 한글 국가명으로 영어 국가명 찾기
       const englishCountryName = Object.keys(countryNamesInKorean).find(
