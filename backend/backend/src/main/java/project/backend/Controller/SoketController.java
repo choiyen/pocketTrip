@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -200,14 +202,14 @@ public class SoketController
 
 
     @MessageMapping("/travelPlan/{travelCode}/{expenditureId}/Delete")
-    @SendTo("/Topic/{travelCode}/{expenditureId}/Delete")//데이터가 삭제되었으니, 해당 채팅방에 속한 사람 모두에게 변경된 지출 DB를 보낸다.
+    @SendTo("/topic/{travelCode}/{expenditureId}/Delete")//데이터가 삭제되었으니, 해당 채팅방에 속한 사람 모두에게 변경된 지출 DB를 보낸다.
     public ResponseEntity<?> Delete(@Header("Authorization") String authHeader, @DestinationVariable("travelCode") String travelCode, @DestinationVariable("expenditureId") String expenditureId)
     {
         try
         {
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " +token);
+            headers.set("Authorization", token);
             restTemplate.getMessageConverters()
                     .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
             String url = "http://localhost:8080/expenditures/" + travelCode + "/" + expenditureId;
@@ -218,10 +220,14 @@ public class SoketController
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
-                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
+                String url2 = "http://localhost:8080/expenditures/" + travelCode;
+                ResponseEntity<String> response2 = restTemplate.exchange(url2, HttpMethod.GET, entity2, String.class);
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
-                    return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(response2.getBody())));
+                    List<Object> objects = new ArrayList<>();
+                    objects.add(response.getBody());
+                    objects.add(response2.getBody());
+                    return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", objects));
                 }
                 else
                 {
