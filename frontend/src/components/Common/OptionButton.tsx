@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SlOptionsVertical } from "react-icons/sl";
 import { HiMiniPencilSquare } from "react-icons/hi2";
 import { FaTrash } from "react-icons/fa";
@@ -17,6 +17,7 @@ interface OptionButtonProps {
   edit?: boolean;
   remove?: boolean;
   editType: string;
+  travelCode?: string;
 }
 
 export const OptionWrap = styled.div`
@@ -75,19 +76,39 @@ export default function OptionButton({
   edit = true,
   remove = true,
   editType,
+  travelCode,
 }: OptionButtonProps) {
   const [visibleOption, setVisibleOption] = useState(false);
   const dispatch: AppDispatch = useDispatch();
   const modalState = useSelector(
     (state: RootState) => state.modalControl.modalState
   );
+  const menuRef = useRef<HTMLUListElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // 메뉴 밖을 클릭하면 자동으로 메뉴가 닫힌다.
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (buttonRef.current!.contains(event.target as Node)) {
+        setVisibleOption((prev) => !prev);
+      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setVisibleOption(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // 버튼 동작에 따라서 모달창이 on/off된다.
   const ChangeState = () => {
     // 모달창이 렌더링 되기 전이면 렌더링 후 등장
     if (modalState === false) {
       dispatch(ChangeModalState());
-      dispatch(setEditType(editType));
+      dispatch(setEditType(`${editType}:${travelCode}`));
       setTimeout(() => {
         dispatch(ChangeMovingModal());
       }, 50);
@@ -108,11 +129,11 @@ export default function OptionButton({
 
   return (
     <OptionWrap className={className}>
-      <Button onClick={() => setVisibleOption((prev) => !prev)}>
+      <Button ref={buttonRef}>
         <SlOptionsVertical />
       </Button>
       {visibleOption && (
-        <OptionMenu>
+        <OptionMenu ref={menuRef}>
           {edit && (
             <li>
               <MenuButton onClick={() => ChangeState()}>
