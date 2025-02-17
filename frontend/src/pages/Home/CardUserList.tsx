@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaPlus } from "react-icons/fa6";
 
 interface UserListProps {
-  user: string[]; // user는 반드시 string[] 배열이어야 합니다.
+  user?: string[]; // user는 반드시 string[] 배열이어야 합니다.
   className?: string;
   $size: "L" | "S";
 }
@@ -46,7 +46,11 @@ export default function CardUserList({
     <UserList className={className}>
       {sliceUser.map((item, idx) => (
         <li key={idx}>
-          <User src={item} alt="프로필 이미지" $size={$size} />
+          <User
+            src={item || "/ProfileImage.png"}
+            alt="프로필 이미지"
+            $size={$size}
+          />
         </li>
       ))}
 

@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Common/Header";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import OptionButton from "../../components/Common/OptionButton";
-import { AppDispatch } from "../../store";
+import { AppDispatch, RootState } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
 import axios from "axios";
+<<<<<<< Updated upstream
+import CryptoJS from "crypto-js";
+=======
 
+>>>>>>> Stashed changes
 import { useNavigate } from "react-router-dom";
 import TourCardList from "./TourCardList";
+import { setTravelData } from "@/slices/travelSlice";
 
 interface TravelPlan {
   id: string;
+  encryptCode: string;
   travelCode: string;
   title: string;
+<<<<<<< Updated upstream
   location: string;
+=======
+>>>>>>> Stashed changes
   startDate: string;
   endDate: string;
   expense: number;
@@ -23,16 +32,62 @@ interface TravelPlan {
 }
 
 export default function MyPage() {
+  const token = localStorage.getItem("accessToken");
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+<<<<<<< Updated upstream
+
+  const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
+  const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
+
+  // 암호화
+  const encrypt = (data: string) => {
+    const encrypted = CryptoJS.AES.encrypt(
+      data,
+      CryptoJS.enc.Utf8.parse(SECRET_KEY),
+      {
+        iv: IV,
+        mode: CryptoJS.mode.CBC, // CBC 모드를 명시적으로 지정
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    ).toString();
+
+    // Base64 → URL-safe 변환
+    return encrypted.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  };
+
+  useEffect(() => {
+    getTravelData(token!);
+  }, []);
+=======
+>>>>>>> Stashed changes
 
   useEffect(() => {
     dispatch(ChangeCurrentPage("mypage"));
     const token = localStorage.getItem("accessToken");
+
+    const getTravelData = async (token: string) => {
+      // 유저의 모든 여행 기록을 받아온다.
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setTourDataArr(response.data.data);
+      console.log(response);
+      console.log(TourDataArr);
+    };
+
     getTravelData(token as string); // 여행 정보 요청
   }, []);
 
+<<<<<<< Updated upstream
   const getTravelData = async (token: string) => {
     // 유저의 모든 여행 기록을 받아온다.
     const response = await axios.post(
@@ -46,9 +101,23 @@ export default function MyPage() {
       }
     );
 
-    setTourDataArr(response.data.data);
-    console.log(response);
+    const TourData = response.data.data;
+    if (TourData.length > 0) {
+      // 암호화 코드 저장
+      const updatedTourData = TourData.map(
+        (item: TravelPlan, index: number) => ({
+          ...item,
+          encryptCode: encrypt(item.travelCode),
+        })
+      );
+      setTourDataArr(updatedTourData);
+    }
   };
+=======
+
+
+  
+>>>>>>> Stashed changes
 
   // const travelList: TravelPlan[] = [
   //   {
@@ -109,15 +178,11 @@ export default function MyPage() {
   TourDataArr.map((item, index) => {
     formattedBudget.push(new Intl.NumberFormat().format(item.expense));
   });
+
   return (
     <div>
       <Header />
       <ProfileContainer>
-        {/* <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="10.5" cy="3.5" r="1.5" fill="#1C1C1C" />
-          <circle cx="10.5" cy="10.5" r="1.5" fill="#1C1C1C" />
-          <circle cx="10.5" cy="17.5" r="1.5" fill="#1C1C1C" />
-        </svg> */}
         <OptionButton
           className="profileButton"
           remove={false}
