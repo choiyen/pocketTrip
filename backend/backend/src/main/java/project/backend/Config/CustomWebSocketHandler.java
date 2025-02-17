@@ -2,6 +2,7 @@ package project.backend.Config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -10,6 +11,7 @@ import org.springframework.web.socket.CloseStatus;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class CustomWebSocketHandler implements WebSocketHandler {
 
     @Autowired
