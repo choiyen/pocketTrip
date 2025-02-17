@@ -112,7 +112,7 @@ const Register: React.FC = () => {
         <a href="/login">
           <img
             style={{ width: "100%", height: "100%" }}
-            src="/airplane.png"
+            src="/Money log logo.png"
             alt="로고위치"
           />
         </a>
