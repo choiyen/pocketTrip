@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "../slices/counterSlice";
 import currentPageReducer from "../slices/currentPageSlice";
 import ModalControlReducer from "../slices/ModalControlSlice";
 import AlertControlReducer from "../slices/AlertControlSlice";
@@ -9,11 +8,10 @@ import editReducer from "../slices/editSlice";
 import SaveTourDataReducer from "../slices/SaveTourDataSlice";
 import UserDataReducer from "../slices/userDataSlice";
 import SpendDataReducer from "../slices/SpendDataSlice";
-
+import webSocketReducer from "../slices/webSocketSlice";
 
 const store = configureStore({
   reducer: {
-    counter: counterReducer,
     currentPage: currentPageReducer,
     modalControl: ModalControlReducer,
     AlertControl: AlertControlReducer,
@@ -23,7 +21,7 @@ const store = configureStore({
     saveTourData: SaveTourDataReducer,
     userData: UserDataReducer,
     SpendData: SpendDataReducer,
-
+    webSocket: webSocketReducer,
   },
 });
 
