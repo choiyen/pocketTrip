@@ -6,11 +6,7 @@ import { AppDispatch, RootState } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
 import axios from "axios";
-<<<<<<< Updated upstream
 import CryptoJS from "crypto-js";
-=======
-
->>>>>>> Stashed changes
 import { useNavigate } from "react-router-dom";
 import TourCardList from "./TourCardList";
 import { setTravelData } from "@/slices/travelSlice";
@@ -20,10 +16,7 @@ interface TravelPlan {
   encryptCode: string;
   travelCode: string;
   title: string;
-<<<<<<< Updated upstream
   location: string;
-=======
->>>>>>> Stashed changes
   startDate: string;
   endDate: string;
   expense: number;
@@ -36,8 +29,6 @@ export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
-<<<<<<< Updated upstream
-
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
@@ -60,8 +51,6 @@ export default function MyPage() {
   useEffect(() => {
     getTravelData(token!);
   }, []);
-=======
->>>>>>> Stashed changes
 
   useEffect(() => {
     dispatch(ChangeCurrentPage("mypage"));
@@ -87,7 +76,6 @@ export default function MyPage() {
     getTravelData(token as string); // 여행 정보 요청
   }, []);
 
-<<<<<<< Updated upstream
   const getTravelData = async (token: string) => {
     // 유저의 모든 여행 기록을 받아온다.
     const response = await axios.post(
@@ -113,11 +101,6 @@ export default function MyPage() {
       setTourDataArr(updatedTourData);
     }
   };
-=======
-
-
-  
->>>>>>> Stashed changes
 
   // const travelList: TravelPlan[] = [
   //   {
