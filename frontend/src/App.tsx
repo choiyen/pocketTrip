@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles/reset.css";
 import "./styles/global.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -21,6 +21,7 @@ import AccountBook from "./pages/Tour/AccountBook";
 import TourMembers from "./pages/TourMembers/TourMembers";
 import MoneyChart from "./pages/MoneyChart/MoneyChart";
 import RequireAuth from "./components/Common/RequireAuth";
+import { socketService } from "./pages/Tour/socketService";
 
 function App() {
   const alertState = useSelector(
@@ -41,6 +42,17 @@ function App() {
   const updateTravelData = (data: any) => {
     setTravelData((prevData) => ({ ...prevData, ...data }));
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return console.error("❌ 토큰이 없습니다.");
+
+    socketService.connect(token);
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, []);
 
   return (
     <div className="App">

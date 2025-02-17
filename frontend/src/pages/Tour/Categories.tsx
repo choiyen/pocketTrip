@@ -7,6 +7,7 @@ import { RootState } from "@/store";
 import { countryNamesInKorean } from "../Data/countryNames";
 import DatePicker from "react-datepicker";
 import "../../styles/calender.css";
+import { Client } from "@stomp/stompjs";
 
 interface CategoryState {
   travel: TravelPlan;
@@ -230,7 +231,6 @@ export default function Categories({
   //   });
   // }, [encrypted]);
 
-
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -259,18 +259,29 @@ export default function Categories({
       description,
       purpose: selectedCategory ? selectedCategory.label : "데이터 없음",
     };
+    const expendituresData = {
+      purpose: "dfsdfdf",
+      method: "dfdff",
+      isPublic: true,
+      payer: "ccc1459@naver.com",
+      date: "2015-10-19",
+      KRW: 555456,
+      amount: 4444,
+      currency: "dfddddff",
+      description: "fdfdf",
+    };
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post(
-        `http://localhost:8080/expenditures/${travel.travelCode}`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // await axios.post(
+      //   `http://localhost:8080/expenditures/${travel.travelCode}`,
+      //   data,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
       ChangeState();
       setAccountModalContent("AccountBook");
 
@@ -330,7 +341,6 @@ export default function Categories({
       <Amount $paymentType={paymentType}>{`${Number(
         amount
       ).toLocaleString()} ₩`}</Amount>
-
 
       <Display
         $hasDescription={!!description}
