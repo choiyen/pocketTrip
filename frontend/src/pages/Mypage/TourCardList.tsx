@@ -10,10 +10,7 @@ interface TravelPlan {
     encryptCode: string;
     travelCode: string;
     title: string;
-<<<<<<< Updated upstream
     location: string;
-=======
->>>>>>> Stashed changes
     startDate: string;
     endDate: string;
     expense: number;

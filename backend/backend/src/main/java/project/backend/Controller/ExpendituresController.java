@@ -93,7 +93,7 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    @Cacheable(value = "Expenditure", key = "#Expenditure")
+    @Cacheable(value = "Expenditure", key = "#travelCode")
     public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
 
         try
