@@ -17,7 +17,7 @@ const Register: React.FC = () => {
     password: "",
     passwordConfirm: "",
     phoneNumber: "",
-    profile: "blob:http://localhost:3000/ProfileImage.png"
+    profile: "blob:http://localhost:3000/ProfileImage.png",
   });
   const [errors, setErrors] = useState({
     emailAddrError: "",
@@ -27,6 +27,29 @@ const Register: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // 입력값이 변경되면 해당 에러 메시지를 초기화
+    if (name === "emailAddr") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emailAddrError: "", // 이메일 입력시 에러 메시지 초기화
+      }));
+    }
+
+    if (name === "passwordConfirm") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        passwordConfirmError: "", // 비밀번호 확인 입력시 에러 메시지 초기화
+      }));
+    }
+
+    if (name === "phoneNumber") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phoneNumberError: "", // 전화번호 입력시 에러 메시지 초기화
+      }));
+    }
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -42,7 +65,7 @@ const Register: React.FC = () => {
           email: formData.emailAddr,
           password: formData.password,
           phone: formData.phoneNumber,
-          profile: formData.profile
+          profile: formData.profile,
         },
         {
           headers: {
@@ -66,6 +89,12 @@ const Register: React.FC = () => {
         if (error.response) {
           if (error.response.status === 400) {
             console.error("400 Error:", error.response.data.message);
+            if (error.response.data.message.includes("already exists")) {
+              setErrors((prevErrors) => ({
+                ...prevErrors,
+                emailAddrError: "이미 가입된 아이디입니다.",
+              }));
+            }
           } else {
             console.error("Unexpected Error:", error.response);
           }
@@ -74,16 +103,6 @@ const Register: React.FC = () => {
         }
       });
   };
-
-  // useEffect(() => {
-  //   axios
-  //     .post("http://localhost:8080/auth/signin", formData)
-  //     .then((response) => {
-  //       if (response.data.status == "success") {
-  //         navigate("/login");
-  //       }
-  //     });
-  // }, []);
 
   const navigate = useNavigate();
 
@@ -130,7 +149,10 @@ const Register: React.FC = () => {
             onChange={handleChange}
           />
           {errors.emailAddrError && (
-            <span id="emailAddrError" className="error-text">
+            <span
+              id="emailAddrError"
+              className={`error-text ${errors.emailAddrError ? "show" : ""}`}
+            >
               {errors.emailAddrError}
             </span>
           )}
