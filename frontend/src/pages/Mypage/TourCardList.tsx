@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 interface TravelPlan {
   travel: {
     id: string;
+    encryptCode: string;
     travelCode: string;
     title: string;
     location: string;
@@ -100,8 +101,8 @@ export default function TourCardList({
   return (
     <TrvelWrap>
       <Travel
-        to={`/Tour/${travel.id}`}
-        $bgImg={travel.bgImg}
+        to={`/Tour/${travel.encryptCode}`}
+        $bgImg={travel.bgImg ? travel.bgImg : "/japan.jpg"}
         state={{ from: "/mypage" }}
       >
         <div
@@ -117,14 +118,21 @@ export default function TourCardList({
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
-          <SmallUserBox user={travel.profiles} $size={"S"} />
+
+          {/* 백엔드 수정 후 user 추가 */}
+          <SmallUserBox $size={"S"} />
+
           <Expense>₩ {formattedBudget[index]}</Expense>
         </div>
         <div>
           <Location>{travel.location}</Location>
         </div>
       </Travel>
-      <OptionButton className="travelButton" editType="editTourCardList" />
+      <OptionButton
+        className="travelButton"
+        editType="editTourCardList"
+        travelCode={travel.travelCode}
+      />
     </TrvelWrap>
   );
 }

@@ -17,22 +17,36 @@ const Register: React.FC = () => {
     password: "",
     passwordConfirm: "",
     phoneNumber: "",
-    profile: "blob:http://localhost:3000/ProfileImage.png"
+    profile: "blob:http://localhost:3000/ProfileImage.png",
   });
   const [errors, setErrors] = useState({
     emailAddrError: "",
     passwordConfirmError: "",
     phoneNumberError: "",
   });
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`${name}Error`]: "",
+    }));
+
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Validation and API submission logic here
+
+    if (formData.password !== formData.passwordConfirm) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        passwordConfirmError: "비밀번호가 다릅니다.",
+      }));
+      return;
+    }
     console.log(formData);
     axios
       .post(
@@ -42,7 +56,7 @@ const Register: React.FC = () => {
           email: formData.emailAddr,
           password: formData.password,
           phone: formData.phoneNumber,
-          profile: formData.profile
+          profile: formData.profile,
         },
         {
           headers: {
@@ -52,20 +66,23 @@ const Register: React.FC = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          // 성공 처리
           console.log(response);
           if (response.data.resultType === "success") {
-            navigate("/Login");
+            setIsSuccess(true);
           } else {
             console.log(response.data.message);
           }
         }
       })
       .catch((error) => {
-        // 400 에러 발생 시 처리
         if (error.response) {
-          if (error.response.status === 400) {
-            console.error("400 Error:", error.response.data.message);
+          const errorMessage = error.response.data.message;
+          console.error("Error Response:", errorMessage);
+          if (errorMessage.includes("아이디 중복")) {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              emailAddrError: "이미 가입된 아이디입니다.",
+            }));
           } else {
             console.error("Unexpected Error:", error.response);
           }
@@ -75,16 +92,6 @@ const Register: React.FC = () => {
       });
   };
 
-  // useEffect(() => {
-  //   axios
-  //     .post("http://localhost:8080/auth/signin", formData)
-  //     .then((response) => {
-  //       if (response.data.status == "success") {
-  //         navigate("/login");
-  //       }
-  //     });
-  // }, []);
-
   const navigate = useNavigate();
 
   return (
@@ -93,7 +100,7 @@ const Register: React.FC = () => {
         <a href="/login">
           <img
             style={{ width: "100%", height: "100%" }}
-            src="/airplane.png"
+            src="/Money log logo.png"
             alt="로고위치"
           />
         </a>
@@ -130,7 +137,7 @@ const Register: React.FC = () => {
             onChange={handleChange}
           />
           {errors.emailAddrError && (
-            <span id="emailAddrError" className="error-text">
+            <span id="emailAddrError" className="error-text show">
               {errors.emailAddrError}
             </span>
           )}
@@ -161,7 +168,7 @@ const Register: React.FC = () => {
             onChange={handleChange}
           />
           {errors.passwordConfirmError && (
-            <span id="password_confirmError" className="error-text">
+            <span id="passwordConfirmError" className="error-text show">
               {errors.passwordConfirmError}
             </span>
           )}
@@ -190,18 +197,20 @@ const Register: React.FC = () => {
         </div>
       </form>
 
-      <div id="successModal">
+      <div
+        id="RegistersuccessModal"
+        style={{ display: isSuccess ? "block" : "none" }}
+      >
         <div className="modal">
           <h2>회원가입 완료!</h2>
           <p>회원가입이 성공적으로 완료되었습니다.</p>
           <div className="modalBtBox">
-            <button className="modalOffBt">
-              <a href="/login">완료</a>
+            <button className="modalOffBt" onClick={() => navigate("/login")}>
+              완료
             </button>
           </div>
         </div>
       </div>
-
       <div className="isUser">
         <p style={{ fontSize: "11px" }}>이미 계정이 있으신가요?</p>
         <a className="lostEp" href="/login">
