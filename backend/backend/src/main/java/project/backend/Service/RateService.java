@@ -1,14 +1,19 @@
 package project.backend.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+
+
+
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.*;
 import java.nio.charset.StandardCharsets;
@@ -18,8 +23,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Calendar;
-import java.util.Map;
 import java.time.*;
+
+
+
 
 
 @Service
@@ -34,28 +41,13 @@ public class RateService
 
     public String getObject() {
         try {
-            // HTTPS SSL 인증서 우회 설정 (실제 환경에서는 사용하지 않음)
-            TrustManager[] trustAllCerts = new TrustManager[]
-            {
-                    new X509TrustManager()
-                    {
-                        public X509Certificate[] getAcceptedIssuers() { return null; }
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-                    }
-            };
-
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, trustAllCerts, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            HostnameVerifier allHostsValid = (hostname, session) -> true;
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-
+            // RestTemplate을 생성하면서 HttpURLConnection을 사용하는 기본 설정
             RestTemplate restTemplate = new RestTemplate();
+
             restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
-            Date today = new Date(); // 현재 날짜
+            // 나머지 코드
+            Date today = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(today);
 
@@ -70,38 +62,25 @@ public class RateService
             boolean success = false;
             String response = "";
 
-            while (attempts < MAX_RETRIES && !success)
-            {
-                try
-                {
+            while (attempts < MAX_RETRIES && !success) {
+                try {
                     attempts++;
-
                     String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
                     System.out.println(formattedDate);
                     String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
 
                     response = restTemplate.getForObject(url, String.class);
-                    success = true; // 성공적으로 응답을 받으면 success를 true로 설정
+                    success = true;
 
                 } catch (RestClientException e) {
-                    // 요청 실패 시 예외 처리
-                    System.out.println("Request failed. Attempt " + attempts + " of " + MAX_RETRIES);
+                    System.out.println("Request failed. Attempt " + attempts + " of " + MAX_RETRIES + ". Error: " + e.getMessage());
                     if (attempts < MAX_RETRIES) {
-                        // 재시도 전 잠시 대기 (3초, 5초, 7초 대기)
-                        int waitTime = 0;
-                        if (attempts == 1) {
-                            waitTime = 3000;  // 3초 대기
-                        } else if (attempts == 2) {
-                            waitTime = 5000;  // 5초 대기
-                        } else if (attempts == 3) {
-                            waitTime = 7000;  // 7초 대기
-                        }
-
+                        int waitTime = (attempts == 1) ? 3000 : (attempts == 2) ? 5000 : 7000;
                         System.out.println("Retrying in " + waitTime / 1000 + " seconds...");
                         try {
-                            Thread.sleep(waitTime);  // 대기 시간 설정
+                            Thread.sleep(waitTime);
                         } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt(); // 예외 처리
+                            Thread.currentThread().interrupt();
                         }
                     } else {
                         System.out.println("Maximum retry attempts reached. Request failed.");
@@ -115,6 +94,8 @@ public class RateService
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
         }
     }
+
+
 
     private String getFormattedDate(DayOfWeek dayOfWeek, LocalTime currentTime, Calendar calendar, SimpleDateFormat formatter)
     {
