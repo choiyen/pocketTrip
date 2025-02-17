@@ -26,7 +26,6 @@ public class rateController {
     private ResponseDTO responseDTO = new ResponseDTO<>();
 
     public List<Map<String, Object>> list = new ArrayList<>();
-    public List<Map<String, Object>> list2 = new ArrayList<>();
 
 
     @Value("${api.key}")
