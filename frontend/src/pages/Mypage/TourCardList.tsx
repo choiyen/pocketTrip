@@ -10,7 +10,10 @@ interface TravelPlan {
     encryptCode: string;
     travelCode: string;
     title: string;
+<<<<<<< Updated upstream
     location: string;
+=======
+>>>>>>> Stashed changes
     startDate: string;
     endDate: string;
     expense: number;
@@ -118,8 +121,10 @@ export default function TourCardList({
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
+
           {/* 백엔드 수정 후 user 추가 */}
           <SmallUserBox $size={"S"} />
+
           <Expense>₩ {formattedBudget[index]}</Expense>
         </div>
         <div>

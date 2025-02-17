@@ -10,10 +10,10 @@ import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { savePath } from "../../slices/RoutePathSlice";
 import axios from "axios";
-import CryptoJS from "crypto-js";
-import { Client, CompatClient, Stomp } from "@stomp/stompjs";
 import Modal from "../..//components/Common/Modal";
 import AccountModal from "./AccountModal";
+import CryptoJS, { enc } from "crypto-js";
+import { Stomp, Message, Client } from "@stomp/stompjs";
 
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -92,6 +92,7 @@ export default function Tour() {
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
   const [FilteringData, setFilteringData] = useState<TravelPlan[]>([]);
+
   const dispatch: AppDispatch = useDispatch();
   const { encrypted } = useParams<{ encrypted: string }>();
 
@@ -103,6 +104,7 @@ export default function Tour() {
     "AccountBook" | "categories"
   >("AccountBook");
 
+  // 홈 혹은 마이페이지 중 어느 경로로 들어온건지 저장 (뒤로가기 기능)
   useEffect(() => {
     dispatch(savePath(fromPage)); // 뒤로가기 경로 설정
     const decode = decrypt(encrypted!); // 여행코드 해독
@@ -127,6 +129,7 @@ export default function Tour() {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -134,7 +137,6 @@ export default function Tour() {
             },
           }
         );
-
         setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
       } catch (error) {
         console.error("지출 내역 불러오기 실패:", error);
@@ -158,6 +160,9 @@ export default function Tour() {
     }
   }, [amount, paymentType, description, category]);
 
+  const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
+
+  var isConnected = false; //연결이 안되어 있을 떄는 false
   // 소켓 통신 (필요시 추가)
   // useEffect(() => {
   //   if (!token) {
@@ -218,11 +223,130 @@ export default function Tour() {
   // }, []);
 
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!SOCKET_URL || !token) return; // 주소나 토큰 없을 시 종료
+
     const socket = new SockJS(`${SOCKET_URL}/ws`);
     const client = Stomp.over(socket);
 
-    client.connect();
-  }, []);
+    // WebSocket 연결 시 Authorization 헤더에 JWT 토큰 전달
+    client.connect(
+      { Authorization: `Bearer ${token}` }, // 이 부분이 중요
+      function (frame: String) {
+        console.log("소켓 연결 성공", frame);
+        isConnected = true;
+        if (encrypted === undefined) return;
+        console.log(decrypt(encrypted));
+        // // 메시지 전송
+        // client.send("/app/travelPlan", {}, "여행 계획 메시지");
+
+        // // 구독
+        // client.subscribe("/topic/travelPlan", function (response) {
+        //   console.log("서버로부터 받은 메시지: " + response.body);
+        // });
+
+        // Tour 페이지에서 여행 계획 요청
+        // client.send(
+        //   `/app/travelPlan/${decrypt(encrypted)}`, // 경로
+        //   { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+        //   JSON.stringify({
+        //     message: "여행 계획을 요청합니다.",
+        //   }) // 본문
+        // );
+
+        // client.subscribe(
+        //   `/user/queue/${decrypt(encrypted)}`,
+        //   function (response) {
+        //     console.log("나에게 온 메시지: " + response.body);
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log(obj);
+        //   }
+        // );
+        //Tour 페이지에서 여행 계획 추가 요청;
+        // insertAccountBook(expendituresData);
+        // client.subscribe(
+        //   `/topic/insert/${decrypt(encrypted)}`,
+        //   function (response) {
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log("나에게 온 메시지: " + obj);
+        //   }
+        // );
+
+        updateAccountBook(expendituresupdateData);
+        client.subscribe(
+          `/topic/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
+          function (response) {
+            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+            const message = response.body;
+            const obj = JSON.parse(message).body.data;
+            console.log("나에게 온 메시지: " + obj);
+          }
+        );
+      },
+      function (error: String) {
+        console.log("소켓 연결 실패", error);
+      }
+    );
+
+    const expendituresData = {
+      purpose: "dfsdfdf",
+      method: "dfdff",
+      isPublic: true,
+      payer: "ccc1459@naver.com",
+      date: "2015-10-19",
+      KRW: 555456,
+      amount: 4444,
+      currency: "dfddddff",
+      description: "fdfdf",
+    };
+
+    function insertAccountBook(expendituresData: any) {
+      // 메시지 전송
+      // 메시지 수신
+      if (encrypted === undefined) return;
+
+      client.send(
+        `/app/travelPlan/${decrypt(encrypted)}/Insert`, // 경로
+        { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+        JSON.stringify(expendituresData) // 객체를 JSON 문자열로 변환하여 본문에 포함
+      );
+    }
+
+    const expendituresupdateData = {
+      purpose: "dfsdfdf11111111111111111111",
+      method: "dfdff111111111111111",
+      isPublic: false,
+      payer: "ccc1459@naver.com",
+      date: "2015-10-11",
+      amount: 4445555,
+      currency: "dfddddffaaa",
+      KRW: 555,
+      description: "fdfdfdddd",
+    };
+
+    const expendituresURL = "oNpoTZYN";
+    //비용 데이터를 수정하기 위한 expenditureID
+    function updateAccountBook(expendituresupdateData: any) {
+      if (encrypted === undefined) return;
+      client.send(
+        `/app/travelPlan/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
+        { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+        JSON.stringify(expendituresupdateData)
+        // 객체를 JSON 문자열로 변환하여 본문에 포함
+      );
+    }
+
+    return () => {
+      // 컴포넌트 언마운트 시 연결 종료
+      client.disconnect(() => {
+        console.log("소켓 연결 종료");
+      });
+    };
+  }, [SOCKET_URL, localStorage.getItem("accessToken")]); // 의존성 배열에 추가
 
   // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
   const getTravelData = async (token: string) => {

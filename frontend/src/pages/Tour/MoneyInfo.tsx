@@ -56,6 +56,7 @@ export default function MoneyInfo({ Tourdata, ChangeState }: TourCardProps) {
   const goToAccountBook = () => {
     navigate(`/Tour/${encrypted}/accountbook`, {
       state: { location: Tourdata.location, encrypted: encrypted }, // location을 state로 전달
+
     });
   };
 
