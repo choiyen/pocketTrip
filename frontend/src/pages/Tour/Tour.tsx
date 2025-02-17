@@ -158,8 +158,6 @@ export default function Tour() {
   }, [amount, paymentType, description, category]);
 
 
-  const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
-
   var isConnected = false; //연결이 안되어 있을 떄는 false
   // 소켓 통신 (필요시 추가)
   useEffect(() => {
