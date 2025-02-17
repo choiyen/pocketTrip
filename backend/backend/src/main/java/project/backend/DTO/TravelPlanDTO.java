@@ -25,5 +25,23 @@ public class TravelPlanDTO
     private boolean isCalculate;
     private List<String> profiles;
     private int currentCurrency;
+
+    @Override
+    public String toString() {
+        return "ExpenditureEntity{" +
+                "travelCode=" + travelCode + // 여기에 해당 클래스의 필드들을 추가
+                ", title='" + title +
+                ", location=" + location + ", img =" + img +
+                ", startDate =" + startDate +
+                ", endDate =" + endDate +
+                ", expense =" + expense +
+                ", founder =" + founder +
+                ", participants =" + participants +
+                ", isCalculate =" + isCalculate +
+                ", profiles =" + profiles +
+                ", currentCurrency = " + currentCurrency +
+                '}';
+    }
+
 }
 //소켓으로 알림으로 보냄

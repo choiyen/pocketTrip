@@ -29,7 +29,6 @@ export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
-
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 

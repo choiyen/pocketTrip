@@ -100,8 +100,8 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode)
-    {
+    @Cacheable(value = "Expenditure", key = "#travelCode")
+    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
 
         try
         {
@@ -195,15 +195,23 @@ public class ExpendituresController {
     }
     // 지출 삭제
     @DeleteMapping("/{travelCode}/{expenditureId}")
-    @CacheEvict(value = "Expenditure", allEntries = true)
+    //@CacheEvict(value = "Expenditure", allEntries = true)
     public ResponseEntity<?> deleteExpenditure(@AuthenticationPrincipal String email, @PathVariable String travelCode,@PathVariable String expenditureId) {
-        try {
-            List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email, travelCode, expenditureId).collectList().block();
+        try
+        {
+            boolean bool = expenditureService.SelectExpenditureId(ExpenditureService.encrypt(expenditureId,key));
 
-            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", deletedExpenditure));
-
+            if(bool == true)
+            {
+                List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email,  ExpenditureService.encrypt(travelCode,key), ExpenditureService.encrypt(expenditureId,key)).collectList().block();
+                return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", deletedExpenditure));
+            }
+            else
+            {
+                throw new Exception("삭제할 Expenditure 목록이 없습니다.");
+            }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
     // 복호화: 암호화된 문자열을 AES 알고리즘을 사용하여 복호화

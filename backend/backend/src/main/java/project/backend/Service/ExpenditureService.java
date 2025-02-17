@@ -135,7 +135,7 @@ public class ExpenditureService {
             throw new RuntimeException("Payer not found");
         }
 
-        expendituresRepository.deleteByExpenditureId(expenditureId);
+        expendituresRepository.deleteByExpenditureId(expenditureId).block();
 
         return expendituresRepository.findAllByTravelCode(travelCode);
     }
