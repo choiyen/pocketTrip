@@ -30,14 +30,24 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* 화면 전체 높이 사용 */
+  height: 100vh;
   background-color: #ffffff;
 }
 
 .Register-page .logoSz {
-  width: 20%;
+  position: relative;
+  width: 15%;
   height: 13%;
-  margin-bottom: 15%;
+  max-width: 200px;
+  /* margin: 0 auto; */
+  margin-bottom: 7%;
+  margin-top: 2%;
+}
+
+.logoSz img {
+  width: 100%;
+  height: auto;
+  object-fit: contain; /* 이미지 비율을 유지하면서 크기 조절 */
 }
 
 #registerForm {
@@ -102,7 +112,7 @@ input::placeholder {
   font-size: 12px;
 }
 
-#successModal {
+#RegistersuccessModal {
   position: absolute;
   display: none;
   justify-content: center;
@@ -110,14 +120,14 @@ input::placeholder {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 75%;
-  height: 55%;
+  height: 35%;
   background-color: #fbfbfb;
   box-shadow: 0px 1px 4px #adb5bd;
   z-index: 999;
   border-radius: 15px;
 }
 
-.modal {
+#RegistersuccessModal .modal {
   position: absolute;
   width: 100%;
   top: 50%;
@@ -130,25 +140,25 @@ input::placeholder {
   border-radius: 15px;
 }
 
-.modal h2 {
+#RegistersuccessModal .modal h2 {
   margin-bottom: 20%;
   font-size: x-large;
 }
 
-.modal p {
-  margin-bottom: 70%;
+#RegistersuccessModal .modal p {
+  margin-bottom: 25%;
 }
 
-.modalBtBox {
+#RegistersuccessModal .modalBtBox {
   display: flex;
   margin-top: 5%;
   justify-content: center;
 }
 
-.modalOffBt {
+#RegistersuccessModal .modalOffBt {
   background-color: #da2337;
   border-width: 0;
-  border-radius: 30px;
+  border-radius: 10px;
   font-weight: 900;
   color: #ffffff;
   text-align: center;
@@ -184,6 +194,10 @@ input::placeholder {
 }
 
 @media screen and (min-width: 768px) {
+  .Register-page .logoSz {
+    margin-bottom: 1%;
+  }
+
   #successModal {
     width: 35%;
     height: 80%;
