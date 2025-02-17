@@ -202,6 +202,7 @@ export default function Categories({
   // const { encrypted } = useParams<{ encrypted: string }>();
   const [description, setDescription] = useState("");
   // const [travel, setTravel] = useState({ travelCode: "", location: "" });
+
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -229,6 +230,7 @@ export default function Categories({
   //   });
   // }, [encrypted]);
 
+
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -252,6 +254,7 @@ export default function Categories({
       KRW: 1000,
       date: selectedDate,
       payer: selectedUser?.email,
+
       method: paymentType,
       description,
       purpose: selectedCategory ? selectedCategory.label : "데이터 없음",
@@ -270,6 +273,7 @@ export default function Categories({
       );
       ChangeState();
       setAccountModalContent("AccountBook");
+
       console.log("데이터 저장 성공:", data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -327,13 +331,13 @@ export default function Categories({
         amount
       ).toLocaleString()} ₩`}</Amount>
 
+
       <Display
         $hasDescription={!!description}
         value={description}
         onChange={handleDescriptionChange}
         placeholder="어디에 사용하셨나요"
       />
-
       <CategoriesGrid>
         {categories.map((category) => (
           <Category
