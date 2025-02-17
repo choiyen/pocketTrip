@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Nav from "./Nav";
 import styled, { keyframes } from "styled-components";
 import Modal from "./Modal";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
 import { IoIosArrowBack } from "react-icons/io";
 import { BsPersonSquare } from "react-icons/bs";
 import { FaChartPie } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import OptionButton from "./OptionButton";
+import LogoutBox from "./LogoutBox";
+import axios from "axios";
+import { ChangeLogoutState } from "../../slices/LogoutControlSlice";
 
 interface HeaderState {
   $bgColor?: string;
@@ -117,6 +120,17 @@ export default function Header({
   const [pathName, setPathName] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch: AppDispatch = useDispatch();
+  const [isBoxVisible, setIsBoxVisible] = useState(false);
+  
+  const logoutState = useSelector(
+      (state: RootState) => state.LogoutControl.logoutState
+    );
+
+  const toggleBoxVisibility = () => {
+    dispatch(ChangeLogoutState());
+  };
+  
 
   // 글로벌 상태관리로 메인과 마이페이지 중 어디서 들어온 경로인지를 불러와서 관리
   const savePath = useSelector((state: RootState) => state.prevPath.value);
@@ -181,6 +195,7 @@ export default function Header({
     return today.toLocaleDateString("ko-KR", options);
   };
 
+
   return (
     <HeaderWrap $bgColor={$bgColor} $pathName={pathName}>
       {/* 세부 페이지에서의 뒤로가기 버튼 설정*/}
@@ -212,6 +227,7 @@ export default function Header({
       {/* 경로가 메인페이지일때 */}
       {pathName === "/" && (
         <MainPageWrap>
+          {logoutState && <LogoutBox /> }
           <UserWrap>
             <h2>
               어서오세요, <strong>{userData ? userData.name : "테스터"}</strong>
@@ -222,6 +238,7 @@ export default function Header({
               alt="프로필 사진"
               width="50px"
               height="50px"
+              onClick={toggleBoxVisibility}
             />
           </UserWrap>
           <DateWrap>

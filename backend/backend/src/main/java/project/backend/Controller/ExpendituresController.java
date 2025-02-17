@@ -106,7 +106,6 @@ public class ExpendituresController {
     @Cacheable(value = "Expenditure", key = "#travelCode")
     public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode)
     {
-
         try
         {
             System.out.println(travelCode);
