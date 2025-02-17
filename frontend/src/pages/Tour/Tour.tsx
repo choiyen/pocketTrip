@@ -106,7 +106,19 @@ export default function Tour() {
   };
   const [travelCodes, setTravelCodes] = useState<string>();
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
-  const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+  const [TourData, setTourData] = useState<TravelPlan>({
+    id: "",
+  travelCode: "",
+  title: "",
+  founder: "",
+  location: "",
+  startDate: "", // 날짜 문자열
+  endDate: "", // 날짜 문자열
+  expense: 0,
+  calculate: false,
+  participants: [], // 참가자 리스트 (배열)
+  encryptCode: "",
+  });
   const [FilteringData, setFilteringData] = useState<TravelPlan[]>([]);
 
   const dispatch: AppDispatch = useDispatch();
@@ -125,42 +137,25 @@ export default function Tour() {
     dispatch(savePath(fromPage)); // 뒤로가기 경로 설정
     const decode = decrypt(encrypted!); // 여행코드 해독
     setTravelCodes(decode); // 여행코드 저장
-    getTravelData(token!); // 모든 여행 리스트 요청
   }, []);
 
-  // 여행 리스트와 코드를 기반으로 하나의 여행 선택
-  useEffect(() => {
-    setFilteringData(
-      TourDataArr.filter((item) => item.travelCode === travelCodes)
-    );
-  }, [TourDataArr]);
+  // // 여행 리스트와 코드를 기반으로 하나의 여행 선택
+  // useEffect(() => {
+  //   setFilteringData(
+  //     TourDataArr.filter((item) => item.travelCode === travelCodes)
+  //   );
+  // }, [TourDataArr]);
 
   const { amount, paymentType, description, category } = state || {};
 
   // 여행 코드에 맞는 비용 내역 불러오는 코드
-  // useEffect(() => {
-  //   if (!travelCodes) return;
+  useEffect(() => {
+    if (!travelCodes) return;
 
-  //   const fetchSpendingLogs = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+    getTravelData(); // 모든 여행 리스트 요청
+    fetchSpendingLogs();
 
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //       setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
-  //       console.log(response.data);
-  //     } catch (error) {
-  //       console.error("지출 내역 불러오기 실패:", error);
-  //     }
-  //   };
-  //   fetchSpendingLogs();
-  // }, [travelCodes]);
+  }, [travelCodes]);
 
   useEffect(() => {
     if (category) {
@@ -178,7 +173,6 @@ export default function Tour() {
   }, [amount, paymentType, description, category]);
 
   //-------------------------------------------------
-
   // 소켓 통신 (필요시 추가)
   // useEffect(() => {
   //   if (!token) {
@@ -248,7 +242,6 @@ export default function Tour() {
       },
       token
     );
-
     socketService.Logsubscribe(travelCodes, setLogs);
     logs && console.log(logs);
   }, [travelCodes]);
@@ -395,7 +388,7 @@ export default function Tour() {
 
   const getTravelData = async (token: string) => {
     const response = await axios.post(
-      `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
+      `${process.env.REACT_APP_API_BASE_URL}/plan/select/${travelCodes}`,
       {},
       {
         headers: {
@@ -404,8 +397,28 @@ export default function Tour() {
         },
       }
     );
-    const TourData = response.data.data;
-    setTourDataArr(TourData);
+
+    console.log(response.data);
+    const TourData = response.data.data[0];
+    setTourData(TourData);
+  };
+
+  const fetchSpendingLogs = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      setLogs(response.data.data); // 서버에서 받은 데이터를 logs에 저장
+    } catch (error) {
+      console.error("지출 내역 불러오기 실패:", error);
+    }
   };
 
   // 버튼 동작에 따라서 모달창이 on/off된다.
@@ -428,16 +441,16 @@ export default function Tour() {
   return (
     <div>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
-      {FilteringData[0] && <TourInfo Tourdata={FilteringData[0]} />}
-      {FilteringData[0] && (
-        <MoneyInfo Tourdata={FilteringData[0]} ChangeState={ChangeState} />
+      {TourData && <TourInfo Tourdata={TourData} />}
+      {TourData && (
+        <MoneyInfo Tourdata={TourData} ChangeState={ChangeState} />
       )}
       <Usehistory logs={logs} />
       {modalVisible && (
         <AccountModal
           modalMoving={modalMoving}
           ChangeState={ChangeState}
-          travel={FilteringData[0]}
+          travel={TourData}
           accountModalContent={accountModalContent}
           setAccountModalContent={setAccountModalContent}
         />

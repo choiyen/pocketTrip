@@ -294,12 +294,15 @@ public class TravelPlanController
             parts.addAll(travelPlan1.getParticipants());
             parts.add(travelPlan1.getFounder());
             List<String> profile = new ArrayList<>();
-            for(String email : parts)
+            for(int i = 0; i < parts.size(); i++)
             {
-                profile.add(userService.getprofileByEmail(email));
-            }
-            TravelPlanDTO travelPlanDTO = ConvertTo(profile, travelPlan1);
-            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlanDTO)));
+                profile.add(userService.getprofileByEmail(parts.get(i)));
+
+            }//지금 user 정보 전부가 들어가고 있음.
+
+            TravelPlanDTO travelPlanDTO1 = ConvertTo(profile, travelPlan1);
+            System.out.println("object : " + travelPlanDTO1);
+            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlanDTO1)));
             return ResponseEntity.ok().body(responseDTO.Response("info", "데이터 전송 알림!!", list));
         }
         catch (Exception e)
@@ -511,6 +514,7 @@ public class TravelPlanController
                 .title(travelPlan.getTitle())
                 .participants(travelPlan.getParticipants())
                 .isCalculate(travelPlan.isCalculate())
+                .profiles(travelPlan.getProfiles())
                 .img(travelPlan.getImg())
                 .build();
 

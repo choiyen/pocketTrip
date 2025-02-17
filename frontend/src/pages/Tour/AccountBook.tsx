@@ -76,6 +76,7 @@ const CurrencyItem = styled.li`
   transition: background-color 0.3s ease;
 `;
 
+
 const Display = styled.div<{ $hasAmount: boolean }>`
   font-size: 24px;
   font-weight: bold;
