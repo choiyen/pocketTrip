@@ -75,41 +75,8 @@ const CurrencyItem = styled.li`
   color: #333;
   cursor: pointer;
   transition: background-color 0.3s ease;
-
-
-
-const CurrencyDropdown = styled.ul`
-  margin-top: 110px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  width: auto;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 10;
-  position: absolute;
-  padding: 10px 0;
-  text-align: center;
 `;
 
-const SelectUserDropDown = styled(CurrencyDropdown)`
-  margin-top: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-`;
-
-const CurrencyItem = styled.li`
-  padding: 10px 20px;
-  font-size: 16px;
-  color: #333;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
 
 const Display = styled.div<{ $hasAmount: boolean }>`
   font-size: 24px;
