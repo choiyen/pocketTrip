@@ -18,7 +18,7 @@ import Where5 from "./pages/Where/Where5";
 import Where6 from "./pages/Where/Where6";
 import Tour from "./pages/Tour/Tour";
 import Categories from "./pages/Tour/Categories";
-import AccountBook from "./pages/Tour/AccountBook";
+// import AccountBook from "./pages/Tour/AccountBook";
 import TourMembers from "./pages/TourMembers/TourMembers";
 import MoneyChart from "./pages/MoneyChart/MoneyChart";
 import RequireAuth from "./components/Common/RequireAuth";
@@ -150,22 +150,22 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
+          {/* <Route
             path="/Tour/:encrypted/accountbook"
             element={
               <RequireAuth>
                 <AccountBook />
               </RequireAuth>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="/Tour/:encrypted/Categories"
             element={
               <RequireAuth>
                 <Categories />
               </RequireAuth>
             }
-          />
+          /> */}
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
