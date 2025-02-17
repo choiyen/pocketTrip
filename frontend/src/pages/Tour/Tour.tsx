@@ -108,16 +108,16 @@ export default function Tour() {
   const [logs, setLogs] = useState<MoneyLogProps[]>([]);
   const [TourData, setTourData] = useState<TravelPlan>({
     id: "",
-  travelCode: "",
-  title: "",
-  founder: "",
-  location: "",
-  startDate: "", // 날짜 문자열
-  endDate: "", // 날짜 문자열
-  expense: 0,
-  calculate: false,
-  participants: [], // 참가자 리스트 (배열)
-  encryptCode: "",
+    travelCode: "",
+    title: "",
+    founder: "",
+    location: "",
+    startDate: "", // 날짜 문자열
+    endDate: "", // 날짜 문자열
+    expense: 0,
+    calculate: false,
+    participants: [], // 참가자 리스트 (배열)
+    encryptCode: "",
   });
   const [FilteringData, setFilteringData] = useState<TravelPlan[]>([]);
 
@@ -138,39 +138,6 @@ export default function Tour() {
     const decode = decrypt(encrypted!); // 여행코드 해독
     setTravelCodes(decode); // 여행코드 저장
   }, []);
-
-  // // 여행 리스트와 코드를 기반으로 하나의 여행 선택
-  // useEffect(() => {
-  //   setFilteringData(
-  //     TourDataArr.filter((item) => item.travelCode === travelCodes)
-  //   );
-  // }, [TourDataArr]);
-
-  const { amount, paymentType, description, category } = state || {};
-
-  // 여행 코드에 맞는 비용 내역 불러오는 코드
-  useEffect(() => {
-    if (!travelCodes) return;
-
-    getTravelData(); // 모든 여행 리스트 요청
-    fetchSpendingLogs();
-
-  }, [travelCodes]);
-
-  useEffect(() => {
-    if (category) {
-      setLogs([
-        {
-          LogState: "minus",
-          title: category.label,
-          detail: description || "설명 없음",
-          profile: "/ProfileImage.png",
-          type: paymentType === "cash" ? "현금" : "카드",
-          money: Number(amount).toLocaleString(),
-        },
-      ]);
-    }
-  }, [amount, paymentType, description, category]);
 
   //-------------------------------------------------
   // 소켓 통신 (필요시 추가)
@@ -232,9 +199,9 @@ export default function Tour() {
   //   };
   // }, []);
   useEffect(() => {
-    if (!token && !travelCodes)
-      return console.error("❌ 토큰 혹은 여행코드가 없습니다.");
+    if (!token || !travelCodes) return;
 
+    // 초기 요청
     socketService.initialSend(
       travelCodes,
       {
@@ -242,9 +209,19 @@ export default function Tour() {
       },
       token
     );
-    socketService.Logsubscribe(travelCodes, setLogs);
-    logs && console.log(logs);
+
+    // 기존 기록들 받아오는 구독 (과거 지출기록, 여행 정보)
+    socketService.Logsubscribe(travelCodes, setLogs, setTourData);
+    // 새로운 기록 실시간 추가하는 구독
+    subscribeToNewLogs();
   }, [travelCodes]);
+
+  const subscribeToNewLogs = () => {
+    if (!token) return console.warn(" 토큰 혹은 여행코드가 없습니다.");
+    if (!travelCodes) return console.warn(" 여행코드가 없습니다.");
+
+    socketService.RealTimeLogSubscribe(travelCodes, setLogs);
+  };
 
   // useEffect(() => {
   //   const token = localStorage.getItem("accessToken");
@@ -442,9 +419,7 @@ export default function Tour() {
     <div>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
       {TourData && <TourInfo Tourdata={TourData} />}
-      {TourData && (
-        <MoneyInfo Tourdata={TourData} ChangeState={ChangeState} />
-      )}
+      {TourData && <MoneyInfo Tourdata={TourData} ChangeState={ChangeState} />}
       <Usehistory logs={logs} />
       {modalVisible && (
         <AccountModal
@@ -453,6 +428,7 @@ export default function Tour() {
           travel={TourData}
           accountModalContent={accountModalContent}
           setAccountModalContent={setAccountModalContent}
+          subscribeToNewLogs={subscribeToNewLogs}
         />
       )}
     </div>
