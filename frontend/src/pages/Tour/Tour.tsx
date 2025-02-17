@@ -23,6 +23,21 @@ export interface MoneyLogProps {
   type: "카드" | "현금";
   money: string;
 }
+
+interface Expenditure {
+  expenditureId: string; // 지출 ID
+  travelCode: string; // 여행 코드
+  purpose: string; // 지출 목적 (예: 숙소, 식비 등)
+  method: "card" | "cash"; // 결제 방법 (카드 or 현금)
+  payer: string; // 결제한 사람 (이메일 또는 ID)
+  date: string; // 날짜 (YYYY-MM-DD 형식)
+  amount: number; // 결제 금액
+  currency: string; // 통화 (예: "그린란드", "KRW" 등)
+  description: string; // 지출 설명
+  public: boolean; // 공개 여부
+  krw: number; // 환산된 원화 금액 (소문자 키)
+  KRW: number; // 환산된 원화 금액 (대문자 키)
+}
 interface TravelPlan {
   id: string;
   travelCode: string;
@@ -122,28 +137,29 @@ export default function Tour() {
   const { amount, paymentType, description, category } = state || {};
 
   // 여행 코드에 맞는 비용 내역 불러오는 코드
-  useEffect(() => {
-    if (!travelCodes) return;
+  // useEffect(() => {
+  //   if (!travelCodes) return;
 
-    const fetchSpendingLogs = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+  //   const fetchSpendingLogs = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
 
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
-      } catch (error) {
-        console.error("지출 내역 불러오기 실패:", error);
-      }
-    };
-    fetchSpendingLogs();
-  }, [travelCodes]);
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       setLogs(response.data); // 서버에서 받은 데이터를 logs에 저장
+  //       console.log(response.data);
+  //     } catch (error) {
+  //       console.error("지출 내역 불러오기 실패:", error);
+  //     }
+  //   };
+  //   fetchSpendingLogs();
+  // }, [travelCodes]);
 
   useEffect(() => {
     if (category) {
@@ -160,9 +176,6 @@ export default function Tour() {
     }
   }, [amount, paymentType, description, category]);
 
-  const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
-
-  var isConnected = false; //연결이 안되어 있을 떄는 false
   // 소켓 통신 (필요시 추가)
   // useEffect(() => {
   //   if (!token) {
@@ -224,7 +237,7 @@ export default function Tour() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!SOCKET_URL || !token) return; // 주소나 토큰 없을 시 종료
+    if (!SOCKET_URL || !token || !travelCodes) return; // 주소나 토큰 없을 시 종료
 
     const socket = new SockJS(`${SOCKET_URL}/ws`);
     const client = Stomp.over(socket);
@@ -232,38 +245,51 @@ export default function Tour() {
     // WebSocket 연결 시 Authorization 헤더에 JWT 토큰 전달
     client.connect(
       { Authorization: `Bearer ${token}` }, // 이 부분이 중요
-      function (frame: String) {
+      (frame: String) => {
         console.log("소켓 연결 성공", frame);
-        isConnected = true;
         if (encrypted === undefined) return;
-        console.log(decrypt(encrypted));
-        // // 메시지 전송
-        // client.send("/app/travelPlan", {}, "여행 계획 메시지");
 
-        // // 구독
+        // 소비내역 불러오기 (요청 및 응답)
+        client.send(
+          `/app/travelPlan/${travelCodes}`,
+          { Authorization: `Bearer ${token}` },
+          JSON.stringify({
+            message: "여행 계획을 요청합니다.",
+          })
+        );
+
+        client.subscribe(`/user/queue/${travelCodes}`, (message) => {
+          console.log(message);
+          const messages = message.body;
+          const response = JSON.parse(messages).body.data;
+          // const Tourdata = JSON.parse(response[0]);
+          const spendData = JSON.parse(response[1]);
+
+          // 소비내역을 리스트 속성 상태에 맞게 정리
+          const spendList = spendData.map(
+            (data: Expenditure, index: number) => {
+              console.log(data);
+              return {
+                LogState: "minus",
+                title: data.purpose,
+                detail: data.description || "설명 없음",
+                profile: "/ProfileImage.png",
+                type: data.method === "cash" ? "현금" : "카드",
+                money: Number(data.amount).toLocaleString(),
+              };
+            }
+          );
+          setLogs(spendList);
+        });
+
+        // 구독
         // client.subscribe("/topic/travelPlan", function (response) {
         //   console.log("서버로부터 받은 메시지: " + response.body);
         // });
 
-        // Tour 페이지에서 여행 계획 요청
-        // client.send(
-        //   `/app/travelPlan/${decrypt(encrypted)}`, // 경로
-        //   { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
-        //   JSON.stringify({
-        //     message: "여행 계획을 요청합니다.",
-        //   }) // 본문
-        // );
+        // // 메시지 전송
+        // client.send("/app/travelPlan", {}, "여행 계획 메시지");
 
-        // client.subscribe(
-        //   `/user/queue/${decrypt(encrypted)}`,
-        //   function (response) {
-        //     console.log("나에게 온 메시지: " + response.body);
-        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
-        //     const message = response.body;
-        //     const obj = JSON.parse(message).body.data;
-        //     console.log(obj);
-        //   }
-        // );
         //Tour 페이지에서 여행 계획 추가 요청;
         // insertAccountBook(expendituresData);
         // client.subscribe(
@@ -277,15 +303,15 @@ export default function Tour() {
         // );
 
         updateAccountBook(expendituresupdateData);
-        client.subscribe(
-          `/topic/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
-          function (response) {
-            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
-            const message = response.body;
-            const obj = JSON.parse(message).body.data;
-            console.log("나에게 온 메시지: " + obj);
-          }
-        );
+        // client.subscribe(
+        //   `/topic/${decrypt(encrypted)}/${expendituresURL}/Update`, // 경로
+        //   function (response) {
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log("나에게 온 메시지: " + obj);
+        //   }
+        // );
       },
       function (error: String) {
         console.log("소켓 연결 실패", error);
@@ -346,7 +372,7 @@ export default function Tour() {
         console.log("소켓 연결 종료");
       });
     };
-  }, [SOCKET_URL, localStorage.getItem("accessToken")]); // 의존성 배열에 추가
+  }, [SOCKET_URL, token, travelCodes]); // 의존성 배열에 추가
 
   // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
   const getTravelData = async (token: string) => {
