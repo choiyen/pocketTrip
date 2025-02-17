@@ -4,6 +4,7 @@ package project.backend.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,6 +39,7 @@ public class ExpendituresController {
 
     // 지출 추가
     @PostMapping("/{travelCode}")
+
     public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode)
     {
         System.out.println(expendituresDTO);
@@ -91,6 +93,7 @@ public class ExpendituresController {
 
             List<Object> list = new ArrayList<>();
             list.add(responsedDTO);
+            evictCache(true);
             return ResponseEntity.ok().body(responseDTO.Response("success", "정상적으로 지출 추가가 완료되었습니다.", list));
         }
         catch (Exception e) {
@@ -100,6 +103,7 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
+    @Cacheable(value = "Expenditure", key = "#travelCode")
     public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode)
     {
 
@@ -148,6 +152,7 @@ public class ExpendituresController {
 
     //지출수정
     @PutMapping("/{travelCode}/{expenditureId}")
+    @CachePut(value = "Expenditure", key = "#travelCode")
     public ResponseEntity<?> updateExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode, @PathVariable String expenditureId) {
         try {
 
@@ -193,9 +198,15 @@ public class ExpendituresController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+
+    @CacheEvict(value = "Expenditure", allEntries = true, condition = "#cash == true")
+    public void evictCache(boolean cash)
+    {
+        // cash가 true일 때만 이 메소드가 호출되고 캐시가 삭제됩니다.
+    }
+
     // 지출 삭제
     @DeleteMapping("/{travelCode}/{expenditureId}")
-    //@CacheEvict(value = "Expenditure", allEntries = true)
     public ResponseEntity<?> deleteExpenditure(@AuthenticationPrincipal String email, @PathVariable String travelCode,@PathVariable String expenditureId) {
         try
         {
@@ -204,6 +215,7 @@ public class ExpendituresController {
             if(bool == true)
             {
                 List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email,  ExpenditureService.encrypt(travelCode,key), ExpenditureService.encrypt(expenditureId,key)).collectList().block();
+                evictCache(bool);
                 return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", deletedExpenditure));
             }
             else
