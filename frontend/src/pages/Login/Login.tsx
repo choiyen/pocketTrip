@@ -27,6 +27,8 @@ const LoginPage: React.FC = () => {
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState<string>(""); // 에러 메시지 상태 추가
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +39,7 @@ const LoginPage: React.FC = () => {
   // 로그인 함수
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    setErrorMessage(""); // 로그인 시 에러 메시지 초기화
     axios
       .post<LoginResponse>(
         `${process.env.REACT_APP_API_BASE_URL}/auth/signin`,
@@ -63,6 +66,7 @@ const LoginPage: React.FC = () => {
             navigate("/");
           } else {
             console.log(response.data.message);
+            setErrorMessage("아이디나 비밀번호가 틀립니다."); // 로그인 실패 시 에러 메시지 설정
           }
         }
       })
@@ -71,6 +75,7 @@ const LoginPage: React.FC = () => {
         if (error.response) {
           if (error.response.status === 400) {
             console.error("400 Error:", error.response.data.message);
+            setErrorMessage("아이디나 비밀번호가 틀립니다.");
           } else {
             console.error("Unexpected Error:", error.response);
           }
@@ -86,7 +91,7 @@ const LoginPage: React.FC = () => {
         <a href="/login">
           <img
             style={{ width: "100%", height: "100%" }}
-            src="/airplane.png"
+            src="/Money log logo.png"
             alt="로고위치"
           />
         </a>
@@ -121,6 +126,13 @@ const LoginPage: React.FC = () => {
             이메일 & 비밀번호 찾기
           </a>
         </div>
+
+        {errorMessage && (
+          <p style={{ color: "red", fontSize: "13px", marginBottom: "3px" }}>
+            {errorMessage}
+          </p>
+        )}
+
         <Button size="L" name="로그인" $bgColor="blue" type="submit" />
         {/* <button type="submit">로그인</button> */}
       </form>
