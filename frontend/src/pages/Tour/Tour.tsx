@@ -161,24 +161,24 @@ export default function Tour() {
         // });
 
         // Tour 페이지에서 여행 계획 요청 : 데이터를 조회하기 위한 코드
-        // client.send(
-        //   `/app/travelPlan/${decrypt(encrypted)}`, // 경로
-        //   { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
-        //   JSON.stringify({
-        //     message: "여행 계획을 요청합니다.",
-        //   }) // 본문
-        // );
+        client.send(
+          `/app/travelPlan/${decrypt(encrypted)}`, // 경로
+          { Authorization: `Bearer ${token}` }, // 헤더 (Authorization 포함)
+          JSON.stringify({
+            message: "여행 계획을 요청합니다.",
+          }) // 본문
+        );
+        client.subscribe(
+          `/user/queue/${decrypt(encrypted)}`,
+          function (response) {
+            console.log("나에게 온 메시지: " + response.body);
+            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+            const message = response.body;
+            const obj = JSON.parse(message).body.data;
+            console.log(obj);
+          }
+        );
 
-        // client.subscribe(
-        //   `/user/queue/${decrypt(encrypted)}`,
-        //   function (response) {
-        //     console.log("나에게 온 메시지: " + response.body);
-        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
-        //     const message = response.body;
-        //     const obj = JSON.parse(message).body.data;
-        //     console.log(obj);
-        //   }
-        // );
         //Tour 페이지에서 여행 계획 추가 요청;
         // insertAccountBook(expendituresData);
         // client.subscribe(
@@ -202,16 +202,16 @@ export default function Tour() {
         //   }
         // );
 
-        deleteAccountBook();
-        client.subscribe(
-          `/topic/${decrypt(encrypted)}/${expendituresURL}/Delete`, // 경로
-          function (response) {
-            // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
-            const message = response.body;
-            const obj = JSON.parse(message).body.data;
-            console.log("나에게 온 메시지: " + obj);
-          }
-        );
+        // deleteAccountBook();
+        // client.subscribe(
+        //   `/topic/${decrypt(encrypted)}/${expendituresURL}/Delete`, // 경로
+        //   function (response) {
+        //     // 만약 JSON 형태로 응답이 온다면, 이를 객체로 변환
+        //     const message = response.body;
+        //     const obj = JSON.parse(message).body.data;
+        //     console.log("나에게 온 메시지: " + obj);
+        //   }
+        // );
       },
       function (error: String) {
         console.log("소켓 연결 실패", error);
