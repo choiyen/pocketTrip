@@ -139,7 +139,7 @@ public class UserService {
         return  results.getMappedResults().get(0);
 
     }
-    public String changePassword(FindPWDTO findPWDTO) throws Exception {
+    public String changePassword(FindPWDTO findPWDTO, PasswordEncoder passwordEncoder ) throws Exception {
         String email = findPWDTO.getEmail();
         String phone = findPWDTO.getPhone();
         Aggregation aggregation = Aggregation.newAggregation(
@@ -176,7 +176,7 @@ public class UserService {
                     .id(userEntity.getId())
                     .name(userEntity.getName())
                     .profile(userEntity.getProfile())
-                    .password(encrypt(generatedString, key))
+                    .password(passwordEncoder.encode(generatedString))
                     .phone(userEntity.getPhone())
                     .build();
             userRepository.save(userEntity1);
