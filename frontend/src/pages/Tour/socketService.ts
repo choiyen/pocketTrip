@@ -80,7 +80,6 @@ class SocketService {
     token: string | null
   ) {
     if (this.client && this.client.connected && travelCodes) {
-      console.log(JSON.stringify(body));
       this.client.publish({
         destination: `/app/travelPlan/${travelCodes}/Insert`,
         headers: { Authorization: `Bearer ${token}` },
@@ -138,13 +137,9 @@ class SocketService {
       console.error("❌ WebSocket이 연결되지 않았습니다.");
       return;
     }
-
     this.client.subscribe(`/topic/insert/${travelCodes}`, (message) => {
-      console.log("ddd");
-
       const result = JSON.parse(message.body);
       const result2 = JSON.parse(result.body.data[0]);
-      console.log(message.body);
       const spendList = result2.map((data: Expenditure, index: number) => {
         return {
           LogState: "minus",
@@ -155,7 +150,6 @@ class SocketService {
           money: Number(data.amount).toLocaleString(),
         };
       });
-      console.log(spendList);
       callback([...spendList]);
     });
   }

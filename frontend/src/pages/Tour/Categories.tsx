@@ -198,7 +198,7 @@ export default function Categories({
     currency,
     paymentType,
     date,
-    selectedUser = { name: "", email: "" },
+    selectedUser = { email: "" },
   } = useSelector((state: RootState) => {
     return state.SpendData.value;
   });
@@ -335,7 +335,7 @@ export default function Categories({
         />
         <CompleteButton onClick={handleComplete}>완료</CompleteButton>
       </Header>
-      <SelectedUser>{selectedUser?.name}</SelectedUser>
+      <SelectedUser>{selectedUser?.email}</SelectedUser>
       <Amount $paymentType={paymentType}>{`${Number(
         amount
       ).toLocaleString()} ₩`}</Amount>

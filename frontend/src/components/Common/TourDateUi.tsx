@@ -52,6 +52,7 @@ const Graph = styled.div<{ $backGraphColor: string }>`
 
 const MovingGraph = styled.div<{ $precent: string; $bgColor: string }>`
   width: ${(props) => props.$precent};
+  min-width: 10%;
   transition-duration: 500ms;
   position: absolute;
   top: 50%;
