@@ -151,6 +151,8 @@ export default function AccountBook({
   const [selectedUser, setSelectedUser] = useState<{
     email: string;
   } | null>(null);
+  // 병합 부분
+  const [members, setMembers] = useState<string[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const [selected, setSelected] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -179,6 +181,12 @@ export default function AccountBook({
   ];
 
   useEffect(() => {
+    console.log(travel.participants, travel.founder);
+    const memberArray = [travel.founder];
+    // travel.participants.map((participant) => {
+    //   memberArray.push(participant);
+    // })
+    setMembers(memberArray);
     if (travel.location) {
       // 1. 한글 국가명으로 영어 국가명 찾기
       const englishCountryName = Object.keys(countryNamesInKorean).find(
@@ -394,7 +402,7 @@ export default function AccountBook({
             <SelectUserDropDown>
               {members.map((option) => (
                 <CurrencyItem
-                  key={option.email}
+                  key={option}
                   onClick={() => handleSelected(option)}
                 >
                   {option.email}
