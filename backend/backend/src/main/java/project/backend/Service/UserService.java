@@ -87,6 +87,7 @@ public class UserService {
         originalUser.setEmail(userEntity.getEmail());
         originalUser.setName(userEntity.getName());
         originalUser.setPhone(userEntity.getPhone());
+        originalUser.setProfile(userEntity.getProfile());
         UserEntity updatedUser = userRepository.save(originalUser);
 
         return updatedUser;

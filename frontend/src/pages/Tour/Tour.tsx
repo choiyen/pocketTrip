@@ -109,11 +109,11 @@ export default function Tour() {
   const [TourData, setTourData] = useState<TravelPlan>({
     id: "",
     travelCode: "",
-    title: "",
+    title: "로딩중...",
     founder: "",
-    location: "",
-    startDate: "", // 날짜 문자열
-    endDate: "", // 날짜 문자열
+    location: "로딩중...",
+    startDate: "2000-01-01", // 날짜 문자열
+    endDate: "2099-12-30", // 날짜 문자열
     expense: 0,
     calculate: false,
     participants: [], // 참가자 리스트 (배열)
@@ -131,6 +131,7 @@ export default function Tour() {
   const [accountModalContent, setAccountModalContent] = useState<
     "AccountBook" | "categories"
   >("AccountBook");
+  const [totalMoney, setTotalMoney] = useState<number>(0);
 
   // 홈 혹은 마이페이지 중 어느 경로로 들어온건지 저장 (뒤로가기 기능)
   useEffect(() => {
@@ -138,6 +139,14 @@ export default function Tour() {
     const decode = decrypt(encrypted!); // 여행코드 해독
     setTravelCodes(decode); // 여행코드 저장
   }, []);
+
+  useEffect(() => {
+    const total = logs.reduce((acc, curr) => {
+      const money = Number(curr.money.split(",").join(""));
+      return !isNaN(money) ? acc + money : acc; // money가 NaN이 아니면 누적, 아니면 그대로 acc 반환
+    }, 0);
+    setTotalMoney(total);
+  }, [logs]);
 
   //-------------------------------------------------
   // 소켓 통신 (필요시 추가)
@@ -218,9 +227,8 @@ export default function Tour() {
   }, [travelCodes]);
 
   const subscribeToNewLogs = () => {
-    if (!token) return console.warn(" 토큰 혹은 여행코드가 없습니다.");
+    if (!token) return console.warn("토큰 혹은 여행코드가 없습니다.");
     if (!travelCodes) return console.warn(" 여행코드가 없습니다.");
-
     socketService.RealTimeLogSubscribe(travelCodes, setLogs);
   };
 
@@ -364,40 +372,40 @@ export default function Tour() {
 
   //----------------------------------------------------
 
-  const getTravelData = async (token: string) => {
-    const response = await axios.post(
-      `${process.env.REACT_APP_API_BASE_URL}/plan/select/${travelCodes}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  // const getTravelData = async (token: string) => {
+  //   const response = await axios.post(
+  //     `${process.env.REACT_APP_API_BASE_URL}/plan/select/${travelCodes}`,
+  //     {},
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   );
 
-    console.log(response.data);
-    const TourData = response.data.data[0];
-    setTourData(TourData);
-  };
+  //   console.log(response.data);
+  //   const TourData = response.data.data[0];
+  //   setTourData(TourData);
+  // };
 
-  const fetchSpendingLogs = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response.data);
-      setLogs(response.data.data); // 서버에서 받은 데이터를 logs에 저장
-    } catch (error) {
-      console.error("지출 내역 불러오기 실패:", error);
-    }
-  };
+  // const fetchSpendingLogs = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log(response.data);
+  //     setLogs(response.data.data); // 서버에서 받은 데이터를 logs에 저장
+  //   } catch (error) {
+  //     console.error("지출 내역 불러오기 실패:", error);
+  //   }
+  // };
 
   // 버튼 동작에 따라서 모달창이 on/off된다.
   const ChangeState = () => {
@@ -420,7 +428,13 @@ export default function Tour() {
     <div>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
       {TourData && <TourInfo Tourdata={TourData} />}
-      {TourData && <MoneyInfo Tourdata={TourData} ChangeState={ChangeState} />}
+      {TourData && (
+        <MoneyInfo
+          Tourdata={TourData}
+          ChangeState={ChangeState}
+          totalMoney={totalMoney}
+        />
+      )}
       <Usehistory logs={logs} />
       {modalVisible && (
         <AccountModal
