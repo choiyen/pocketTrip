@@ -2,20 +2,31 @@ package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import project.backend.DTO.FindPWDTO;
 import project.backend.Entity.UserEntity;
 import project.backend.Repository.UserRepository;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+import java.util.Random;
 
 @Slf4j
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+
+    @Value("${encrypt.key}")
+    private String key;
 
 
     @Autowired
@@ -100,6 +111,92 @@ public class UserService {
 
         return result.getMappedResults().get(0).getProfile();  // 첫 번째 사용자 profile 반환
     }
+
+    public String getUserEmailByNameAndPhone(FindIDDTO findIDDTO)
+    {
+        // findIDDTO가 email과 status를 포함하는 객체라면
+        String name = findIDDTO.getName();  // findIDDTO에서 email 추출
+        String phone = findIDDTO.getPhone();  // findIDDTO에서 status 추출
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(
+                        Criteria.where("name").is(name)  // email 조건
+                                .and("phone").is(phone)
+                        // status 조건
+                ),
+                Aggregation.project("email")
+                        .andExclude("_id")// profile만 반환
+        );
+
+        AggregationResults<String> results = mongoTemplate.aggregate(aggregation, UserEntity.class, String.class);
+
+        // 결과에서 profile 반환
+        if (results.getMappedResults().isEmpty())
+        {
+            return null;  // 결과가 없으면 null 반환
+        }
+
+        return  results.getMappedResults().get(0);
+
+    }
+    public String changePassword(FindPWDTO findPWDTO) throws Exception {
+        String email = findPWDTO.getEmail();
+        String phone = findPWDTO.getPhone();
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(
+                        Criteria.where("email").is(email)  // email 조건
+                                .and("phone").is(phone)
+
+                        // status 조건
+                )
+        );
+        AggregationResults<UserEntity> results = mongoTemplate.aggregate(aggregation, UserEntity.class, UserEntity.class);
+
+        // 결과에서 profile 반환
+        if (results.getMappedResults().isEmpty())
+        {
+            return "Email is not find";  // 결과가 없으면 null 반환
+        }
+        else
+        {
+            int leftLimit = 48; // numeral '0'
+            int rightLimit = 122; // letter 'z'
+            int targetStringLength = 10;
+            Random random = new Random();
+
+            String generatedString = random.ints(leftLimit,rightLimit + 1)
+                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                    .limit(targetStringLength)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+
+            UserEntity userEntity = results.getMappedResults().get(0);
+            UserEntity userEntity1 = UserEntity.builder()
+                    .email(userEntity.getEmail())
+                    .id(userEntity.getId())
+                    .name(userEntity.getName())
+                    .profile(userEntity.getProfile())
+                    .password(encrypt(generatedString, key))
+                    .phone(userEntity.getPhone())
+                    .build();
+            userRepository.save(userEntity1);
+
+            return generatedString;
+
+        }
+
+    }
+
+    //암호화 코드 작성
+    private static String encrypt(String data, String key) throws Exception
+    {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedData = cipher.doFinal(data.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedData);
+    }
+
 
     public void deteleUserID(String userId)
     {
