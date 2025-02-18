@@ -139,6 +139,10 @@ export default function Tour() {
     setTravelCodes(decode); // 여행코드 저장
   }, []);
 
+  useEffect(() => {
+    logs.map((item) => item.money);
+  }, [logs]);
+
   //-------------------------------------------------
   // 소켓 통신 (필요시 추가)
   // useEffect(() => {
@@ -218,9 +222,8 @@ export default function Tour() {
   }, [travelCodes]);
 
   const subscribeToNewLogs = () => {
-    if (!token) return console.warn(" 토큰 혹은 여행코드가 없습니다.");
+    if (!token) return console.warn("토큰 혹은 여행코드가 없습니다.");
     if (!travelCodes) return console.warn(" 여행코드가 없습니다.");
-
     socketService.RealTimeLogSubscribe(travelCodes, setLogs);
   };
 
@@ -364,40 +367,40 @@ export default function Tour() {
 
   //----------------------------------------------------
 
-  const getTravelData = async (token: string) => {
-    const response = await axios.post(
-      `${process.env.REACT_APP_API_BASE_URL}/plan/select/${travelCodes}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  // const getTravelData = async (token: string) => {
+  //   const response = await axios.post(
+  //     `${process.env.REACT_APP_API_BASE_URL}/plan/select/${travelCodes}`,
+  //     {},
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   );
 
-    console.log(response.data);
-    const TourData = response.data.data[0];
-    setTourData(TourData);
-  };
+  //   console.log(response.data);
+  //   const TourData = response.data.data[0];
+  //   setTourData(TourData);
+  // };
 
-  const fetchSpendingLogs = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response.data);
-      setLogs(response.data.data); // 서버에서 받은 데이터를 logs에 저장
-    } catch (error) {
-      console.error("지출 내역 불러오기 실패:", error);
-    }
-  };
+  // const fetchSpendingLogs = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_API_BASE_URL}/expenditures/${travelCodes}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log(response.data);
+  //     setLogs(response.data.data); // 서버에서 받은 데이터를 logs에 저장
+  //   } catch (error) {
+  //     console.error("지출 내역 불러오기 실패:", error);
+  //   }
+  // };
 
   // 버튼 동작에 따라서 모달창이 on/off된다.
   const ChangeState = () => {

@@ -102,9 +102,9 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    @Cacheable(value = "Expenditure", key = "#travelCode")
-    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode)
-    {
+//     @Cacheable(value = "Expenditure", key = "#travelCode")
+    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
+
         try
         {
             System.out.println(travelCode);
