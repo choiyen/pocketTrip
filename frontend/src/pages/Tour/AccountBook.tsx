@@ -149,7 +149,7 @@ export default function AccountBook({
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
   const [members, setMembers] = useState<string[]>([]);
-  const [selectedUser, setSelectedUser] = useState< string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const [selected, setSelected] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -165,8 +165,9 @@ export default function AccountBook({
     setIsOpen((prev) => !prev);
   };
 
-  const handleSelected = (option: string ) => {
+  const handleSelected = (option: string) => {
     setSelectedUser(option);
+    console.log(option);
     setIsOpen(false);
   };
 
@@ -176,8 +177,6 @@ export default function AccountBook({
   //   { name: "김영희", email: "email3@naver.com" },
   //   { name: "홍길동", email: "email4@naver.com" },
   // ];
-
-  
 
   useEffect(() => {
     console.log(travel.participants, travel.founder);
@@ -338,6 +337,7 @@ export default function AccountBook({
     };
     const formattedDate = today.toLocaleDateString("ko-KR", options);
 
+    console.log("현재는 우리다" + selectedUser);
     dispatch(
       SaveSpendData({
         amount,

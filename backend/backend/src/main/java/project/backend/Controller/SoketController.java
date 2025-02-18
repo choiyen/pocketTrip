@@ -100,6 +100,7 @@ public class SoketController
     {
          try
          {
+             System.out.println("Userssssss" + expendituresDTO);
              String token = authHeader != null ? authHeader : "";
              HttpHeaders headers = new HttpHeaders();
              headers.set("Authorization", token);
@@ -153,6 +154,7 @@ public class SoketController
     {
         try
         {
+            System.out.println("Userssssss" + expendituresDTO);
             System.out.println("dfffffff :   " + expendituresDTO);
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
