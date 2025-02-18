@@ -147,7 +147,6 @@ public class UserService {
                 Aggregation.match(
                         Criteria.where("email").is(email)  // email 조건
                                 .and("phone").is(phone)
-
                         // status 조건
                 )
         );
