@@ -39,7 +39,6 @@ public class ExpendituresController {
 
     // 지출 추가
     @PostMapping("/{travelCode}")
-
     public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode)
     {
         System.out.println(expendituresDTO);
