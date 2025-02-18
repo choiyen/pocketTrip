@@ -218,7 +218,7 @@ public class rateController {
             System.out.println(list);
 
         } catch (Exception e) {
-            log.error("RatePost 실행 중 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -237,7 +237,7 @@ public class rateController {
     }
 
     @GetMapping("/country")
-    public  ResponseEntity<?> responseEntity(@RequestParam String country)
+    public  ResponseEntity<?> responseEntity(@RequestBody String country)
     {
         try
         {
