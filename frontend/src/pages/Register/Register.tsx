@@ -17,7 +17,7 @@ const Register: React.FC = () => {
     password: "",
     passwordConfirm: "",
     phoneNumber: "",
-    profile: "blob:http://localhost:3000/ProfileImage.png",
+    profile: "/ProfileImage.png",
   });
   const [errors, setErrors] = useState({
     emailAddrError: "",

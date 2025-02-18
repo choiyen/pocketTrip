@@ -87,6 +87,7 @@ public class UserService {
         originalUser.setEmail(userEntity.getEmail());
         originalUser.setName(userEntity.getName());
         originalUser.setPhone(userEntity.getPhone());
+        originalUser.setProfile(userEntity.getProfile());
         UserEntity updatedUser = userRepository.save(originalUser);
 
         return updatedUser;
@@ -112,8 +113,7 @@ public class UserService {
         return result.getMappedResults().get(0).getProfile();  // 첫 번째 사용자 profile 반환
     }
 
-    public String getUserEmailByNameAndPhone(FindIDDTO findIDDTO)
-    {
+    public String getUserEmailByNameAndPhone(FindIDDTO findIDDTO) throws Exception {
         // findIDDTO가 email과 status를 포함하는 객체라면
         String name = findIDDTO.getName();  // findIDDTO에서 email 추출
         String phone = findIDDTO.getPhone();  // findIDDTO에서 status 추출
@@ -133,7 +133,8 @@ public class UserService {
         // 결과에서 profile 반환
         if (results.getMappedResults().isEmpty())
         {
-            return null;  // 결과가 없으면 null 반환
+            throw new Exception("이름이나 전화번호가 틀렸습니다.");
+            // 결과가 없으면 null 반환
         }
 
         return  results.getMappedResults().get(0);
@@ -146,7 +147,6 @@ public class UserService {
                 Aggregation.match(
                         Criteria.where("email").is(email)  // email 조건
                                 .and("phone").is(phone)
-
                         // status 조건
                 )
         );
