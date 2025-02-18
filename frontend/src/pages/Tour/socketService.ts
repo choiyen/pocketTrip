@@ -95,6 +95,13 @@ class SocketService {
   ) {
     if (!this.client || !this.client.connected) {
       console.error("❌ WebSocket이 연결되지 않았습니다.");
+      const spendList = JSON.parse(localStorage.getItem("spendList") || "{}");
+      const TourDataResult = JSON.parse(
+        localStorage.getItem("TourDataResult") || "{}"
+      );
+
+      callback1(spendList);
+      callback2(TourDataResult);
       return;
     }
 
@@ -115,6 +122,8 @@ class SocketService {
           money: Number(data.amount).toLocaleString(),
         };
       });
+      localStorage.setItem("spendList", JSON.stringify(spendList));
+      localStorage.setItem("TourDataResult", JSON.stringify(TourDataResult));
       callback1(spendList);
       callback2(TourDataResult);
     });
