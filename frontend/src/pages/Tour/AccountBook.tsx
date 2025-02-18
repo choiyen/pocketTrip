@@ -152,7 +152,12 @@ export default function AccountBook({
     email: string;
   } | null>(null);
   // 병합 부분
-  const [members, setMembers] = useState<string[]>([]);
+  const [members, setMembers] = useState<{ email: string }[]>([
+    { email: "test@" },
+    { email: "test@1" },
+    { email: "email3@naver.com" },
+    { email: "email4@naver.com" },
+  ]);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const [selected, setSelected] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -173,20 +178,12 @@ export default function AccountBook({
     setIsOpen(false);
   };
 
-  const members = [
-    { email: "test@" },
-    { email: "test@1" },
-    { email: "email3@naver.com" },
-    { email: "email4@naver.com" },
-  ];
-
   useEffect(() => {
     console.log(travel.participants, travel.founder);
-    const memberArray = [travel.founder];
     // travel.participants.map((participant) => {
     //   memberArray.push(participant);
     // })
-    setMembers(memberArray);
+    setMembers([{ email: travel.founder }]);
     if (travel.location) {
       // 1. 한글 국가명으로 영어 국가명 찾기
       const englishCountryName = Object.keys(countryNamesInKorean).find(
@@ -403,7 +400,7 @@ export default function AccountBook({
             <SelectUserDropDown>
               {members.map((option) => (
                 <CurrencyItem
-                  key={option}
+                  key={option.email}
                   onClick={() => handleSelected(option)}
                 >
                   {option.email}
