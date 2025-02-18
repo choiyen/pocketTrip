@@ -117,7 +117,7 @@ const Amount = styled.div<{ $paymentType: string }>`
   font-weight: bold;
 `;
 const SelectedUser = styled.span`
-  margin-top: 20%;
+  margin-top: 15%;
   margin-bottom: 10px;
   font-size: 20px;
   font-weight: 900;
@@ -130,7 +130,7 @@ const Display = styled.textarea<{ $hasDescription: boolean }>`
   color: ${(props) => (props.$hasDescription ? "#333" : "#b0b0b0")};
   text-align: center;
   min-height: 30px;
-  margin-top: 20px;
+  margin-top: 30px;
   background-color: transparent;
   border: none;
   outline: none;
@@ -145,7 +145,7 @@ const CategoriesGrid = styled.div`
   gap: 20px;
   width: 100%;
   margin: 20px 0;
-  margin-top: 15%;
+  margin-top: 20%;
 `;
 const Category = styled.div<{ $backgroundColor: string; $isSelected: boolean }>`
   display: flex;

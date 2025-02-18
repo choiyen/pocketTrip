@@ -91,7 +91,7 @@ const LoginPage: React.FC = () => {
         <a href="/login">
           <img
             style={{ width: "100%", height: "100%" }}
-            src="/Money log logo.png"
+            src="/PocktetTripLogo.png"
             alt="로고위치"
           />
         </a>
