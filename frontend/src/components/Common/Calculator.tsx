@@ -1,5 +1,15 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import CurrencySelector from "./CurrencySelector";
+
+interface currencyProps {
+    기준통화: string;
+    통화기호: string;
+    통화이름: string;
+    환전구매환율: number;
+    환전판매환율: number;
+}
 
 export default function Calculator() {
     const [result, setResult] = useState(0);
@@ -8,9 +18,12 @@ export default function Calculator() {
     const [operator, setOperator] = useState("");
     const [isDecimal, setIsDecimal] = useState(false);
     const [decimalPosition, setDecimalPosition] = useState(0);
-    const [unit1, setUnit1] = useState("$");
-    const [unit2, setUnit2] = useState("₩");
-    const [currency, setCurrency] = useState(1455.30);
+    const [unit, setUnit] = useState("$");
+    const [currencyList, setCurrencyList] = useState<currencyProps[]>([]);
+    const [currency, setCurrency] = useState(1);
+    const [toggleState, setToggleState] = useState(false);
+
+    const output2 = result * currency;
 
     const numbersElements = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "="];
     const operatorElements = ["AC", "/", "*", "-", "+"];
@@ -85,17 +98,42 @@ export default function Calculator() {
             setInput1(parseFloat(newResult.toFixed(10))); // Update input1 with the result of the operation
             setInput2(0);
         }
-
-        console.log(input1, input2, result);
     };
 
-    function selectUnit(){
+    useEffect(() => {
+        axios.get(`${process.env.REACT_APP_API_BASE_URL}/rate`
+        ).then((res) => {
+            console.log(res.data);
+            setCurrencyList(res.data.data);
 
-    }
+            const initialCurrency = res.data.data[21]?.환전구매환율;
+            console.log("초기 환율 값:", initialCurrency); // 여기서 undefined가 찍히는지 확인
 
-    const output2 = result * currency;
+        setCurrency(initialCurrency || 1);
+        setUnit(res.data.data[21]?.통화기호 || "$");
+        }).catch((error) => {
+            console.error(error);
+        });
+    }, []);
 
-    const selectUnitButton = <div style={{ "margin": "30px" }}><svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    useEffect(() => {
+        if (currency !== undefined) {
+            console.log("환율 변경:", currency);
+        }
+    }, [currency]);
+
+    useEffect(() => {
+        console.log("result:", result, "currency:", currency, "output2:", output2);
+    }, [result, currency]);
+    
+
+    const handleCurrencySelect = (currency: number, unit : string) => {
+        setCurrency(currency);
+        setUnit(unit);
+        setToggleState(false); // Close the dropdown after selection
+      };
+
+    const selectUnitButton = <div style={{ "margin": "30px" }} onClick={() => setToggleState(!toggleState)}><svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g id="chevron-down 1">
             <path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M3.08597 8.71125C3.17306 8.62394 3.27651 8.55467 3.39041 8.50741C3.50431 8.46015 3.62641 8.43582 3.74972 8.43582C3.87304 8.43582 3.99514 8.46015 4.10904 8.50741C4.22293 8.55467 4.32639 8.62394 4.41347 8.71125L14.9997 19.2994L25.586 8.71125C25.6731 8.62408 25.7766 8.55494 25.8905 8.50777C26.0044 8.46059 26.1265 8.43631 26.2497 8.43631C26.373 8.43631 26.4951 8.46059 26.6089 8.50777C26.7228 8.55494 26.8263 8.62408 26.9135 8.71125C27.0006 8.79841 27.0698 8.90189 27.117 9.01578C27.1641 9.12966 27.1884 9.25173 27.1884 9.375C27.1884 9.49827 27.1641 9.62033 27.117 9.73422C27.0698 9.8481 27.0006 9.95158 26.9135 10.0387L15.6635 21.2887C15.5764 21.3761 15.4729 21.4453 15.359 21.4926C15.2451 21.5398 15.123 21.5642 14.9997 21.5642C14.8764 21.5642 14.7543 21.5398 14.6404 21.4926C14.5265 21.4453 14.4231 21.3761 14.336 21.2887L3.08597 10.0387C2.99867 9.95166 2.9294 9.84821 2.88214 9.73431C2.83487 9.62041 2.81055 9.49831 2.81055 9.375C2.81055 9.25168 2.83487 9.12958 2.88214 9.01568C2.9294 8.90179 2.99867 8.79833 3.08597 8.71125Z" fill="#0095FF" />
         </g>
@@ -105,10 +143,10 @@ export default function Calculator() {
         <CalculatorBody>
             <Output>
                 <div style={{"display": "flex"}}>
-                <Unit>{unit1}</Unit>
+                <Unit>{unit}</Unit>
                 <Text>{result}</Text>
                 </div>
-                <CurrencyInfo>{unit1}1 = {unit2}{currency}</CurrencyInfo>
+                <CurrencyInfo>{unit}1 = ₩{currency}</CurrencyInfo>
                 {selectUnitButton}
             </Output>
             {/* <Exchange>
@@ -125,10 +163,10 @@ export default function Calculator() {
             </Exchange> */}
             <Output>
                 <div style={{"display": "flex", "width": "100%"}}>
-                <Unit>{unit2}</Unit>
-                <Text>{parseFloat(output2.toFixed(10))}</Text>
+                <Unit>₩</Unit>
+                <Text>{output2 == undefined ? 0 : parseFloat(output2.toFixed(10))}</Text>
                 </div>
-                {selectUnitButton}
+                {/* {selectUnitButton} */}
             </Output>
             <InputBody>
                 <Numbers>
@@ -159,6 +197,7 @@ export default function Calculator() {
                     })}
                 </Operators>
             </InputBody>
+            <CurrencySelector currencyList={currencyList} toggleState={toggleState} onCurrencySelect={handleCurrencySelect}/>
         </CalculatorBody>
     );
 }
