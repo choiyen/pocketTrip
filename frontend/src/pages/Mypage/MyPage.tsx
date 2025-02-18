@@ -29,6 +29,8 @@ export default function MyPage() {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+  const [userName, setUserName] = useState("");
+  const [userProfile, setUserProfile] = useState("");
 
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
@@ -49,17 +51,6 @@ export default function MyPage() {
     return encrypted.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   };
 
-  useEffect(() => {
-    getTravelData(token!);
-  }, []);
-
-  useEffect(() => {
-    dispatch(ChangeCurrentPage("mypage"));
-    const token = localStorage.getItem("accessToken");
-
-    getTravelData(token as string); // 여행 정보 요청
-  }, []);
-
   const getTravelData = async (token: string) => {
     // 유저의 모든 여행 기록을 받아온다.
     const response = await axios.post(
@@ -72,7 +63,6 @@ export default function MyPage() {
         },
       }
     );
-
     const TourData = response.data.data;
     if (TourData.length > 0) {
       // 암호화 코드 저장
@@ -85,6 +75,40 @@ export default function MyPage() {
       setTourDataArr(updatedTourData);
     }
   };
+
+    const getUserData = async (token: string) => {
+      // 유저의 모든 여행 기록을 받아온다.
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      const UserData = response.data.data[0];
+      if (UserData) {
+        setUserName(UserData.name);
+        setUserProfile(UserData.profile);
+      }
+    };
+
+  // useEffect(() => {
+  //   getTravelData(token!);
+  // }, []);
+
+  useEffect(() => {
+    dispatch(ChangeCurrentPage("mypage"));
+    const token = localStorage.getItem("accessToken");
+    getUserData(token as string);
+    getTravelData(token as string); // 여행 정보 요청
+  }, []);
+
+
+
+  
 
   // const travelList: TravelPlan[] = [
   //   {
@@ -156,8 +180,8 @@ export default function MyPage() {
           editType="editProfile"
         />
         <Profile>
-          <img src="/profileImage.png" alt="프로필사진" />
-          <span>name</span>
+          <img src={userProfile} alt="프로필사진" />
+          <span>{userName}</span>
         </Profile>
       </ProfileContainer>
       {TourDataArr.length != 0 ? (
