@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { ChangeAlertState } from "../../slices/AlertControlSlice";
+import axios from "axios";
 
 interface InputCodeProps {
   setInputCodeVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -109,6 +110,26 @@ export default function InputCodeBox({ setInputCodeVisible }: InputCodeProps) {
       setValues(newValues);
     }
   };
+
+  const submitCode = () => {
+    const token = localStorage.getItem("accessToken");
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/apply/insert/${values.join("")}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((res) => {
+      console.log(res.data);
+      if(res.data.resultType === "success"){
+        closeInputCode();
+      }
+    })
+  };
+
+
   return (
     <BoxWrap>
       <FcConferenceCall size={"80px"} />
@@ -128,14 +149,14 @@ export default function InputCodeBox({ setInputCodeVisible }: InputCodeProps) {
           />
         ))}
       </InputWrap>
-
+        
       <Button
         size="S"
         name="취소"
         $bgColor="transparent"
         onClick={() => closeInputCode()}
       />
-      <Button size="S" name="입력" />
+      <Button size="S" name="입력" onClick={() => submitCode()}/>
     </BoxWrap>
   );
 }
