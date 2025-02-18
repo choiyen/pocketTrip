@@ -148,8 +148,11 @@ export default function AccountBook({
   const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
+  const [selectedUser, setSelectedUser] = useState<{
+    email: string;
+  } | null>(null);
+  // 병합 부분
   const [members, setMembers] = useState<string[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const [selected, setSelected] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -165,18 +168,17 @@ export default function AccountBook({
     setIsOpen((prev) => !prev);
   };
 
-  const handleSelected = (option: string) => {
+  const handleSelected = (option: { email: string }) => {
     setSelectedUser(option);
-    console.log(option);
     setIsOpen(false);
   };
 
-  // const members = [
-  //   { name: "황종현", email: "test@" },
-  //   { name: "김철수", email: "email2@naver.com" },
-  //   { name: "김영희", email: "email3@naver.com" },
-  //   { name: "홍길동", email: "email4@naver.com" },
-  // ];
+  const members = [
+    { email: "test@" },
+    { email: "test@1" },
+    { email: "email3@naver.com" },
+    { email: "email4@naver.com" },
+  ];
 
   useEffect(() => {
     console.log(travel.participants, travel.founder);
@@ -211,13 +213,13 @@ export default function AccountBook({
           // **여기서 API 호출 추가!**
           fetchExchangeRate(currencyCode);
         } else {
-          console.log("해당 국가의 통화 정보가 없습니다.");
+          // console.log("해당 국가의 통화 정보가 없습니다.");
         }
       } else {
-        console.log("해당 국가의 영어 이름을 찾을 수 없습니다.");
+        // console.log("해당 국가의 영어 이름을 찾을 수 없습니다.");
       }
     } else {
-      console.log("country 값이 전달되지 않았습니다.");
+      // console.log("country 값이 전달되지 않았습니다.");
     }
   }, [travel.location]);
 
@@ -226,7 +228,7 @@ export default function AccountBook({
       const response = await fetch(
         `http://localhost:8080/rate?currency=${selectedCurrency}`
       );
-      console.log("API 응답 상태:", response.status);
+      // console.log("API 응답 상태:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -234,7 +236,7 @@ export default function AccountBook({
       }
 
       const data = await response.json();
-      console.log("받은 데이터:", data);
+      // console.log("받은 데이터:", data);
 
       // 🔥 selectedCurrency에서 괄호 안의 통화 코드만 추출 (정규식)
       const currencyCode =
@@ -242,7 +244,7 @@ export default function AccountBook({
           ? selectedCurrency
           : selectedCurrency.match(/\((.*?)\)/)?.[1]; // 예: "MYR"
 
-      console.log("검색할 통화 코드:", currencyCode);
+      // console.log("검색할 통화 코드:", currencyCode);
 
       if (!currencyCode) {
         console.error("❌ 통화 코드가 없습니다. 잘못된 선택입니다.");
@@ -255,7 +257,7 @@ export default function AccountBook({
       );
 
       if (currencyData) {
-        console.log("✅ 찾은 환율 데이터:", currencyData);
+        // console.log("✅ 찾은 환율 데이터:", currencyData);
         const exchangeRateValue = parseFloat(
           currencyData.환전판매환율.replace(/,/g, "")
         );
@@ -395,7 +397,7 @@ export default function AccountBook({
 
         <div>
           <CurrencyButton onClick={toggleDropDown}>
-            {selectedUser ? selectedUser : "유저를 선택해주세요"} ▼
+            {selectedUser?.email ? selectedUser.email : "유저를 선택해주세요"} ▼
           </CurrencyButton>
           {isOpen && (
             <SelectUserDropDown>
@@ -404,7 +406,7 @@ export default function AccountBook({
                   key={option}
                   onClick={() => handleSelected(option)}
                 >
-                  {option}
+                  {option.email}
                 </CurrencyItem>
               ))}
             </SelectUserDropDown>

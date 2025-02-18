@@ -55,7 +55,6 @@ const TourWrap = styled.div`
 `;
 export default function TourInfo({ Tourdata }: TourCardProps) {
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
-  console.log(Tourdata.startDate);
   const startDate = new Date(Tourdata.startDate);
   const endDate = new Date(Tourdata.endDate);
   const today = new Date();
