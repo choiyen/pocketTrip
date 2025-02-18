@@ -4,6 +4,7 @@ const initialState = {
   value: {
     amount: "",
     currency: "",
+    currencySymbol: "",
     paymentType: "",
     date: "",
     selectedUser: { name: "", email: "" },
