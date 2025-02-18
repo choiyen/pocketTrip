@@ -142,7 +142,6 @@ public class UserController {
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
         try{
             UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), passwordEncoder);
-            System.out.println(user.getEmail());
             if(user != null)
             {
                 String token = tokenProvider.createToken(user);
@@ -269,7 +268,7 @@ public class UserController {
     {
         try
         {
-            String PW = userService.changePassword(findPWDTO);
+            String PW = userService.changePassword(findPWDTO, passwordEncoder);
             if(PW.equals("Email is not find"))
             {
                 throw new RuntimeException("이메일이나 전화번호를 다시 확인해주세요. 정보를 찾을 수 없습니다.");
