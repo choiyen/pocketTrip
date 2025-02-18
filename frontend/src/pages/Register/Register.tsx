@@ -17,7 +17,7 @@ const Register: React.FC = () => {
     password: "",
     passwordConfirm: "",
     phoneNumber: "",
-    profile: "blob:http://localhost:3000/ProfileImage.png",
+    profile: "/ProfileImage.png",
   });
   const [errors, setErrors] = useState({
     emailAddrError: "",
@@ -100,7 +100,7 @@ const Register: React.FC = () => {
         <a href="/login">
           <img
             style={{ width: "100%", height: "100%" }}
-            src="/Money log logo.png"
+            src="/PocktetTripLogo.png"
             alt="로고위치"
           />
         </a>

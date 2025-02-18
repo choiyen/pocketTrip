@@ -76,7 +76,6 @@ const CurrencyItem = styled.li`
   transition: background-color 0.3s ease;
 `;
 
-
 const Display = styled.div<{ $hasAmount: boolean }>`
   font-size: 24px;
   font-weight: bold;
@@ -149,10 +148,8 @@ export default function AccountBook({
   const [currencySymbol, setCurrencySymbol] = useState("₩"); // 통화 기호
   const [currencyList, setCurrencyList] = useState<string[]>(["KRW", "USD"]); // 통화 리스트
   const [isCurrencyListVisible, setIsCurrencyListVisible] = useState(false); // 통화 선택 드롭다운 표시 여부
-  const [selectedUser, setSelectedUser] = useState<{
-    name: string;
-    email: string;
-  } | null>(null);
+  const [members, setMembers] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState< string | null>(null);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null); // 환율 상태 추가
   const [selected, setSelected] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -168,19 +165,27 @@ export default function AccountBook({
     setIsOpen((prev) => !prev);
   };
 
-  const handleSelected = (option: { name: string; email: string }) => {
+  const handleSelected = (option: string ) => {
     setSelectedUser(option);
     setIsOpen(false);
   };
 
-  const members = [
-    { name: "황종현", email: "test@" },
-    { name: "김철수", email: "email2@naver.com" },
-    { name: "김영희", email: "email3@naver.com" },
-    { name: "홍길동", email: "email4@naver.com" },
-  ];
+  // const members = [
+  //   { name: "황종현", email: "test@" },
+  //   { name: "김철수", email: "email2@naver.com" },
+  //   { name: "김영희", email: "email3@naver.com" },
+  //   { name: "홍길동", email: "email4@naver.com" },
+  // ];
+
+  
 
   useEffect(() => {
+    console.log(travel.participants, travel.founder);
+    const memberArray = [travel.founder];
+    // travel.participants.map((participant) => {
+    //   memberArray.push(participant);
+    // })
+    setMembers(memberArray);
     if (travel.location) {
       // 1. 한글 국가명으로 영어 국가명 찾기
       const englishCountryName = Object.keys(countryNamesInKorean).find(
@@ -390,16 +395,16 @@ export default function AccountBook({
 
         <div>
           <CurrencyButton onClick={toggleDropDown}>
-            {selectedUser?.name ? selectedUser.name : "유저를 선택해주세요"} ▼
+            {selectedUser ? selectedUser : "유저를 선택해주세요"} ▼
           </CurrencyButton>
           {isOpen && (
             <SelectUserDropDown>
               {members.map((option) => (
                 <CurrencyItem
-                  key={option.email}
+                  key={option}
                   onClick={() => handleSelected(option)}
                 >
-                  {option.name}
+                  {option}
                 </CurrencyItem>
               ))}
             </SelectUserDropDown>
