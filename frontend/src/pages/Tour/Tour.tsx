@@ -109,11 +109,11 @@ export default function Tour() {
   const [TourData, setTourData] = useState<TravelPlan>({
     id: "",
     travelCode: "",
-    title: "",
+    title: "로딩중...",
     founder: "",
-    location: "",
-    startDate: "", // 날짜 문자열
-    endDate: "", // 날짜 문자열
+    location: "로딩중...",
+    startDate: "2000-01-01", // 날짜 문자열
+    endDate: "2099-12-30", // 날짜 문자열
     expense: 0,
     calculate: false,
     participants: [], // 참가자 리스트 (배열)
@@ -131,6 +131,7 @@ export default function Tour() {
   const [accountModalContent, setAccountModalContent] = useState<
     "AccountBook" | "categories"
   >("AccountBook");
+  const [totalMoney, setTotalMoney] = useState<number>(0);
 
   // 홈 혹은 마이페이지 중 어느 경로로 들어온건지 저장 (뒤로가기 기능)
   useEffect(() => {
@@ -140,7 +141,11 @@ export default function Tour() {
   }, []);
 
   useEffect(() => {
-    logs.map((item) => item.money);
+    const total = logs.reduce((acc, curr) => {
+      const money = Number(curr.money.split(",").join(""));
+      return !isNaN(money) ? acc + money : acc; // money가 NaN이 아니면 누적, 아니면 그대로 acc 반환
+    }, 0);
+    setTotalMoney(total);
   }, [logs]);
 
   //-------------------------------------------------
@@ -423,7 +428,13 @@ export default function Tour() {
     <div>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
       {TourData && <TourInfo Tourdata={TourData} />}
-      {TourData && <MoneyInfo Tourdata={TourData} ChangeState={ChangeState} />}
+      {TourData && (
+        <MoneyInfo
+          Tourdata={TourData}
+          ChangeState={ChangeState}
+          totalMoney={totalMoney}
+        />
+      )}
       <Usehistory logs={logs} />
       {modalVisible && (
         <AccountModal
