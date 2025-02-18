@@ -151,7 +151,7 @@ input::placeholder {
 
 #RegistersuccessModal .modalBtBox {
   display: flex;
-  margin-top: 5%;
+  /* margin-top: 5%; */
   justify-content: center;
 }
 
@@ -162,8 +162,8 @@ input::placeholder {
   font-weight: 900;
   color: #ffffff;
   text-align: center;
-  width: 197px;
-  height: 45px;
+  width: 100px;
+  height: 37px;
 }
 
 .error-text {
