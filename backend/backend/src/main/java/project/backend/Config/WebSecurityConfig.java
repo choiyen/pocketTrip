@@ -37,8 +37,7 @@ public class WebSecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(
                         sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/", "/auth/**", "/rate/**", "/expenditures/**", "/plan/**","/ws/**").permitAll().anyRequest().authenticated());
-        출처: https://thuthi.tistory.com/entry/SpringSecurity-항상-403에러가-뜨는-이유 [ThuThi's Tistory:티스토리]
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/","/auth/**", "/rate/**", "/expenditures/**", "/plan/**","/ws/**", "/api/**","/public/**").permitAll().anyRequest().authenticated());
 
         http.addFilterBefore(jwtAuthenticationFilter, CorsFilter.class);
 
@@ -51,7 +50,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:8080"));  // 특정 도메인 허용
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://localhost:9000"));  // 특정 도메인 허용
         config.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));  // 🔹 허용할 헤더 추가
         config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type")); // 🔹 클라이언트에서 접근 가능하도록 노출

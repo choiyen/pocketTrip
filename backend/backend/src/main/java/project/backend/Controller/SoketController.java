@@ -51,7 +51,7 @@ public class SoketController
     {
         try
         {
-            System.out.println(authHeader);
+            //System.out.println(authHeader);
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
@@ -61,13 +61,13 @@ public class SoketController
             String url = "http://localhost:8080/plan/select/" + travelCode;
             // GET 요청 보내기
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            System.out.println(response.getBody());
+            //System.out.println(response.getBody());
             if(response.getStatusCode() == HttpStatus.OK)
             {
                 String url2 = "http://localhost:8080/expenditures/" + travelCode;
                 // GET 요청 보내기
                 ResponseEntity<String> response2 = restTemplate.exchange(url2,HttpMethod.GET,entity, String.class);
-                System.out.println(response2.getBody());
+                //System.out.println(response2.getBody());
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
                     List list = new ArrayList<>();
