@@ -24,7 +24,7 @@ export default function EditProfile() {
   const [userEmail, setUserEmail] = useState("");
   const [userPhoneNumber, setUserPhoneNumber] = useState("");
   const [userPassword, setuserPassword] = useState("");
-  const [previewImage, setPreviewImage] = useState("/ProfileImage.png"); // 임시 미리보기 이미지
+  const [previewImage, setPreviewImage] = useState(""); // 임시 미리보기 이미지
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch: AppDispatch = useDispatch();
 
@@ -119,6 +119,8 @@ export default function EditProfile() {
           },
         }
       );
+
+      console.log(response.data);
 
       if (response.status === 200) {
         alert("변경 사항이 저장되었습니다!");

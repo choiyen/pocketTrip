@@ -177,6 +177,7 @@ public class UserController {
                     .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .phone(userDTO.getPhone())
+                    .profile(userDTO.getProfile())
                     .build();
 
             UserEntity editUser = userService.updateUser(email, user);
@@ -186,6 +187,7 @@ public class UserController {
                     .email(editUser.getEmail())
                     .password(editUser.getPassword())
                     .phone(editUser.getPhone())
+                    .profile(editUser.getProfile())
                     .build();
 
             List<Object> list = new ArrayList<>();
