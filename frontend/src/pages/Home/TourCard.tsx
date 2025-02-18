@@ -57,6 +57,7 @@ const TitleWrap = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
 
   .location {
     /* font-size: 32px; 
@@ -117,7 +118,6 @@ export default function TourCard({ Tourdata }: TourCardProps) {
             <h3 className="location">{location}</h3>
             <CardUserList user={ImgArr} $size="L" />
           </TitleWrap>
-          <p>{formattedBudget} ₩</p>
           <TourDateUi
             $precent={progress ? progress.toFixed(2) + "%" : "0%"}
             startDate={startDate}
