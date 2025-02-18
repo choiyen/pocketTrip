@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import project.backend.Config.StartupRunner;
 import project.backend.DTO.ResponseDTO;
 import project.backend.Service.RateService;
 
@@ -42,7 +43,6 @@ public class rateController {
             String rate = rateService.getObject();
             ObjectMapper objectMapper = new ObjectMapper();
             list = objectMapper.readValue(rate, List.class);
-
 
             for (Map<String, Object> map : list)
             {
