@@ -39,7 +39,6 @@ public class ExpendituresController {
 
     // 지출 추가
     @PostMapping("/{travelCode}")
-
     public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode)
     {
         System.out.println(expendituresDTO);
@@ -103,9 +102,9 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    @Cacheable(value = "Expenditure", key = "#travelCode")
-    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode)
-    {
+//     @Cacheable(value = "Expenditure", key = "#travelCode")
+    public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
+
         try
         {
             System.out.println(travelCode);
