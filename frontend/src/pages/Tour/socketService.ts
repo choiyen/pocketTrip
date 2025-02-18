@@ -141,6 +141,7 @@ class SocketService {
 
     this.client.subscribe(`/topic/insert/${travelCodes}`, (message) => {
       console.log("ddd");
+
       const result = JSON.parse(message.body);
       const result2 = JSON.parse(result.body.data[0]);
       console.log(message.body);
