@@ -18,7 +18,7 @@ export default function Calculator() {
     const [operator, setOperator] = useState("");
     const [isDecimal, setIsDecimal] = useState(false);
     const [decimalPosition, setDecimalPosition] = useState(0);
-    const [unit, setUnit] = useState("$");
+    const [unit, setUnit] = useState("₩");
     const [currencyList, setCurrencyList] = useState<currencyProps[]>([]);
     const [currency, setCurrency] = useState(1);
     const [toggleState, setToggleState] = useState(false);
@@ -106,11 +106,11 @@ export default function Calculator() {
             console.log(res.data);
             setCurrencyList(res.data.data);
 
-            const initialCurrency = res.data.data[21]?.환전구매환율;
-            console.log("초기 환율 값:", initialCurrency); // 여기서 undefined가 찍히는지 확인
+        //     const initialCurrency = res.data.data[21]?.환전구매환율;
+        //     console.log("초기 환율 값:", initialCurrency); // 여기서 undefined가 찍히는지 확인
 
-        setCurrency(initialCurrency || 1);
-        setUnit(res.data.data[21]?.통화기호 || "$");
+        // setCurrency(initialCurrency || 1);
+        // setUnit(res.data.data[21]?.통화기호 || "$");
         }).catch((error) => {
             console.error(error);
         });
