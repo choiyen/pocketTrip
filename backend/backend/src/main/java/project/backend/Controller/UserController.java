@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import project.backend.DTO.ResponseDTO;
 import project.backend.DTO.UserDTO;
 import project.backend.DTO.UserTravelsDTO;
+import project.backend.DTO.FindPWDTO;
 import project.backend.Entity.UserEntity;
 import project.backend.Entity.UserTravelsEntity;
 import project.backend.Security.TokenProvider;
+import project.backend.Service.FindIDDTO;
 import project.backend.Service.UserService;
 import project.backend.Service.UserTravelsService;
 
@@ -248,8 +250,39 @@ public class UserController {
     }
 
 
-//    @PostMapping("/findID")
-//    public ResponseEntity<?> findEmail(@RequestBody )
+    @PostMapping("/findID")
+    public ResponseEntity<?> findEmail(@RequestBody FindIDDTO findIDDTO)
+    {
+        try
+        {
+            String email = userService.getUserEmailByNameAndPhone(findIDDTO);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "이메일 찾기 완료!", Collections.singletonList(email)));
+        }
+        catch (Exception e)
+        {
+            return  ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
 
+    @PostMapping("/findPW")
+    public ResponseEntity<?> changePassword(@RequestBody FindPWDTO findPWDTO)
+    {
+        try
+        {
+            String PW = userService.changePassword(findPWDTO);
+            if(PW.equals("Email is not find"))
+            {
+                throw new RuntimeException("이메일이나 전화번호를 다시 확인해주세요. 정보를 찾을 수 없습니다.");
+            }
+            else
+            {
+                return ResponseEntity.ok().body(responseDTO.Response("success", "임시 비밀번호 발급 완료!", Collections.singletonList(PW)));
+            }
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
 
 }
