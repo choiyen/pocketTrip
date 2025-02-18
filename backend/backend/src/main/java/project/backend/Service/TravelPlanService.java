@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,14 @@ public class TravelPlanService
 
     public Flux<TravelPlanEntity> travelPlanEntityAll(String userId)
     {
-        return travelPlanRepository.findByFounder(userId,Sort.by(Sort.Order.asc("startDate")));
+        List<TravelPlanEntity> list = new ArrayList<>();
+        Flux<TravelPlanEntity> travelPlanEntityFlux = travelPlanRepository.findByFounder(userId,Sort.by(Sort.Order.asc("startDate")));
+        Flux<TravelPlanEntity> travelPlanEntityFlux2 = travelPlanRepository.findByParticipantsContaining(userId,Sort.by(Sort.Order.asc("startDate")));
+        Flux<TravelPlanEntity> combinedFlux = Flux.concat(
+                travelPlanEntityFlux,
+                travelPlanEntityFlux2
+        );
+        return combinedFlux;
     }
     public long TravelPlanCount()
     {
