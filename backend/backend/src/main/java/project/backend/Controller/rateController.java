@@ -217,6 +217,7 @@ public class rateController {
 
             System.out.println(list);
 
+
         } catch (Exception e)
          {
             log.error("환율 등록 과정에서 오류 발생 : {}", e.getMessage(), e);
@@ -236,6 +237,7 @@ public class rateController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+
 
     @PostMapping("/country")
     public  ResponseEntity<?> responseEntity(@RequestBody String country)
