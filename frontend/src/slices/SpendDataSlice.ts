@@ -6,7 +6,7 @@ const initialState = {
     currency: "",
     paymentType: "",
     date: "",
-    selectedUser: { name: "", email: "" },
+    selectedUser: { email: "" },
     img: "",
   },
 };
