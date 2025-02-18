@@ -76,24 +76,24 @@ export default function MyPage() {
     }
   };
 
-    const getUserData = async (token: string) => {
-      // 유저의 모든 여행 기록을 받아온다.
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response.data);
-      const UserData = response.data.data[0];
-      if (UserData) {
-        setUserName(UserData.name);
-        setUserProfile(UserData.profile);
+  const getUserData = async (token: string) => {
+    // 유저의 모든 여행 기록을 받아온다.
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    };
+    );
+    console.log(response.data);
+    const UserData = response.data.data[0];
+    if (UserData) {
+      setUserName(UserData.name);
+      setUserProfile(UserData.profile);
+    }
+  };
 
   // useEffect(() => {
   //   getTravelData(token!);
@@ -105,10 +105,6 @@ export default function MyPage() {
     getUserData(token as string);
     getTravelData(token as string); // 여행 정보 요청
   }, []);
-
-
-
-  
 
   // const travelList: TravelPlan[] = [
   //   {
@@ -180,7 +176,9 @@ export default function MyPage() {
           editType="editProfile"
         />
         <Profile>
-          <img src={userProfile} alt="프로필사진" />
+          <ImgContainer>
+            <img src={userProfile} alt="프로필사진" />
+          </ImgContainer>
           <span>{userName}</span>
         </Profile>
       </ProfileContainer>
@@ -244,15 +242,25 @@ const ProfileContainer = styled.div`
   }
 `;
 
+const ImgContainer = styled.div`
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+`;
+
 const Profile = styled.div`
   display: flex;
   flex-direction: column;
   // margin: 20px 0 0 0;
 
   & img {
-    border-radius: 100%;
-    width: 150px;
-    height: 150px;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   & span {

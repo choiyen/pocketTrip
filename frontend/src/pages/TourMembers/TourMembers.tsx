@@ -4,6 +4,7 @@ import UserListItem from "./UserListItem";
 import styled from "styled-components";
 import Button from "../../components/Common/Button";
 import { useParams } from "react-router-dom";
+import CryptoJS, { enc } from "crypto-js";
 
 const CodeWrap = styled.div`
   width: 90%;
@@ -72,6 +73,24 @@ const UserContainer = styled.ul`
 `;
 
 export default function TourMembers() {
+  const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
+  const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
+  const decrypt = (encryptedData: string) => {
+    // URL-safe Base64 복구
+    const base64 = encryptedData.replace(/-/g, "+").replace(/_/g, "/");
+
+    const decrypted = CryptoJS.AES.decrypt(
+      base64,
+      CryptoJS.enc.Utf8.parse(SECRET_KEY),
+      {
+        iv: IV,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    );
+
+    return decrypted.toString(CryptoJS.enc.Utf8); // 복호화된 문자열 반환
+  };
   const { encrypted } = useParams<{ encrypted: string }>();
   const userData = [
     {
@@ -93,7 +112,7 @@ export default function TourMembers() {
       <ContentBox>
         <CodeWrap>
           <h2 className="TourMemberTitle">초대코드</h2>
-          <span className="InviteCode">1H3D4G</span>
+          <span className="InviteCode">{decrypt(encrypted!)}</span>
         </CodeWrap>
         <CurrentMembersWrap>
           <h3>
