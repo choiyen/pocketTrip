@@ -4,8 +4,10 @@ import axios from "axios";
 import Button from "../../components/Common/Button";
 import "./Where2.css";
 import { countryNamesInKorean } from "../Data/countryNames";
+import { countryCurrencies } from "../Data/countryMoney";
 import styled from "styled-components";
 import SelectLocation from "../../components/ui/SelectLocation";
+import ExchangeRate from "../../components/ui/ExchangeRate";
 
 interface Where2Props {
   travelData: {
@@ -42,6 +44,7 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
   const [location, setSelectedCountry] = useState<string>(""); // 선택된 나라
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
   const isButtonDisabled = !location;
+  const [pound, setPound] = useState<string>("$");
 
   // 페이지 이동 함수
   const goToWhere1 = () => {
@@ -55,6 +58,20 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
 
     navigate("/Where3");
   };
+
+  useEffect(() => {
+    if (!location) {
+      return;
+    }
+    const englishName = Object.entries(countryNamesInKorean).filter(
+      (item) => item[1] === location
+    )[0][0];
+    const pound = Object.entries(countryCurrencies)
+      .filter((item) => item[0] === englishName)[0][1]
+      .split(",")[1];
+
+    setPound(pound);
+  }, [location]);
 
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
@@ -116,6 +133,8 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
         filteredCountries={filteredCountries}
         location={location}
       />
+
+      <ExchangeRate pound={pound} />
 
       {/* 확인 버튼 */}
       <div className="button-container">
