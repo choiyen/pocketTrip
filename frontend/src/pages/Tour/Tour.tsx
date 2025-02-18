@@ -198,6 +198,7 @@ export default function Tour() {
   //     }
   //   };
   // }, []);
+
   useEffect(() => {
     if (!token || !travelCodes) return;
 
