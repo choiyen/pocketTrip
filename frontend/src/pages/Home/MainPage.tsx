@@ -88,11 +88,9 @@ export default function MainPage() {
 
   // 위에서 필요한 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
   useEffect(() => {
-
     // 로컬 상태에 있으면 로컬을 쓴다.
     SelectCurrentTourData(TourDataArr);
     dispatch(setTravelData(TourDataArr)); // 암호화 코드 추가된 여행 정보 저장
-
   }, [TourDataArr]);
 
   // 현재 여행중인 여행정보를 하나만 선정한다.
