@@ -18,6 +18,7 @@ interface TravelData {
 interface TourCardProps {
   Tourdata: TravelData; // props 타입 정의
   ChangeState: () => void;
+  totalMoney: number;
 }
 
 const MoneyInfoWrap = styled.div`
@@ -49,7 +50,11 @@ const MoneyInfoWrap = styled.div`
   }
 `;
 
-export default function MoneyInfo({ Tourdata, ChangeState }: TourCardProps) {
+export default function MoneyInfo({
+  Tourdata,
+  ChangeState,
+  totalMoney,
+}: TourCardProps) {
   const navigate = useNavigate();
   const { encrypted } = useParams<{ encrypted: string }>();
 
@@ -60,11 +65,14 @@ export default function MoneyInfo({ Tourdata, ChangeState }: TourCardProps) {
   };
 
   // expense을 쉼표 구분 형식으로 변환
-  const formattedBudget = new Intl.NumberFormat().format(Tourdata.expense);
+  const formattedBudget = new Intl.NumberFormat().format(
+    Tourdata.expense - totalMoney
+  );
+  const initialBudget = new Intl.NumberFormat().format(Tourdata.expense);
 
   return (
     <MoneyInfoWrap>
-      <h2>현재예산</h2>
+      <h2>현재예산 (초기값 : {initialBudget})</h2>
       <strong>{formattedBudget}</strong>
       <Button size="M" name="가계부 작성" onClick={ChangeState} />
     </MoneyInfoWrap>

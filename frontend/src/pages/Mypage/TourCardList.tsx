@@ -85,9 +85,7 @@ const Expense = styled.strong`
   margin-top: 10px;
 `;
 
-const Location = styled.div`
-  padding: 20px;
-`;
+const Location = styled.div``;
 
 const SmallUserBox = styled(CardUserList)`
   /* transform: scale(0.8); */
@@ -122,9 +120,6 @@ export default function TourCardList({
           {/* 백엔드 수정 후 user 추가 */}
           <SmallUserBox $size={"S"} />
 
-          <Expense>₩ {formattedBudget[index]}</Expense>
-        </div>
-        <div>
           <Location>{travel.location}</Location>
         </div>
       </Travel>

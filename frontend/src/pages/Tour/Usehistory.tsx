@@ -47,15 +47,15 @@ export default function Usehistory({ logs }: logsProps) {
   // 탭에 따라서 보이는 목록 필터링
   useEffect(() => {
     if (tabState === "종합") {
-      const data = logs.filter(
-        (log) => log.type === "카드" || log.type === "현금"
-      );
+      const data = logs
+        .filter((log) => log.type === "카드" || log.type === "현금")
+        .reverse();
       setFilteringLogs(data);
     } else if (tabState === "카드") {
-      const data = logs.filter((log) => log.type === "카드");
+      const data = logs.filter((log) => log.type === "카드").reverse();
       setFilteringLogs(data);
     } else {
-      const data = logs.filter((log) => log.type === "현금");
+      const data = logs.filter((log) => log.type === "현금").reverse();
       setFilteringLogs(data);
     }
   }, [tabState, logs]);
