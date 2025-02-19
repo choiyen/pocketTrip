@@ -2,7 +2,6 @@ package project.backend.Service;
 
 
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -11,13 +10,12 @@ import org.springframework.web.client.RestClientException;
 
 
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.StringHttpMessageConverter;
+
 import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.*;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
+
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
@@ -34,13 +32,18 @@ public class RateService
 {
     @Value("${api.key}")
     private String apiKey;
-    private static final int MAX_RETRIES = 15;  // 최대 재시도 횟수
+    private static final int MAX_RETRIES = 3;  // 최대 재시도 횟수
 
     int attempts = 0;
     boolean success = false;
 
-    public String getObject() {
-        try {
+
+    public String getObject() throws Exception {
+
+
+        try
+        {
+
             // RestTemplate을 생성하면서 HttpURLConnection을 사용하는 기본 설정
             RestTemplate restTemplate = new RestTemplate();
 
@@ -61,14 +64,15 @@ public class RateService
             int attempts = 0;
             boolean success = false;
             String response = "";
-
+            String url;
             while (attempts < MAX_RETRIES && !success) {
                 try {
                     attempts++;
                     String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
                     System.out.println(formattedDate);
-                    String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
+                    url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
 
+                    ignoreSsl();
                     response = restTemplate.getForObject(url, String.class);
                     success = true;
 
@@ -94,8 +98,6 @@ public class RateService
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
         }
     }
-
-
 
     private String getFormattedDate(DayOfWeek dayOfWeek, LocalTime currentTime, Calendar calendar, SimpleDateFormat formatter)
     {
@@ -135,4 +137,51 @@ public class RateService
 
         return formattedDate;
     }
+
+    //SSL 인증을 무시하고 HTTPS를 http처럼 post 요청하기
+    public static void  ignoreSsl() throws  Exception
+    {
+        HostnameVerifier hv = new HostnameVerifier() {
+            public boolean verify(String urlHostName, SSLSession sslSession)
+            {
+                return true;
+            };
+        };
+    }
+    private static void trustAllHttpsCertificates() throws Exception
+    {
+        TrustManager[] trustManagers = new TrustManager[1];
+        TrustManager tm = new miTm();
+        trustManagers[0] = tm;
+        SSLContext sc = SSLContext.getInstance("TLS");
+        sc.init(null, trustManagers, null);
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    }
+    static class miTm implements TrustManager, X509TrustManager
+    {
+        public X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+        public boolean isServerTrusted(X509Certificate[] certs) {
+            return true;
+        }
+        public boolean isClientTrusted(X509Certificate[] certs)
+        {
+            return true;
+        }
+        @Override
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            return;
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            return;
+        }
+
+
+
+    }
+
+
 }
