@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.TravelPlanEntity;
+import project.backend.Entity.UserEntity;
 import project.backend.Repository.TravelPlanRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,8 +42,22 @@ public class TravelPlanService
 
     public Mono<TravelPlanEntity> TravelPlanUpdate(TravelPlanEntity travelPlan)
     {
+        TravelPlanEntity originalTravelPlan = travelPlanRepository.findByTravelCode(travelPlan.getTravelCode()).block();
 
-       return travelPlanRepository.save(travelPlan);
+        originalTravelPlan.setTravelCode(travelPlan.getTravelCode());
+        originalTravelPlan.setCalculate(travelPlan.isCalculate());
+        originalTravelPlan.setFounder(travelPlan.getFounder());
+        originalTravelPlan.setStartDate(travelPlan.getStartDate());
+        originalTravelPlan.setEndDate(travelPlan.getEndDate());
+        originalTravelPlan.setParticipants(travelPlan.getParticipants());
+        originalTravelPlan.setCurrentCurrency(travelPlan.getCurrentCurrency());
+        originalTravelPlan.setExpense(travelPlan.getExpense());
+        originalTravelPlan.setImg(travelPlan.getImg());
+        originalTravelPlan.setTitle(travelPlan.getTitle());
+        originalTravelPlan.setLocation(travelPlan.getLocation());
+
+
+        return travelPlanRepository.save(originalTravelPlan);
     }
 
     public void TravelPlanDelete(String TravelCode)
