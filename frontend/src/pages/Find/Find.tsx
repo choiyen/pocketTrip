@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./Find.css";
 import { useNavigate } from "react-router-dom";
 
@@ -9,26 +10,72 @@ const Find: React.FC = () => {
   const [phoneNumberPw, setPhoneNumberPw] = useState<string>("");
   const [emailAddrPw, setEmailAddrPw] = useState<string>("");
   const [errorMessages, setErrorMessages] = useState<any>({});
-
-  const [modalState, setModalState] = useState({
+  const [emailModalState, setEmailModalState] = useState({
     result: false,
-    userFound: false,
-    resetPassword: false,
     error: false,
   });
+  const [passwordModalState, setPasswordModalState] = useState({
+    result: false,
+    error: false,
+  });
+  const [userInfo, setUserInfo] = useState<any>(null); // 사용자 정보를 저장할 상태 추가
+  const [tempPassword, setTempPassword] = useState<string>(""); // 임시 비밀번호 상태 추가
 
   const navigate = useNavigate();
 
-  const findEmail = () => {
+  // 아이디 찾기 요청 함수
+  const findEmail = async () => {
     console.log("이메일 찾기:", usernameId, phoneNumberId);
-    // 이메일 찾기 로직
-    setModalState({ ...modalState, result: true });
+
+    try {
+      const response = await axios.post("http://localhost:8080/auth/findID", {
+        name: usernameId,
+        phone: phoneNumberId,
+      });
+
+      console.log(response); // 응답 데이터를 확인
+      if (response.data.resultType === "success") {
+        // 응답 데이터를 파싱하여 이메일을 추출
+        const email = JSON.parse(response.data.data[0]).email;
+        setUserInfo(email); // 이메일만 상태에 저장
+        setEmailModalState({ result: true, error: false }); // 이메일 모달 띄우기
+      } else {
+        setEmailModalState({ error: true, result: false }); // 실패 시 오류 모달
+      }
+    } catch (error) {
+      console.error("아이디 찾기 오류:", error);
+      setEmailModalState({ error: true, result: false }); // 오류 발생 시 오류 모달
+    }
   };
 
-  const requestPasswordReset = () => {
-    console.log("비밀번호 재설정:", usernamePw, phoneNumberPw, emailAddrPw);
-    // 비밀번호 재설정 로직
-    setModalState({ ...modalState, userFound: true });
+  // 비밀번호 찾기 요청 함수 (임시 비밀번호 발급)
+  const requestPasswordReset = async () => {
+    console.log("비밀번호 찾기:", emailAddrPw, phoneNumberPw);
+
+    try {
+      const response = await axios.post("http://localhost:8080/auth/findPW", {
+        email: emailAddrPw,
+        phone: phoneNumberPw,
+      });
+
+      console.log(response); // 응답 데이터 확인
+
+      if (response.data.resultType === "success") {
+        const data = response.data.data[0]; // 응답에서 첫 번째 데이터 가져오기
+
+        if (data) {
+          setTempPassword(data); // 임시 비밀번호 상태에 저장
+          setPasswordModalState({ result: true, error: false }); // 비밀번호 모달 띄우기
+        } else {
+          setPasswordModalState({ error: true, result: false }); // 비밀번호 없음
+        }
+      } else {
+        setPasswordModalState({ error: true, result: false }); // 실패 시 오류 모달
+      }
+    } catch (error) {
+      console.error("비밀번호 찾기 오류:", error);
+      setPasswordModalState({ error: true, result: false }); // 오류 발생 시 오류 모달
+    }
   };
 
   return (
@@ -44,8 +91,9 @@ const Find: React.FC = () => {
       </div>
 
       <div className="findD">
+        {/* 아이디 찾기 폼 */}
         <form className="findForm">
-          <h2 style={{ marginBottom: "20px" }}>사용자 정보</h2>
+          <h2 style={{ marginBottom: "20px" }}>아이디 찾기</h2>
           <input
             type="text"
             placeholder="이름을 입력해 주세요"
@@ -63,19 +111,12 @@ const Find: React.FC = () => {
           <span className="error-text">{errorMessages.phoneNumberIdError}</span>
         </form>
         <button className="findBt" type="button" onClick={findEmail}>
-          이메일 찾기
+          아이디 찾기
         </button>
 
+        {/* 비밀번호 찾기 폼 */}
         <form className="findForm">
-          <h2 style={{ marginBottom: "20px" }}>비밀번호 재설정</h2>
-          <input
-            type="text"
-            placeholder="이름을 입력해 주세요"
-            value={usernamePw}
-            onChange={(e) => setUsernamePw(e.target.value)}
-          />
-          <span className="error-text">{errorMessages.usernamePwError}</span>
-
+          <h2 style={{ marginBottom: "20px" }}>비밀번호 찾기</h2>
           <input
             type="number"
             placeholder="전화번호를 입력해 주세요"
@@ -93,7 +134,7 @@ const Find: React.FC = () => {
           <span className="error-text">{errorMessages.emailAddrPwError}</span>
         </form>
         <button className="findBt" type="button" onClick={requestPasswordReset}>
-          비밀번호 재설정
+          비밀번호 찾기
         </button>
       </div>
 
@@ -105,65 +146,67 @@ const Find: React.FC = () => {
       </div>
 
       {/* 이메일 확인 모달 */}
-      {modalState.result && (
+      {emailModalState.result && (
         <div className="modal">
           <div className="modalContent">
-            <p>이메일을 찾을 수 없습니다.</p>
-            <button
-              onClick={() => setModalState({ ...modalState, result: false })}
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 사용자 확인 모달 */}
-      {modalState.userFound && (
-        <div className="modal">
-          <div className="modalContent">
-            <p>비밀번호 재설정 요청이 완료되었습니다.</p>
-            <button
-              onClick={() => setModalState({ ...modalState, userFound: false })}
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 비밀번호 재설정 모달 */}
-      {modalState.resetPassword && (
-        <div className="modal">
-          <div className="modalContent">
-            <h3>새 비밀번호 입력</h3>
-            <input type="password" placeholder="새 비밀번호" />
-            <input type="password" placeholder="비밀번호 확인" />
-            <button>비밀번호 변경</button>
+            <p>아이디</p>
+            {userInfo ? (
+              <div>
+                <p>{userInfo}</p> {/* 이메일만 출력 */}
+              </div>
+            ) : (
+              <p>사용자 정보를 찾을 수 없습니다.</p>
+            )}
             <button
               onClick={() =>
-                setModalState({ ...modalState, resetPassword: false })
+                setEmailModalState({ ...emailModalState, result: false })
               }
             >
-              닫기
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 비밀번호 확인 모달 */}
+      {passwordModalState.result && (
+        <div className="modal">
+          <div className="modalContent">
+            <p>비밀번호</p>
+            {tempPassword ? (
+              <div>
+                <p>{tempPassword}</p> {/* 임시 비밀번호 출력 */}
+              </div>
+            ) : (
+              <p>비밀번호를 찾을 수 없습니다.</p>
+            )}
+            <button
+              onClick={() =>
+                setPasswordModalState({ ...passwordModalState, result: false })
+              }
+            >
+              확인
             </button>
           </div>
         </div>
       )}
 
       {/* 오류 모달 */}
-      {modalState.error && (
+      {emailModalState.error || passwordModalState.error ? (
         <div className="modal">
           <div className="modalContent">
-            <p>입력 오류입니다.</p>
+            <p>잘못된 형식입니다.</p>
             <button
-              onClick={() => setModalState({ ...modalState, error: false })}
+              onClick={() => {
+                setEmailModalState({ ...emailModalState, error: false });
+                setPasswordModalState({ ...passwordModalState, error: false });
+              }}
             >
               닫기
             </button>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
