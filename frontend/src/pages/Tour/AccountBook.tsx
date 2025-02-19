@@ -117,6 +117,7 @@ const Footer = styled.div`
   width: 100%;
   margin-top: 20px;
   gap: 10px;
+  margin-bottom: 100px;
 `;
 const ActionButton = styled.button<{ $bgColor: string }>`
   background-color: ${(props) => props.$bgColor};

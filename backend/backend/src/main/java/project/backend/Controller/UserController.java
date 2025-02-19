@@ -218,7 +218,7 @@ public class UserController {
     } // 프론트엔드 연결 후 기능 정상 동작 여부 확인해야 함.
 
 
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     public ResponseEntity<?> signprofile(@RequestBody List<String> emails)
     {
         try

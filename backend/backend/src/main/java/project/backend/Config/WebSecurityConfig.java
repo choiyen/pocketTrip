@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(
                         sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/","/auth/**", "/rate/**", "/expenditures/**", "/plan/**","/ws/**", "/api/**","/public/**").permitAll().anyRequest().authenticated());
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/","/auth/**", "/rate/**", "/expenditures/**", "/plan/**","/ws/**", "/api/**","/public/**", "/apply/**").permitAll().anyRequest().authenticated());
 
         http.addFilterBefore(jwtAuthenticationFilter, CorsFilter.class);
 
@@ -50,11 +50,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:3000", 
-                "http://localhost:8080",
-                "http://13.124.212.22:81",  // 프론트 배포 주소
-                "http://13.124.212.22:9000"));  // 특정 도메인 허용
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:8080"));  // 특정 도메인 허용
         config.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));  // 🔹 허용할 헤더 추가
         config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type")); // 🔹 클라이언트에서 접근 가능하도록 노출
