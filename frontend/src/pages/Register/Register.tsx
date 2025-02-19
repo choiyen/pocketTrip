@@ -50,7 +50,7 @@ const Register: React.FC = () => {
     console.log(formData);
     axios
       .post(
-        "http://localhost:8080/auth/signup",
+        `${process.env.REACT_APP_API_BASE_URL}/auth/signup`,
         {
           name: formData.username,
           email: formData.emailAddr,
@@ -107,7 +107,7 @@ const Register: React.FC = () => {
       </div>
 
       <form
-        action="http://localhost:8080/auth/signup"
+        action={`${process.env.REACT_APP_API_BASE_URL}/auth/signup`}
         method="POST"
         id="registerForm"
         onSubmit={handleSubmit}
