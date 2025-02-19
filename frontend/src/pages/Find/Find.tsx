@@ -195,7 +195,7 @@ const Find: React.FC = () => {
       {emailModalState.error || passwordModalState.error ? (
         <div className="modal">
           <div className="modalContent">
-            <p>입력 오류입니다.</p>
+            <p>잘못된 형식입니다.</p>
             <button
               onClick={() => {
                 setEmailModalState({ ...emailModalState, error: false });
