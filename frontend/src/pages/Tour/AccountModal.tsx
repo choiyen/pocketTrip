@@ -44,6 +44,7 @@ const ModalBox = styled.div<{ $isActive: boolean }>`
   transition-duration: 500ms;
   padding: 20px;
   box-sizing: border-box;
+  overflow: auto;
 `;
 
 const CloseButton = styled.button`

@@ -18,6 +18,17 @@ const LogWrap = styled.li`
   font-size: 17px;
   padding: 10px 20px;
   align-items: center;
+  @media (min-width: 768px) and (max-width: 1023px) {
+    padding: 10px 35px;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    padding: 10px 130px;
+  }
+
+  @media (min-width: 1440px) {
+    padding: 10px 350px;
+  }
 
   .InfoBox {
     display: flex;
