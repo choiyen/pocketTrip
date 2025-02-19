@@ -318,10 +318,13 @@ public class TravelPlanController
     {
         try
         {
-            Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(travelCode);
+            System.out.println("Received Applicant: " + Applicant);
+
+            Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(travelCode, key));
             if (travelPlanEntityMono.block().getFounder().equals(userId))
             {
-                Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.applicantsSelect(travelCode);
+                Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.applicantsSelect(encrypt(travelCode, key));
+                System.out.println("ApplicationsEntity: " + applicantsEntityMono.block().getUserList());
                 if(applicantsEntityMono.block().getUserList().contains(Applicant))
                 {
                     TravelPlanEntity travelPlan = ConvertToParticipants(Applicant, travelPlanEntityMono);
