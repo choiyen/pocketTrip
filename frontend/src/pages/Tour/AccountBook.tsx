@@ -336,6 +336,7 @@ export default function AccountBook({
     };
     const formattedDate = today.toLocaleDateString("ko-KR", options);
 
+    console.log("현재는 우리다" + selectedUser);
     dispatch(
       SaveSpendData({
         amount,
