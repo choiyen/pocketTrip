@@ -275,6 +275,12 @@ const TravelListContainer = styled.div`
   height: 60vh;
   // background: black;
   overflow: scroll;
+  @media (min-width: 768px) and (max-width: 1023px) {
+    height: 70vh;
+  }
+  @media (min-width: 1024px) {
+    height: 50vh;
+  }
 `;
 
 const NoTravelList = styled.div`
@@ -351,5 +357,16 @@ const AddTravel = styled.div`
     font-size: 25px;
     text-align: center;
     line-height: 30px;
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    width: 85vw;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    width: 74vw;
+  }
+
+  @media (min-width: 1440px) {
+    width: 53vw;
   }
 `;

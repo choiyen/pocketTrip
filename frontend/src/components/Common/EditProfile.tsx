@@ -31,27 +31,28 @@ export default function EditProfile() {
   const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`, 
-      {
+    axios
+      .get(`${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
-      }
-    ).then((res) => {
-      if(res.data.data[0] != null){
-        setUsername(res.data.data[0].name);
-        setUserEmail(res.data.data[0].email);
-        setUserPhoneNumber(res.data.data[0].phone);
-        // setuserPassword(res.data.data[0].password);
-        setPreviewImage(res.data.data[0].profile);
-      }
+      })
+      .then((res) => {
+        if (res.data.data[0] != null) {
+          setUsername(res.data.data[0].name);
+          setUserEmail(res.data.data[0].email);
+          setUserPhoneNumber(res.data.data[0].phone);
+          // setuserPassword(res.data.data[0].password);
+          setPreviewImage(res.data.data[0].profile);
+        }
 
-      console.log(res);
-    }).catch((e) => {
-      console.error(e);
-    })
-  }, [])
+        console.log(res);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -292,6 +293,17 @@ const BoxWrap = styled.div`
   /* @media (min-width: 768px) {
     flex-direction: row;
   } */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    margin-bottom: 100px;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    margin-bottom: 100px;
+  }
+
+  @media (min-width: 1440px) {
+    margin-bottom: 100px;
+  }
 `;
 const CancleButton = styled(Button)`
   background-color: #e8e8e8;
