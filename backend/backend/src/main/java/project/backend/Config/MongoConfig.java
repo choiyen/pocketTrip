@@ -18,7 +18,7 @@ public class MongoConfig {
 
     public MongoTemplate mongoTemplate()
     {
-        return new MongoTemplate(MongoClients.create("mongodb://localhost:27017/travel"), "travel");
+        return new MongoTemplate(MongoClients.create("mongodb://13.124.173.118:27017/travel"), "travel");
     }
     @Bean
     public MappingMongoConverter mappingMongoConverter(
