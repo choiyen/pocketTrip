@@ -87,7 +87,6 @@ export default function MyPage() {
         },
       }
     );
-    console.log(response.data);
     const UserData = response.data.data[0];
     if (UserData) {
       setUserName(UserData.name);
