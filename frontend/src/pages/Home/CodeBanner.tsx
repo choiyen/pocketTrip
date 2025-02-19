@@ -17,16 +17,31 @@ const CodeBannerWrap = styled.div`
   padding: 30px 16px;
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.09);
   box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    margin: 0;
+    background-size: 130px;
+    padding: 30px 20px;
+    width: 40vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 `;
 
 const Paragraph = styled.p`
   font-size: 16px;
   color: white;
   margin-bottom: 10px;
+
+  @media (min-width: 768px) {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
 `;
 
 const Span = styled.span`
-  color: #0077cc;
+  color: #3caeff;
 `;
 
 export default function CodeBanner({ setInputCodeVisible }: CodeBannerProps) {
