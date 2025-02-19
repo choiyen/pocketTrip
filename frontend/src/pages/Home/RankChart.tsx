@@ -37,6 +37,11 @@ const ChartBoxWrap = styled.div`
   margin-top: 20px;
   padding: 16px;
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.09);
+
+  @media (min-width: 768px) {
+    width: 40vw;
+    margin: 0;
+  }
 `;
 
 const ChartContainer = styled.div`
