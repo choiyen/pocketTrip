@@ -17,7 +17,6 @@ import java.util.Set;
 @Document(collection = "TravelPlan")
 @Builder
 @Getter
-@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TravelPlanEntity

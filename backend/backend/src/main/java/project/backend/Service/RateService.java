@@ -26,6 +26,8 @@ import org.springframework.web.client.RestClientException;
 
 
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import project.backend.Config.StartupRunner;
 import reactor.netty.http.client.HttpClient;
 
@@ -100,8 +102,8 @@ public class RateService
 
                     success = true;
 
-
-                } catch (RestClientException e) {
+                } catch (WebClientResponseException e)
+                {
                     System.out.println("Request failed. Attempt " + attempts + " of " + MAX_RETRIES + ". Error: " + e.getMessage());
                     if (attempts < MAX_RETRIES) {
                         int waitTime = (attempts == 1) ? 3000 : (attempts == 2) ? 5000 : 7000;
