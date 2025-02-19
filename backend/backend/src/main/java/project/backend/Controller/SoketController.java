@@ -98,53 +98,53 @@ public class SoketController
     @SendTo("/topic/insert/{travelCode}")//새로운 데이터가 저장되었으니, 해당 채팅방에 속한 사람 모두에게 DB를 보낸다.
     public ResponseEntity<?> insert(@Header("Authorization") String authHeader, @DestinationVariable("travelCode")  String travelCode, @RequestBody ExpendituresDTO expendituresDTO)
     {
-         try
-         {
-             System.out.println("Userssssss" + expendituresDTO);
-             String token = authHeader != null ? authHeader : "";
-             HttpHeaders headers = new HttpHeaders();
-             headers.set("Authorization", token);
-             headers.setContentType(MediaType.APPLICATION_JSON);
+        try
+        {
+            System.out.println("Userssssss" + expendituresDTO);
+            String token = authHeader != null ? authHeader : "";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", token);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-             HttpEntity<ExpendituresDTO> entity = new HttpEntity<>(expendituresDTO, headers);
+            HttpEntity<ExpendituresDTO> entity = new HttpEntity<>(expendituresDTO, headers);
 
-             restTemplate.getMessageConverters()
-                     .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+            restTemplate.getMessageConverters()
+                    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
-             // 2. JSON 처리용 MappingJackson2HttpMessageConverter 추가
-             ObjectMapper objectMapper = new ObjectMapper();
-             MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+            // 2. JSON 처리용 MappingJackson2HttpMessageConverter 추가
+            ObjectMapper objectMapper = new ObjectMapper();
+            MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
 
-             // 3. HTTP 메시지 컨버터에 추가
-             List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-             converters.add(jsonConverter);
+            // 3. HTTP 메시지 컨버터에 추가
+            List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+            converters.add(jsonConverter);
 
-             String url = "http://localhost:9000/expenditures/" + travelCode;
+            String url = "http://localhost:9000/expenditures/" + travelCode;
 
-             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-             if (response.getStatusCode() == HttpStatus.OK)
-             {
-                     HttpEntity<String> entity2 = new HttpEntity<>(headers);
-                     ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
-                     if(response2.getStatusCode() == HttpStatus.OK)
-                     {
-                         return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(response2.getBody())));
-                     }
-                     else
-                     {
-                         throw new RuntimeException("비용 목록 불러오기 실패!! 다시 시도해주세요");
-                     }
-             }
-             else
-             {
-                 throw new RuntimeException("지출 데이터를 저장하는데 실패하였습니다.");
-             }
-         }
-         catch (Exception e)
-         {
-             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
-         }
+            if (response.getStatusCode() == HttpStatus.OK)
+            {
+                HttpEntity<String> entity2 = new HttpEntity<>(headers);
+                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
+                if(response2.getStatusCode() == HttpStatus.OK)
+                {
+                    return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(response2.getBody())));
+                }
+                else
+                {
+                    throw new RuntimeException("비용 목록 불러오기 실패!! 다시 시도해주세요");
+                }
+            }
+            else
+            {
+                throw new RuntimeException("지출 데이터를 저장하는데 실패하였습니다.");
+            }
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
     }
 
 
