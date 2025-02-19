@@ -15,6 +15,7 @@ public class ExpendituresDTO {
     private String purpose;
     private String method;
     private boolean isPublic;
+    @JsonProperty("payer")  // JSON에서 "KRW"라는 필드를 이 자바 필드에 매핑
     private String payer;
     private LocalDate date;
     @JsonProperty("KRW")  // JSON에서 "KRW"라는 필드를 이 자바 필드에 매핑
