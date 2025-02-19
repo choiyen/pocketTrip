@@ -25,6 +25,17 @@ const TourWrap = styled.div`
   background-color: white;
   position: relative;
   box-shadow: 0px 9px 9px rgba(0, 0, 0, 0.1);
+  @media (min-width: 768px) and (max-width: 1023px) {
+    padding: 20px 40px;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    padding: 20px 130px;
+  }
+
+  @media (min-width: 1440px) {
+    padding: 20px 350px;
+  }
 
   h2 {
     font-size: 16px;
