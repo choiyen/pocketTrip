@@ -2,19 +2,35 @@ package project.backend.Service;
 
 
 
+
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.apache.coyote.Response;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 
 
-import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.StandardCharsets;
+import org.springframework.web.reactive.function.client.WebClient;
+import project.backend.Config.StartupRunner;
+import reactor.netty.http.client.HttpClient;
+
 
 import javax.net.ssl.*;
-
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
@@ -37,17 +53,12 @@ public class RateService
     int attempts = 0;
     boolean success = false;
 
-
     public String getObject() throws Exception {
 
 
         try
         {
 
-            // RestTemplate을 생성하면서 HttpURLConnection을 사용하는 기본 설정
-            RestTemplate restTemplate = new RestTemplate();
-
-            restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
             // 나머지 코드
             Date today = new Date();
@@ -63,18 +74,32 @@ public class RateService
 
             int attempts = 0;
             boolean success = false;
-            String response = "";
-            String url;
+            SslContext context = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
+            String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
+            System.out.println(formattedDate);
+            String url1 = "https://www.koreaexim.go.kr";
+            String url2 = "/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
+            String response2 = "";
             while (attempts < MAX_RETRIES && !success) {
                 try {
                     attempts++;
-                    String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
-                    System.out.println(formattedDate);
-                    url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
+                   response2 =  WebClient.builder()
+                            .baseUrl(url1)
+                            .clientConnector(new ReactorClientHttpConnector(httpClient))
+                            .build()
+                            .get()
+                            .uri(url2)
+                            .exchangeToMono(response -> {
+                                if(response.statusCode().is2xxSuccessful())
+                                {
+                                    System.out.println("API is Sussess");
+                                }
+                                return response.bodyToMono(String.class);
+                            }).block();
 
-                    ignoreSsl();
-                    response = restTemplate.getForObject(url, String.class);
                     success = true;
+
 
                 } catch (RestClientException e) {
                     System.out.println("Request failed. Attempt " + attempts + " of " + MAX_RETRIES + ". Error: " + e.getMessage());
@@ -92,7 +117,7 @@ public class RateService
                 }
             }
 
-            return response;
+            return response2;
 
         } catch (Exception e) {
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
@@ -137,7 +162,6 @@ public class RateService
 
         return formattedDate;
     }
-
     //SSL 인증을 무시하고 HTTPS를 http처럼 post 요청하기
     public static void  ignoreSsl() throws  Exception
     {
@@ -178,10 +202,8 @@ public class RateService
         public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
             return;
         }
-
-
-
     }
+
 
 
 }
