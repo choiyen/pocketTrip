@@ -4,41 +4,70 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.print.Doc;
+import javax.swing.text.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 @Component
-public class StartupRunner implements CommandLineRunner {
-    @Override
+public class StartupRunner {
+
+
     public void run(String... args) throws Exception {
         String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=NoYRIAuzpf7UUeZXbpQtOLuDhamPWzi6&searchdate=2025-01-31&data=AP01";
+        StringBuffer sb = new StringBuffer();
 
-        try {
-//            RestTemplate restTemplate = new RestTemplate();
-//            String response = restTemplate.getForObject(url, String.class);
-//            System.out.println("Startup API Request Successful: " + response);
-            // 요청할 URL
+        try
+        {
+            TrustManager[] trustManagers = new TrustManager[] {new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException
+                {
 
-            // HttpClient 생성
-            HttpClient client = HttpClient.newHttpClient();
+                }
 
-            // GET 요청 준비
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(url))
-                    .GET() // GET 요청
-                    .build();
+                @Override
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
 
-            // 요청 보내기 및 응답 받기
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                }
 
-            // 응답 상태 코드 및 본문 출력
-            System.out.println("Response Code: " + response.statusCode());
-            System.out.println("Response Body: " + response.body());
-
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers()
+                {
+                    return null;
+                }
+            }};
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustManagers, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            URL url1 = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
+            InputStreamReader in = new InputStreamReader((InputStream) connection.getContent());
+            BufferedReader br = new BufferedReader(in);
+            String line;
+            while ((line = br.readLine()) != null)
+            {
+                sb.append(line).append("/n");
+            }
+            System.out.println(sb.toString());
+            br.close();
+            in.close();
+            connection.disconnect();
 
         }
         catch (Exception e)
