@@ -26,10 +26,25 @@ const BannerWrap = styled.div`
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.09);
   margin-bottom: 20px;
 
+  @media (min-width: 768px) {
+    width: 100%;
+    height: 422px;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+  }
+
   img {
     width: 90px;
     height: 64px;
     margin-top: 10px;
+
+    @media (min-width: 768px) {
+      width: 80%;
+      max-width: 180px;
+      height: auto;
+    }
   }
 
   div {
@@ -40,6 +55,14 @@ const BannerWrap = styled.div`
     font-size: 20px;
     font-weight: 500;
     margin-bottom: 9px;
+    @media (min-width: 768px) and (max-width: 1023px) {
+      font-size: 25px;
+      margin-bottom: 15px;
+    }
+    @media (min-width: 1024px) {
+      font-size: 30px;
+      margin-bottom: 20px;
+    }
   }
 
   div > strong {
@@ -47,6 +70,15 @@ const BannerWrap = styled.div`
     font-weight: 700;
     margin-bottom: 10px;
     display: block;
+    @media (min-width: 768px) and (max-width: 1023px) {
+      font-size: 35px;
+      margin-bottom: 15px;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
   }
 
   .noPlan {
@@ -60,6 +92,12 @@ const BannerWrap = styled.div`
     font-size: 11px;
     font-weight: 500;
     color: #575757;
+    @media (min-width: 768px) and (max-width: 1023px) {
+      font-size: 12px;
+    }
+    @media (min-width: 1024px) {
+      font-size: 17px;
+    }
   }
 
   &::before {
@@ -70,6 +108,12 @@ const BannerWrap = styled.div`
     height: 40px;
     background-color: #e1c3a7;
     bottom: 0;
+    @media (min-width: 768px) and (max-width: 1023px) {
+      height: 80px;
+    }
+    @media (min-width: 1024px) {
+      height: 70px;
+    }
   }
 `;
 

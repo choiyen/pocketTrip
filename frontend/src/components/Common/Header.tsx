@@ -46,6 +46,9 @@ const UserWrap = styled.div`
 
   h2 {
     font-size: 17px;
+    @media (min-width: 768px) {
+      font-size: 20px;
+    }
   }
 
   strong {
@@ -71,15 +74,45 @@ const MainPageWrap = styled.div`
     font-weight: 900;
     margin-top: 10px;
     margin-bottom: 10px;
+
+    @media (min-width: 768px) {
+      font-size: 40px;
+    }
   }
   .year {
     font-size: 24px;
+    @media (min-width: 768px) {
+      font-size: 30px;
+    }
   }
 `;
 const DateWrap = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  & svg {
+    width: 80px;
+    height: 60px;
+    @media (min-width: 768px) {
+      width: 120px;
+      height: 100px;
+    }
+  }
+  & text {
+    /* x: 0px;
+    y: 50px; */
+    transform: translate(0px, 50px);
+    font-size: 60px;
+    stroke: #051e31;
+    fill: none;
+    stroke-width: 2;
+    @media (min-width: 768px) {
+      transform: translate(0px, 70px);
+
+      font-size: 80px;
+    }
+  }
 `;
 const HeaderWrap = styled.div<{ $bgColor: string; $pathName: string }>`
   padding: 20px;
@@ -122,15 +155,14 @@ export default function Header({
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
   const [isBoxVisible, setIsBoxVisible] = useState(false);
-  
+
   const logoutState = useSelector(
-      (state: RootState) => state.LogoutControl.logoutState
-    );
+    (state: RootState) => state.LogoutControl.logoutState
+  );
 
   const toggleBoxVisibility = () => {
     dispatch(ChangeLogoutState());
   };
-  
 
   // 글로벌 상태관리로 메인과 마이페이지 중 어디서 들어온 경로인지를 불러와서 관리
   const savePath = useSelector((state: RootState) => state.prevPath.value);
@@ -195,7 +227,6 @@ export default function Header({
     return today.toLocaleDateString("ko-KR", options);
   };
 
-
   return (
     <HeaderWrap $bgColor={$bgColor} $pathName={pathName}>
       {/* 세부 페이지에서의 뒤로가기 버튼 설정*/}
@@ -227,7 +258,7 @@ export default function Header({
       {/* 경로가 메인페이지일때 */}
       {pathName === "/" && (
         <MainPageWrap>
-          {logoutState && <LogoutBox /> }
+          {logoutState && <LogoutBox />}
           <UserWrap>
             <h2>
               어서오세요, <strong>{userData ? userData.name : "테스터"}</strong>
@@ -242,17 +273,8 @@ export default function Header({
             />
           </UserWrap>
           <DateWrap>
-            <svg width="105px" height="60">
-              <text
-                x="0"
-                y="50"
-                fontSize="60px"
-                stroke="#051E31"
-                fill="none"
-                strokeWidth="2"
-              >
-                {+date < 10 ? "0" + date : date}
-              </text>
+            <svg>
+              <text>{+date < 10 ? "0" + date : date}</text>
             </svg>
             <div>
               <span className="month">{month}</span>
