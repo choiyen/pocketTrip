@@ -6,7 +6,6 @@ import { countryCurrencies } from "../../pages/Data/countryMoney"; // 데이터 
 import { countryNamesInKorean } from "../../pages/Data/countryNames"; // 한글 국가명
 import { useDispatch } from "react-redux";
 import { SaveSpendData } from "../../slices/SpendDataSlice";
-
 interface AccountBookState {
   travel: TravelPlan;
   setAccountModalContent: (value: "AccountBook" | "categories") => void;
@@ -223,7 +222,7 @@ export default function AccountBook({
   const fetchExchangeRate = async (selectedCurrency: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/rate?currency=${selectedCurrency}`
+        `${process.env.REACT_APP_API_BASE_URL}/rate?currency=${selectedCurrency}`
       );
       // console.log("API 응답 상태:", response.status);
 

@@ -110,7 +110,6 @@ class SocketService {
       const response = JSON.parse(messages).body.data;
       const Tourdata = JSON.parse(response[0]);
       const TourDataResult = Tourdata.data[0];
-      console.log(TourDataResult);
       const spendData = JSON.parse(response[1]);
       // 소비내역을 리스트 속성 상태에 맞게 정리
       const spendList = spendData.map((data: Expenditure, index: number) => {

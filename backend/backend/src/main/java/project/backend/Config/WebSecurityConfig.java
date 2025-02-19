@@ -50,7 +50,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://localhost:9000", "http://13.124.212.22:9000/"));  // 특정 도메인 허용
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:9000", "http://13.124.212.22:9000/", "http://13.124.212.22"));  // 특정 도메인 허용
         config.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));  // 🔹 허용할 헤더 추가
         config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type")); // 🔹 클라이언트에서 접근 가능하도록 노출
