@@ -72,6 +72,13 @@ const Container = styled.div`
   position: relative;
   width: 80%;
   margin: 0 auto;
+
+  @media (min-width: 768px) {
+    width: 100%;
+    margin: 0;
+  }
+  @media (min-width: 1024px) {
+  }
 `;
 const StyledOptionButton = styled(OptionButton)`
   position: absolute;
