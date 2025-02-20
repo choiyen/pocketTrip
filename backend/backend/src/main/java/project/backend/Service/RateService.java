@@ -29,20 +29,24 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import project.backend.Config.StartupRunner;
-import reactor.netty.http.client.HttpClient;
+
 
 
 import javax.net.ssl.*;
+import java.io.InputStream;
+import java.net.http.HttpClient;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Calendar;
 import java.time.*;
-
-
-
+import java.util.Properties;
 
 
 @Service
@@ -60,8 +64,6 @@ public class RateService
 
         try
         {
-
-
             // 나머지 코드
             Date today = new Date();
             Calendar calendar = Calendar.getInstance();
@@ -76,19 +78,24 @@ public class RateService
 
             int attempts = 0;
             boolean success = false;
-            SslContext context = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
+//            SslContext context = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+//            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
             String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
             System.out.println(formattedDate);
             String url1 = "https://www.koreaexim.go.kr";
             String url2 = "/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
             String response2 = "";
+            Properties props = System.getProperties();
+            props.setProperty("jdk.internal.httpclient.disableHostnameVerification", Boolean.TRUE.toString());
+
+            //disableSslVerification();
+            HttpClient httpClient = HttpClient.newHttpClient();
             while (attempts < MAX_RETRIES && !success) {
                 try {
                     attempts++;
                    response2 =  WebClient.builder()
                             .baseUrl(url1)
-                            .clientConnector(new ReactorClientHttpConnector(httpClient))
+                            //.clientConnector(new ReactorClientHttpConnector(httpClient))
                             .build()
                             .get()
                             .uri(url2)
@@ -125,7 +132,43 @@ public class RateService
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
         }
     }
+    // ssl security Exception 방지
+    public void disableSslVerification(){
+        // TODO Auto-generated method stub
+        try
+        {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(X509Certificate[] certs, String authType){
+                }
+                public void checkServerTrusted(X509Certificate[] certs, String authType){
+                }
+            }
+            };
 
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session){
+                    return true;
+                }
+            };
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
     private String getFormattedDate(DayOfWeek dayOfWeek, LocalTime currentTime, Calendar calendar, SimpleDateFormat formatter)
     {
         String formattedDate = "";
