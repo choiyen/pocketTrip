@@ -143,16 +143,45 @@ input::placeholder {
 #RegistersuccessModal .modal h2 {
   margin-bottom: 20%;
   font-size: x-large;
+  @media (min-width: 768px) and (max-width: 1023px) {
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    margin-bottom: 50px;
+  }
+
+  @media (min-width: 1440px) {
+    margin-bottom: 50px;
+  }
 }
 
 #RegistersuccessModal .modal p {
   margin-bottom: 25%;
+  @media (min-width: 768px) and (max-width: 1023px) {
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    margin-bottom: 50px;
+  }
+
+  @media (min-width: 1440px) {
+    margin-bottom: 50px;
+  }
 }
 
 #RegistersuccessModal .modalBtBox {
   display: flex;
   /* margin-top: 5%; */
   justify-content: center;
+  @media (min-width: 768px) and (max-width: 1023px) {
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+  }
+
+  @media (min-width: 1440px) {
+    margin-bottom: 55px;
+  }
 }
 
 #RegistersuccessModal .modalOffBt {
@@ -164,6 +193,15 @@ input::placeholder {
   text-align: center;
   width: 100px;
   height: 37px;
+  @media (min-width: 768px) and (max-width: 1023px) {
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+  }
+
+  @media (min-width: 1440px) {
+    margin-bottom: 55px;
+  }
 }
 
 .error-text {
