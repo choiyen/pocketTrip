@@ -6,6 +6,7 @@ package project.backend.Service;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -13,6 +14,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,8 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 
-
-
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -33,8 +35,12 @@ import project.backend.Config.StartupRunner;
 
 
 import javax.net.ssl.*;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -43,12 +49,14 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Calendar;
 import java.time.*;
 import java.util.Properties;
 
 
+@Slf4j
 @Service
 public class RateService
 {
@@ -64,7 +72,18 @@ public class RateService
 
         try
         {
-            // 나머지 코드
+            // 리소스 파일 로딩 (krearn.crt) - JAR 내의 리소스 읽기
+            Resource resource = new ClassPathResource("krearn.crt");
+
+            String encodedSrtContent = null;
+            try (InputStream inputStream = resource.getInputStream()) {
+                // JAR 내부의 리소스를 InputStream으로 읽기
+                byte[] bytes = inputStream.readAllBytes();  // InputStream에서 바이트 배열로 읽기
+                encodedSrtContent = Base64.getEncoder().encodeToString(bytes);  // Base64로 인코딩
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Error reading or encoding certificate: " + e.getMessage());
+            }  // 나머지 코드
             Date today = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(today);
@@ -82,30 +101,16 @@ public class RateService
 //            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
             String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
             System.out.println(formattedDate);
-            String url1 = "https://www.koreaexim.go.kr";
-            String url2 = "/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
-            String response2 = "";
-            Properties props = System.getProperties();
-            props.setProperty("jdk.internal.httpclient.disableHostnameVerification", Boolean.TRUE.toString());
+            String url1 = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
+            HttpHeaders headers = new HttpHeaders();
+            String responce2 = "";
+            headers.set("X-SRT-Content", encodedSrtContent);
+            RestTemplate restTemplate = new RestTemplate();
 
-            //disableSslVerification();
-            HttpClient httpClient = HttpClient.newHttpClient();
             while (attempts < MAX_RETRIES && !success) {
                 try {
                     attempts++;
-                   response2 =  WebClient.builder()
-                            .baseUrl(url1)
-                            //.clientConnector(new ReactorClientHttpConnector(httpClient))
-                            .build()
-                            .get()
-                            .uri(url2)
-                            .exchangeToMono(response -> {
-                                if(response.statusCode().is2xxSuccessful())
-                                {
-                                    System.out.println("API is Sussess");
-                                }
-                                return response.bodyToMono(String.class);
-                            }).block();
+                    responce2 = restTemplate.getForObject(url1, String.class);
 
                     success = true;
 
@@ -126,7 +131,7 @@ public class RateService
                 }
             }
 
-            return response2;
+            return responce2;
 
         } catch (Exception e) {
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
