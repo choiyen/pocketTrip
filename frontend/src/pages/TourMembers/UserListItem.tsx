@@ -53,11 +53,11 @@ const Button2 = styled.button`
 
 export default function UserListItem({ travelCode, email, profile }: UserInfoProps) {
   
-  const token = localStorage.getItem("accessToken");
 
   console.log(email);
 
   const accept = () => {
+    const token = localStorage.getItem("accessToken");
     axios.post(`${process.env.REACT_APP_API_BASE_URL}/plan/check/${travelCode}`, email,
       {
         headers: {
