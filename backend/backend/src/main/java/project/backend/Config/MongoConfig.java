@@ -1,5 +1,6 @@
 package project.backend.Config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -16,9 +17,13 @@ import com.mongodb.client.MongoClients;
 @EnableMongoRepositories(basePackages = "project.backend.Repository")
 public class MongoConfig {
 
+    @Value("${mongodb.uri}")
+    String mongodbUrl;
+
+
     public MongoTemplate mongoTemplate()
     {
-        return new MongoTemplate(MongoClients.create("mongodb://localhost:27017/travel"), "travel");
+        return new MongoTemplate(MongoClients.create(mongodbUrl), "travel");
     }
     @Bean
     public MappingMongoConverter mappingMongoConverter(

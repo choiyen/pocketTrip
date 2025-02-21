@@ -55,7 +55,6 @@ public class CustomWebSocketHandler implements WebSocketHandler {
             }
         }
     }
-
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception
     {
