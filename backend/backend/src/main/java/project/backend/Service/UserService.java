@@ -1,6 +1,7 @@
 package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import project.backend.DTO.FindIDDTO;
 import project.backend.DTO.FindPWDTO;
 import project.backend.Entity.UserEntity;
 import project.backend.Repository.UserRepository;
@@ -21,6 +23,7 @@ import java.util.Random;
 @Slf4j
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -82,13 +85,16 @@ public class UserService {
         if(originalUser == null) {
             log.warn("User with email {} does not exist", email);
         }
+        UserEntity userEntity1 = UserEntity.builder()
+                .id(originalUser.getId())
+                .phone(userEntity.getPhone())
+                .password(originalUser.getPassword())
+                .profile(userEntity.getProfile())
+                .name(userEntity.getName())
+                .email(userEntity.getEmail())
+                .build();
 
-        originalUser.setPassword(userEntity.getPassword());
-        originalUser.setEmail(userEntity.getEmail());
-        originalUser.setName(userEntity.getName());
-        originalUser.setPhone(userEntity.getPhone());
-        originalUser.setProfile(userEntity.getProfile());
-        UserEntity updatedUser = userRepository.save(originalUser);
+        UserEntity updatedUser = userRepository.save(userEntity1);
 
         return updatedUser;
     }

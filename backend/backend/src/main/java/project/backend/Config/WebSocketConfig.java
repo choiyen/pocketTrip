@@ -1,6 +1,7 @@
 package project.backend.Config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -15,6 +16,9 @@ import project.backend.Socket.HttpHandshakeInterceptor;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
 {
+    @Value("${released.URL}")
+    String url;
+
     @Autowired
     private TokenProvider tokenProvider;
 
