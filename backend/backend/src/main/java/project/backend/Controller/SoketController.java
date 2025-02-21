@@ -1,6 +1,7 @@
 package project.backend.Controller;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -28,6 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 public class SoketController
 {
+
+
+    @Value("${port.url}")
+    String url2;
+
 
     private ResponseDTO responseDTO = new ResponseDTO<>();
 
@@ -58,15 +64,15 @@ public class SoketController
             HttpEntity<String> entity = new HttpEntity<>(headers);
             restTemplate.getMessageConverters()
                     .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-            String url = "http://localhost:9000/plan/select/" + travelCode;
+            String url = url2 + "/plan/select/" + travelCode;
             // GET 요청 보내기
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             //System.out.println(response.getBody());
             if(response.getStatusCode() == HttpStatus.OK)
             {
-                String url2 = "http://localhost:9000/expenditures/" + travelCode;
+                url = url2 +"/expenditures/" + travelCode;
                 // GET 요청 보내기
-                ResponseEntity<String> response2 = restTemplate.exchange(url2,HttpMethod.GET,entity, String.class);
+                ResponseEntity<String> response2 = restTemplate.exchange(url,HttpMethod.GET,entity, String.class);
                 //System.out.println(response2.getBody());
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
@@ -105,7 +111,7 @@ public class SoketController
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
             headers.setContentType(MediaType.APPLICATION_JSON);
-
+            String url = "";
             HttpEntity<ExpendituresDTO> entity = new HttpEntity<>(expendituresDTO, headers);
 
             restTemplate.getMessageConverters()
@@ -119,7 +125,7 @@ public class SoketController
             List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
             converters.add(jsonConverter);
 
-            String url = "http://localhost:9000/expenditures/" + travelCode;
+            url = url2 + "/expenditures/" + travelCode;
 
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
@@ -154,8 +160,6 @@ public class SoketController
     {
         try
         {
-            System.out.println("Userssssss" + expendituresDTO);
-            System.out.println("dfffffff :   " + expendituresDTO);
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
@@ -169,20 +173,18 @@ public class SoketController
             // 3. HTTP 메시지 컨버터에 추가
             List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
             converters.add(jsonConverter);
-
             headers.setContentType(MediaType.APPLICATION_JSON);
-
             HttpEntity<Object> entity = new HttpEntity<>(expendituresDTO, headers);
 
             System.out.println("ssss" + entity);
-            String url = "http://localhost:9000/expenditures/" + travelCode + "/" + expenditureId;
+            String url = url2 + "/expenditures/" + travelCode + "/" + expenditureId;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
             System.out.println("dddd" + response.getBody());
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
-                String url2 = "http://localhost:9000/expenditures/" + travelCode;
-                ResponseEntity<String> response2 = restTemplate.exchange(url2, HttpMethod.GET, entity2, String.class);
+                url = url2 + "/expenditures/" + travelCode;
+                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
                 if (response2.getStatusCode() == HttpStatus.OK) {
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(response2.getBody())));
                 }
@@ -214,7 +216,7 @@ public class SoketController
             headers.set("Authorization", token);
             restTemplate.getMessageConverters()
                     .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-            String url = "http://localhost:9000/expenditures/" + travelCode + "/" + expenditureId;
+            String url = url2 + "/expenditures/" + travelCode + "/" + expenditureId;
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
@@ -222,8 +224,8 @@ public class SoketController
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
-                String url2 = "http://localhost:9000/expenditures/" + travelCode;
-                ResponseEntity<String> response2 = restTemplate.exchange(url2, HttpMethod.GET, entity2, String.class);
+                url =  url2 + "/expenditures/" + travelCode;
+                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
                     List<Object> objects = new ArrayList<>();

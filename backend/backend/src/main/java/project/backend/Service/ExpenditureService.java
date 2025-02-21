@@ -2,6 +2,7 @@ package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.ExpenditureEntity;
 import project.backend.Entity.TravelPlanEntity;
@@ -18,9 +19,8 @@ import java.util.Base64;
 @Service
 public class ExpenditureService {
 
-    private final String key = "1234567890123456";
-
-
+    @Value("${encrypt.key}")
+    private String key;
 
     @Autowired
     private ExpendituresRepository expendituresRepository;
