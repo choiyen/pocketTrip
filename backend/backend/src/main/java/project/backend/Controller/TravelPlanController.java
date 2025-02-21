@@ -325,11 +325,15 @@ public class TravelPlanController
             {
                 Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.applicantsSelect(encrypt(travelCode, key));
                 System.out.println("ApplicationsEntity: " + applicantsEntityMono.block().getUserList());
-                if(applicantsEntityMono.block().getUserList().contains(Applicant))
+                List<String> userList = new ArrayList<>(applicantsEntityMono.block().getUserList());
+                if(userList.contains(Applicant.trim()))
                 {
                     TravelPlanEntity travelPlan = ConvertToParticipants(Applicant, travelPlanEntityMono);
+                    System.out.println("travelPlan: " + travelPlan);
                     Mono<TravelPlanEntity> travelPlanEntityMono1 = travelPlanService.TravelPlanUpdate(travelPlan);
+                    System.out.println("travelPlanEntityMono1: " + travelPlanEntityMono1.block());
                     UserTravelsEntity userTravels = userTravelsService.insertUserTravels(Applicant, travelCode);
+                    System.out.println("userTravels: " + userTravels);
                     List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
@@ -688,6 +692,7 @@ public class TravelPlanController
 
         TravelPlanEntity travelPlan = TravelPlanEntity.builder()
                 .travelCode(travelPlanEntityMono.block().getTravelCode())
+                .title(travelPlanEntityMono.block().getTitle())
                 .location(travelPlanEntityMono.block().getLocation())
                 .startDate(travelPlanEntityMono.block().getStartDate())
                 .endDate(travelPlanEntityMono.block().getEndDate())
