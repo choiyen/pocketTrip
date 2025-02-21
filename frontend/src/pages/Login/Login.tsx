@@ -23,8 +23,8 @@ const LoginPage: React.FC = () => {
   // const [email, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
   // const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "test@",
+    password: "Rjlrd41ZTW",
   });
 
   const [errorMessage, setErrorMessage] = useState<string>(""); // 에러 메시지 상태 추가
@@ -96,7 +96,9 @@ const LoginPage: React.FC = () => {
           />
         </a>
       </div>
-
+      <span style={{ color: "#cdcdcd" }}>
+        기본값으로 테스트 계정이 제공됩니다.
+      </span>
       <form className="loginForm" id="loginForm" onSubmit={handleSubmit}>
         <label className="formLabel">아이디</label>
         <input
@@ -119,9 +121,7 @@ const LoginPage: React.FC = () => {
           onChange={handleChange}
         />
         <div className="lostE">
-          <p style={{ fontSize: "9px" }}>
-            이메일 또는 비밀번호를 잊어버리셨나요?
-          </p>
+          <p>이메일 또는 비밀번호를 잊어버리셨나요?</p>
           <a className="lostEp1" href="/login/find">
             이메일 & 비밀번호 찾기
           </a>
@@ -140,10 +140,6 @@ const LoginPage: React.FC = () => {
       {/* 회원가입 페이지 만들면 경로 바꾸기! */}
       <a className="lostEp2" href="/login/register">
         회원가입
-      </a>
-      {/* 경로 바꾸기! */}
-      <a className="noLogin" href="/">
-        로그인없이 구경하기
       </a>
     </div>
   );

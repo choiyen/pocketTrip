@@ -50,29 +50,31 @@ const Button2 = styled.button`
   color: white;
 `;
 
-
-export default function UserListItem({ travelCode, email, profile }: UserInfoProps) {
-  
+export default function UserListItem({
+  travelCode,
+  email,
+  profile,
+}: UserInfoProps) {
   const token = localStorage.getItem("accessToken");
 
-  console.log(email);
-
   const accept = () => {
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/plan/check/${travelCode}`, email,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "text/plain",
-        },
-      }
-    ).then((res) => {
-      console.log(res.data);
-    })
+    axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_URL}/plan/check/${travelCode}`,
+        email,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "text/plain",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      });
   };
 
-  const refuse = () => {
-
-  };
+  const refuse = () => {};
 
   return (
     <ListItem>
@@ -80,10 +82,9 @@ export default function UserListItem({ travelCode, email, profile }: UserInfoPro
       <div>
         <h2>이름</h2>
         <span>{email}</span>
-        
+
         <Button1 onClick={accept}>O</Button1>
         <Button2 onClick={refuse}>X</Button2>
-        
       </div>
     </ListItem>
   );
