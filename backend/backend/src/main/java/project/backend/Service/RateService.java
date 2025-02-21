@@ -67,23 +67,12 @@ public class RateService
     int attempts = 0;
     boolean success = false;
 
-    public String getObject() throws Exception {
+    public String getObject() throws Exception
+    {
 
 
         try
         {
-            // 리소스 파일 로딩 (krearn.crt) - JAR 내의 리소스 읽기
-            Resource resource = new ClassPathResource("krearn.crt");
-
-            String encodedSrtContent = null;
-            try (InputStream inputStream = resource.getInputStream()) {
-                // JAR 내부의 리소스를 InputStream으로 읽기
-                byte[] bytes = inputStream.readAllBytes();  // InputStream에서 바이트 배열로 읽기
-                encodedSrtContent = Base64.getEncoder().encodeToString(bytes);  // Base64로 인코딩
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Error reading or encoding certificate: " + e.getMessage());
-            }  // 나머지 코드
             Date today = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(today);
@@ -96,15 +85,12 @@ public class RateService
             DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
 
             int attempts = 0;
-            boolean success = false;
 //            SslContext context = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 //            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
             String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
             System.out.println(formattedDate);
             String url1 = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
-            HttpHeaders headers = new HttpHeaders();
             String responce2 = "";
-            headers.set("X-SRT-Content", encodedSrtContent);
             RestTemplate restTemplate = new RestTemplate();
 
             while (attempts < MAX_RETRIES && !success) {
@@ -135,43 +121,6 @@ public class RateService
 
         } catch (Exception e) {
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
-        }
-    }
-    // ssl security Exception 방지
-    public void disableSslVerification(){
-        // TODO Auto-generated method stub
-        try
-        {
-            // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-                public void checkClientTrusted(X509Certificate[] certs, String authType){
-                }
-                public void checkServerTrusted(X509Certificate[] certs, String authType){
-                }
-            }
-            };
-
-            // Install the all-trusting trust manager
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            // Create all-trusting host name verifier
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session){
-                    return true;
-                }
-            };
-
-            // Install the all-trusting host verifier
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
         }
     }
     private String getFormattedDate(DayOfWeek dayOfWeek, LocalTime currentTime, Calendar calendar, SimpleDateFormat formatter)
