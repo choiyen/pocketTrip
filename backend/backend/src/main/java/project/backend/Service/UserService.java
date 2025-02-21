@@ -94,7 +94,7 @@ public class UserService {
                 .email(userEntity.getEmail())
                 .build();
 
-        UserEntity updatedUser = userRepository.save(originalUser);
+        UserEntity updatedUser = userRepository.save(userEntity1);
 
         return updatedUser;
     }
