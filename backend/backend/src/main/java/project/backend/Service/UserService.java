@@ -84,7 +84,6 @@ public class UserService {
         }
 
         originalUser.setPassword(userEntity.getPassword());
-        originalUser.setEmail(userEntity.getEmail());
         originalUser.setName(userEntity.getName());
         originalUser.setPhone(userEntity.getPhone());
         originalUser.setProfile(userEntity.getProfile());
