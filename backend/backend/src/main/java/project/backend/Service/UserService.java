@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import project.backend.DTO.FindIDDTO;
 import project.backend.DTO.FindPWDTO;
 import project.backend.Entity.UserEntity;
 import project.backend.Repository.UserRepository;
@@ -22,6 +23,7 @@ import java.util.Random;
 @Slf4j
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
