@@ -194,61 +194,10 @@ export default function EditProfile() {
             value={userPhoneNumber}
             onChange={handlePhoneNumberChange}
           />
-          {/* <Table>
-            <tbody>
-              <tr>
-                <td>이름</td>
-                <td>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    style={{ color: "grey" }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>아이디</td>
-                <td>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    style={{ color: "grey" }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>전화번호</td>
-                <td>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>비밀번호</td>
-                <td>
-                  <input
-                    type="password"
-                    id="password"
-                    value={pwInput}
-                    onChange={handlePasswordChange}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </Table> */}
         </ProfileInfo>
-        {/* <SaveButton onClick={handleSave} disabled={!isModified}>
-          저장하기
-        </SaveButton> */}
         <BoxWrap>
           <CancleButton size="S" name="취소" onClick={() => ChangeState()} />
-          <Button size="S" name="저장" onClick={handleSave} />
+          <Button size="S" name="저장" onClick={() => handleSave()} />
         </BoxWrap>
       </ProfileContainer>
     </div>
