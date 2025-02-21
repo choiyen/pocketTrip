@@ -2,6 +2,7 @@ package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -27,7 +28,8 @@ import java.util.Map;
 @Service
 public class TravelPlanService
 {
-    private final String key = "1234567890123456";
+    @Value("${encrypt.key}")
+    private String key;
 
     @Autowired
     private MongoTemplate mongoTemplate;
