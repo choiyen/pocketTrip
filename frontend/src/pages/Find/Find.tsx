@@ -28,7 +28,7 @@ const Find: React.FC = () => {
     console.log("이메일 찾기:", usernameId, phoneNumberId);
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/findID", {
+      const response = await axios.post("http://localhost:9000/auth/findID", {
         name: usernameId,
         phone: phoneNumberId,
       });
@@ -53,7 +53,7 @@ const Find: React.FC = () => {
     console.log("비밀번호 찾기:", emailAddrPw, phoneNumberPw);
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/findPW", {
+      const response = await axios.post("http://localhost:9000/auth/findPW", {
         email: emailAddrPw,
         phone: phoneNumberPw,
       });
