@@ -44,20 +44,23 @@ public class TravelPlanService
     {
         TravelPlanEntity originalTravelPlan = travelPlanRepository.findByTravelCode(travelPlan.getTravelCode()).block();
 
-        originalTravelPlan.setTravelCode(travelPlan.getTravelCode());
-        originalTravelPlan.setCalculate(travelPlan.isCalculate());
-        originalTravelPlan.setFounder(travelPlan.getFounder());
-        originalTravelPlan.setStartDate(travelPlan.getStartDate());
-        originalTravelPlan.setEndDate(travelPlan.getEndDate());
-        originalTravelPlan.setParticipants(travelPlan.getParticipants());
-        originalTravelPlan.setCurrentCurrency(travelPlan.getCurrentCurrency());
-        originalTravelPlan.setExpense(travelPlan.getExpense());
-        originalTravelPlan.setImg(travelPlan.getImg());
-        originalTravelPlan.setTitle(travelPlan.getTitle());
-        originalTravelPlan.setLocation(travelPlan.getLocation());
 
+        TravelPlanEntity originTravelPlan = TravelPlanEntity.builder()
+                .id(originalTravelPlan.getId())
+                .travelCode(travelPlan.getTravelCode())
+                .isCalculate(travelPlan.isCalculate())
+                .founder(travelPlan.getFounder())
+                .startDate(travelPlan.getStartDate())
+                .title(travelPlan.getTitle())
+                .endDate(travelPlan.getEndDate())
+                .participants(travelPlan.getParticipants())
+                .currentCurrency(travelPlan.getCurrentCurrency())
+                .expense(travelPlan.getExpense())
+                .img(travelPlan.getImg())
+                .location(travelPlan.getLocation())
+                .build();
 
-        return travelPlanRepository.save(originalTravelPlan);
+        return travelPlanRepository.save(originTravelPlan);
     }
 
     public void TravelPlanDelete(String TravelCode)

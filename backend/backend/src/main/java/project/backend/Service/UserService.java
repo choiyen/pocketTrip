@@ -1,6 +1,7 @@
 package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -82,12 +83,16 @@ public class UserService {
         if(originalUser == null) {
             log.warn("User with email {} does not exist", email);
         }
+        UserEntity userEntity1 = UserEntity.builder()
+                .id(originalUser.getId())
+                .phone(userEntity.getPhone())
+                .password(originalUser.getPassword())
+                .profile(userEntity.getProfile())
+                .name(userEntity.getName())
+                .email(userEntity.getEmail())
+                .build();
 
-        originalUser.setPassword(userEntity.getPassword());
-        originalUser.setName(userEntity.getName());
-        originalUser.setPhone(userEntity.getPhone());
-        originalUser.setProfile(userEntity.getProfile());
-        UserEntity updatedUser = userRepository.save(originalUser);
+        UserEntity updatedUser = userRepository.save(userEntity1);
 
         return updatedUser;
     }
