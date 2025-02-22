@@ -106,6 +106,7 @@ class SocketService {
     }
 
     this.client.subscribe(`/user/queue/${travelCodes}`, (message) => {
+      console.log("📩 받은 원본 메시지:", message);
       const messages = message.body;
       const response = JSON.parse(messages).body.data;
       const Tourdata = JSON.parse(response[0]);
