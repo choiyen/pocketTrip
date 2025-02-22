@@ -56,11 +56,42 @@ interface User {
   profile: string;
 }
 
+const Wrap = styled.div`
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 20px;
+  }
+`;
+
 const H2 = styled.h2`
   font-size: 18px;
   font-weight: 500;
   font-family: inherit;
   margin: 20px;
+`;
+
+const Section = styled.section`
+  @media (min-width: 768px) {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 85%;
+    max-width: 900px;
+    margin: 0 auto;
+
+    & article {
+      /* flex-grow: 1; */
+      display: flex;
+      flex-direction: column;
+      width: 40vw;
+    }
+  }
+  @media (min-width: 1024px) {
+    /* max-width: 70vw; */
+  }
 `;
 
 export default function MainPage() {
@@ -80,16 +111,17 @@ export default function MainPage() {
   useEffect(() => {
     dispatch(ChangeCurrentPage("home"));
     const token = localStorage.getItem("accessToken");
+    // if (!ReduxTravelData) {
     getTravelData(token as string); // 여행 정보 요청
+    // }
     getUserProfile(token as string); // 유저 정보 요청
   }, []);
 
   // 위에서 필요한 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
   useEffect(() => {
-    if (TourDataArr.length > 0) {
-      SelectCurrentTourData();
-      dispatch(setTravelData(TourDataArr)); // 암호화 코드 추가된 여행 정보 저장
-    }
+    // 로컬 상태에 있으면 로컬을 쓴다.
+    SelectCurrentTourData(TourDataArr);
+    dispatch(setTravelData(TourDataArr)); // 암호화 코드 추가된 여행 정보 저장
   }, [TourDataArr]);
 
   // 현재 여행중인 여행정보를 하나만 선정한다.
@@ -149,7 +181,7 @@ export default function MainPage() {
     dispatch(saveUser(response.data.data[0]));
   };
 
-  const SelectCurrentTourData = () => {
+  const SelectCurrentTourData = (TourDataArr: TravelPlan[]) => {
     const currentTourList: TravelPlan[] = [];
     const currentTime = new Date().getTime();
 
@@ -212,10 +244,6 @@ export default function MainPage() {
     profile: "ProfileImage.png",
   };
 
-  // 현재 여행이 없을 경우
-  // const data = CurrentTour;
-  // console.log(data);
-
   // 다음 여행지 계획
   const nextTour = nextTourData
     ? {
@@ -224,8 +252,6 @@ export default function MainPage() {
         endDate: nextTourData?.endDate, // 여행 종료일
       }
     : false;
-  // 다음 여행지 계획이 없을 경우
-  // const nextTour = false;
 
   // 순위 데이터
   const popularCountry = {
@@ -235,12 +261,22 @@ export default function MainPage() {
   return (
     <div style={{ paddingBottom: "100px" }}>
       <Header $bgColor={"#eaf6ff"} userData={userData} />
-      <H2>현재 여행중인 지역</H2>
-      {data ? <TourCard Tourdata={data} /> : <EmptyCard />}
-      <H2>다가오는 여행</H2>
-      <NextTour nextTour={nextTour} />
-      <CodeBanner setInputCodeVisible={setInputCodeVisible} />
-      <RankChart popularCountry={popularCountry} />
+      <Section>
+        <Wrap>
+          <article>
+            <H2>현재 여행중인 지역</H2>
+            {data ? <TourCard Tourdata={data} /> : <EmptyCard />}
+          </article>
+          <article>
+            <H2>다가오는 여행</H2>
+            <NextTour nextTour={nextTour} />
+          </article>
+        </Wrap>
+        <Wrap>
+          <CodeBanner setInputCodeVisible={setInputCodeVisible} />
+          <RankChart popularCountry={popularCountry} />
+        </Wrap>
+      </Section>
       {isAlertVisible && (
         <Alert
           alertState={alertType}

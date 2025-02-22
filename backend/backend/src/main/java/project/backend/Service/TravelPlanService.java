@@ -2,6 +2,7 @@ package project.backend.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -10,12 +11,14 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import project.backend.Entity.TravelPlanEntity;
+import project.backend.Entity.UserEntity;
 import project.backend.Repository.TravelPlanRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,8 @@ import java.util.Map;
 @Service
 public class TravelPlanService
 {
-    private final String key = "1234567890123456";
+    @Value("${encrypt.key}")
+    private String key;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -40,8 +44,25 @@ public class TravelPlanService
 
     public Mono<TravelPlanEntity> TravelPlanUpdate(TravelPlanEntity travelPlan)
     {
+        TravelPlanEntity originalTravelPlan = travelPlanRepository.findByTravelCode(travelPlan.getTravelCode()).block();
 
-       return travelPlanRepository.save(travelPlan);
+
+        TravelPlanEntity originTravelPlan = TravelPlanEntity.builder()
+                .id(originalTravelPlan.getId())
+                .travelCode(travelPlan.getTravelCode())
+                .isCalculate(travelPlan.isCalculate())
+                .founder(travelPlan.getFounder())
+                .startDate(travelPlan.getStartDate())
+                .title(travelPlan.getTitle())
+                .endDate(travelPlan.getEndDate())
+                .participants(travelPlan.getParticipants())
+                .currentCurrency(travelPlan.getCurrentCurrency())
+                .expense(travelPlan.getExpense())
+                .img(travelPlan.getImg())
+                .location(travelPlan.getLocation())
+                .build();
+
+        return travelPlanRepository.save(originTravelPlan);
     }
 
     public void TravelPlanDelete(String TravelCode)
@@ -81,7 +102,14 @@ public class TravelPlanService
 
     public Flux<TravelPlanEntity> travelPlanEntityAll(String userId)
     {
-        return travelPlanRepository.findByFounder(userId,Sort.by(Sort.Order.asc("startDate")));
+        List<TravelPlanEntity> list = new ArrayList<>();
+        Flux<TravelPlanEntity> travelPlanEntityFlux = travelPlanRepository.findByFounder(userId,Sort.by(Sort.Order.asc("startDate")));
+        Flux<TravelPlanEntity> travelPlanEntityFlux2 = travelPlanRepository.findByParticipantsContaining(userId,Sort.by(Sort.Order.asc("startDate")));
+        Flux<TravelPlanEntity> combinedFlux = Flux.concat(
+                travelPlanEntityFlux,
+                travelPlanEntityFlux2
+        );
+        return combinedFlux;
     }
     public long TravelPlanCount()
     {

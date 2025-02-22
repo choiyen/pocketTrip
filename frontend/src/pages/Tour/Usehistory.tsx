@@ -31,7 +31,9 @@ const Buttons = styled.button<{ $selected: boolean }>`
   font-family: inherit;
   padding: 5px;
 `;
-
+const ListWrap = styled.div`
+  overflow: scroll;
+`;
 const LogList = styled.ul`
   .LogItem:last-child {
     padding-bottom: 70px;
@@ -45,15 +47,15 @@ export default function Usehistory({ logs }: logsProps) {
   // 탭에 따라서 보이는 목록 필터링
   useEffect(() => {
     if (tabState === "종합") {
-      const data = logs.filter(
-        (log) => log.type === "카드" || log.type === "현금"
-      );
+      const data = logs
+        .filter((log) => log.type === "카드" || log.type === "현금")
+        .reverse();
       setFilteringLogs(data);
     } else if (tabState === "카드") {
-      const data = logs.filter((log) => log.type === "카드");
+      const data = logs.filter((log) => log.type === "카드").reverse();
       setFilteringLogs(data);
     } else {
-      const data = logs.filter((log) => log.type === "현금");
+      const data = logs.filter((log) => log.type === "현금").reverse();
       setFilteringLogs(data);
     }
   }, [tabState, logs]);
@@ -71,21 +73,22 @@ export default function Usehistory({ logs }: logsProps) {
           </Buttons>
         ))}
       </ButtonsWrap>
-
-      <LogList>
-        {filteringLogs.map((log, index) => (
-          <MoneyLog
-            className="LogItem"
-            key={index}
-            LogState={log.LogState}
-            title={log.title}
-            detail={log.detail}
-            profile={log.profile}
-            type={log.type}
-            money={log.money}
-          />
-        ))}
-      </LogList>
+      <ListWrap>
+        <LogList>
+          {filteringLogs.map((log, index) => (
+            <MoneyLog
+              className="LogItem"
+              key={index}
+              LogState={log.LogState}
+              title={log.title}
+              detail={log.detail}
+              profile={log.profile}
+              type={log.type}
+              money={log.money}
+            />
+          ))}
+        </LogList>
+      </ListWrap>
     </div>
   );
 }

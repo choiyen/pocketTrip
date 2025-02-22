@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Common/Header";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import OptionButton from "../../components/Common/OptionButton";
-import { AppDispatch } from "../../store";
+import { AppDispatch, RootState } from "../../store";
 import { ChangeCurrentPage } from "../../slices/currentPageSlice";
 import styled from "styled-components";
 import axios from "axios";
-
+import CryptoJS from "crypto-js";
 import { useNavigate } from "react-router-dom";
 import TourCardList from "./TourCardList";
+import { setTravelData } from "@/slices/travelSlice";
 
 interface TravelPlan {
   id: string;
+  encryptCode: string;
   travelCode: string;
   title: string;
   location: string;
@@ -23,15 +25,31 @@ interface TravelPlan {
 }
 
 export default function MyPage() {
+  const token = localStorage.getItem("accessToken");
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
+  const [userName, setUserName] = useState("");
+  const [userProfile, setUserProfile] = useState("/ProfileImage.jpg");
 
-  useEffect(() => {
-    dispatch(ChangeCurrentPage("mypage"));
-    const token = localStorage.getItem("accessToken");
-    getTravelData(token as string); // 여행 정보 요청
-  }, []);
+  const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
+  const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
+
+  // 암호화
+  const encrypt = (data: string) => {
+    const encrypted = CryptoJS.AES.encrypt(
+      data,
+      CryptoJS.enc.Utf8.parse(SECRET_KEY),
+      {
+        iv: IV,
+        mode: CryptoJS.mode.CBC, // CBC 모드를 명시적으로 지정
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    ).toString();
+
+    // Base64 → URL-safe 변환
+    return encrypted.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  };
 
   const getTravelData = async (token: string) => {
     // 유저의 모든 여행 기록을 받아온다.
@@ -45,10 +63,47 @@ export default function MyPage() {
         },
       }
     );
-
-    setTourDataArr(response.data.data);
-    console.log(response);
+    const TourData = response.data.data;
+    if (TourData.length > 0) {
+      // 암호화 코드 저장
+      const updatedTourData = TourData.map(
+        (item: TravelPlan, index: number) => ({
+          ...item,
+          encryptCode: encrypt(item.travelCode),
+        })
+      );
+      setTourDataArr(updatedTourData);
+    }
   };
+
+  const getUserData = async (token: string) => {
+    // 유저의 모든 여행 기록을 받아온다.
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const UserData = response.data.data[0];
+    if (UserData) {
+      setUserName(UserData.name);
+      setUserProfile(UserData.profile);
+    }
+  };
+
+  // useEffect(() => {
+  //   getTravelData(token!);
+  // }, []);
+
+  useEffect(() => {
+    dispatch(ChangeCurrentPage("mypage"));
+    const token = localStorage.getItem("accessToken");
+    getUserData(token as string);
+    getTravelData(token as string); // 여행 정보 요청
+  }, []);
 
   // const travelList: TravelPlan[] = [
   //   {
@@ -109,23 +164,21 @@ export default function MyPage() {
   TourDataArr.map((item, index) => {
     formattedBudget.push(new Intl.NumberFormat().format(item.expense));
   });
+
   return (
     <div>
       <Header />
       <ProfileContainer>
-        {/* <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="10.5" cy="3.5" r="1.5" fill="#1C1C1C" />
-          <circle cx="10.5" cy="10.5" r="1.5" fill="#1C1C1C" />
-          <circle cx="10.5" cy="17.5" r="1.5" fill="#1C1C1C" />
-        </svg> */}
         <OptionButton
           className="profileButton"
           remove={false}
           editType="editProfile"
         />
         <Profile>
-          <img src="/profileImage.png" alt="프로필사진" />
-          <span>name</span>
+          <ImgContainer>
+            <img src={userProfile} alt="프로필사진" />
+          </ImgContainer>
+          <span>{userName}</span>
         </Profile>
       </ProfileContainer>
       {TourDataArr.length != 0 ? (
@@ -188,15 +241,25 @@ const ProfileContainer = styled.div`
   }
 `;
 
+const ImgContainer = styled.div`
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+`;
+
 const Profile = styled.div`
   display: flex;
   flex-direction: column;
   // margin: 20px 0 0 0;
 
   & img {
-    border-radius: 100%;
-    width: 150px;
-    height: 150px;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   & span {
@@ -211,6 +274,12 @@ const TravelListContainer = styled.div`
   height: 60vh;
   // background: black;
   overflow: scroll;
+  @media (min-width: 768px) and (max-width: 1023px) {
+    height: 70vh;
+  }
+  @media (min-width: 1024px) {
+    height: 50vh;
+  }
 `;
 
 const NoTravelList = styled.div`
@@ -287,5 +356,16 @@ const AddTravel = styled.div`
     font-size: 25px;
     text-align: center;
     line-height: 30px;
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    width: 85vw;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    width: 74vw;
+  }
+
+  @media (min-width: 1440px) {
+    width: 53vw;
   }
 `;

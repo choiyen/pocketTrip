@@ -84,8 +84,12 @@ public class TravelPlanController
                 List<String> list = new ArrayList<>();
                 list.add(travelPlanEntity.getFounder());
                 list.addAll(travelPlanEntity.getParticipants());
-                List<String> profilelist = userService.getprofileByEmail(list);
-                TravelPlanDTO travelPlanDTO1 = ConvertTo(profilelist, travelPlanDTO);
+                List<String> profile = new ArrayList<>();
+                for(int i = 0; i < list.size(); i++)
+                {
+                    profile.add(userService.getprofileByEmail(list.get(i)));
+                }//지금 user 정보 전부가 들어가고 있음.
+                TravelPlanDTO travelPlanDTO1 = ConvertTo(profile, travelPlanDTO);
                 return travelPlanDTO1;
             });
             List<TravelPlanDTO> resultList = travelPlanAll2.collectList().block();
@@ -95,10 +99,7 @@ public class TravelPlanController
         {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
-
     }
-
-
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
     @CacheEvict(value = "travelCode", allEntries = true)
@@ -292,9 +293,16 @@ public class TravelPlanController
             List<String> parts = new ArrayList<>();
             parts.addAll(travelPlan1.getParticipants());
             parts.add(travelPlan1.getFounder());
-            List<String> profileurl = userService.getprofileByEmail(parts);
-            TravelPlanDTO travelPlanDTO = ConvertTo(profileurl, travelPlan1);
-            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlanDTO)));
+            List<String> profile = new ArrayList<>();
+            for(int i = 0; i < parts.size(); i++)
+            {
+                profile.add(userService.getprofileByEmail(parts.get(i)));
+
+            }//지금 user 정보 전부가 들어가고 있음.
+
+            TravelPlanDTO travelPlanDTO1 = ConvertTo(profile, travelPlan1);
+            System.out.println("object : " + travelPlanDTO1);
+            List<Object> list = new ArrayList<>(Collections.singletonList(ConvertTo(travelCode, travelPlanDTO1)));
             return ResponseEntity.ok().body(responseDTO.Response("info", "데이터 전송 알림!!", list));
         }
         catch (Exception e)
@@ -310,15 +318,22 @@ public class TravelPlanController
     {
         try
         {
-            Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(travelCode);
+            System.out.println("Received Applicant: " + Applicant);
+
+            Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(travelCode, key));
             if (travelPlanEntityMono.block().getFounder().equals(userId))
             {
-                Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.applicantsSelect(travelCode);
-                if(applicantsEntityMono.block().getUserList().contains(Applicant))
+                Mono<ApplicantsEntity> applicantsEntityMono = appllicantsService.applicantsSelect(encrypt(travelCode, key));
+                System.out.println("ApplicationsEntity: " + applicantsEntityMono.block().getUserList());
+                List<String> userList = new ArrayList<>(applicantsEntityMono.block().getUserList());
+                if(userList.contains(Applicant.trim()))
                 {
                     TravelPlanEntity travelPlan = ConvertToParticipants(Applicant, travelPlanEntityMono);
+                    System.out.println("travelPlan: " + travelPlan);
                     Mono<TravelPlanEntity> travelPlanEntityMono1 = travelPlanService.TravelPlanUpdate(travelPlan);
+                    System.out.println("travelPlanEntityMono1: " + travelPlanEntityMono1.block());
                     UserTravelsEntity userTravels = userTravelsService.insertUserTravels(Applicant, travelCode);
+                    System.out.println("userTravels: " + userTravels);
                     List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
@@ -352,7 +367,8 @@ public class TravelPlanController
                 Mono<TravelPlanEntity> travelPlanEntityMono1 = travelPlanService.TravelPlanUpdate(travelPlan);
                 appllicantsService.TravelPlanAllDelete(travelCode);//전체 승인이 완료되었으므로 데이터 삭제
                 Set<String> applicants = applicantsEntityMono.block().getUserList();
-                for( String applicant : applicants ){
+                for( String applicant : applicants )
+                {
                     userTravelsService.insertUserTravels(applicant, travelCode);
                 }
                 List<Object> list = new ArrayList<>(Collections.singletonList(travelPlanEntityMono1));
@@ -505,6 +521,7 @@ public class TravelPlanController
                 .title(travelPlan.getTitle())
                 .participants(travelPlan.getParticipants())
                 .isCalculate(travelPlan.isCalculate())
+                .profiles(travelPlan.getProfiles())
                 .img(travelPlan.getImg())
                 .build();
 
@@ -675,6 +692,7 @@ public class TravelPlanController
 
         TravelPlanEntity travelPlan = TravelPlanEntity.builder()
                 .travelCode(travelPlanEntityMono.block().getTravelCode())
+                .title(travelPlanEntityMono.block().getTitle())
                 .location(travelPlanEntityMono.block().getLocation())
                 .startDate(travelPlanEntityMono.block().getStartDate())
                 .endDate(travelPlanEntityMono.block().getEndDate())

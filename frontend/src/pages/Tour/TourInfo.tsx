@@ -3,13 +3,17 @@ import styled from "styled-components";
 import TourDateUi from "../../components/Common/TourDateUi";
 
 interface TravelData {
-  title: string; // 여행지갑 이름
-  location: string; // 여행지 이름
-  expense: number; // 현재 누적 금액 (통화 단위 포함)
-  ImgArr?: string[]; // 참여 인원들의 프로필 이미지 경로 배열
-  startDate: string; // 여행 시작일 (ISO 날짜 형식)
-  endDate: string; // 여행 종료일 (ISO 날짜 형식)
-  bgImg?: string;
+  id: string;
+  travelCode: string;
+  title: string;
+  founder: string;
+  location: string;
+  startDate: string; // 날짜 문자열
+  endDate: string; // 날짜 문자열
+  expense: number;
+  calculate: boolean;
+  participants: string[]; // 참가자 리스트 (배열)
+  encryptCode: string;
 }
 
 interface TourCardProps {
@@ -21,6 +25,17 @@ const TourWrap = styled.div`
   background-color: white;
   position: relative;
   box-shadow: 0px 9px 9px rgba(0, 0, 0, 0.1);
+  @media (min-width: 768px) and (max-width: 1023px) {
+    padding: 20px 40px;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    padding: 20px 130px;
+  }
+
+  @media (min-width: 1440px) {
+    padding: 20px 350px;
+  }
 
   h2 {
     font-size: 16px;

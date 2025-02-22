@@ -1,8 +1,7 @@
 package project.backend.Repository;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import project.backend.Entity.UserEntity;
 
@@ -17,6 +16,9 @@ public interface UserRepository extends MongoRepository<UserEntity, String> {
     // 주어진 아이디로 사용자 찾아 반환
     UserEntity findByEmail(String userid);
 
-    List<String> findProfileUrlByEmailIn(List<String> emails);
+    @Query("{'email' : ?0}")
+    String findProfileByEmail(String email);
+
+    void  deleteByEmail(String email);
 
 }

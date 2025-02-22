@@ -15,13 +15,13 @@ import java.util.List;
 public class CachingConfig
 {
     @Bean
-    public CacheManager cacheManager() {
+    public CacheManager cacheManager()
+    {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
         cacheManager.setAllowNullValues(false);
         cacheManager.setCacheNames(List.of("email"));//회원정보를 불러오기 위한 cash
         cacheManager.setCacheNames(List.of("travelCode"));
         cacheManager.setCacheNames(List.of("Expenditure"));
         return cacheManager;
-
     }
 }

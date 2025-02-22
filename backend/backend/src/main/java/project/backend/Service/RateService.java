@@ -1,61 +1,90 @@
 package project.backend.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+
+
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import project.backend.Config.StartupRunner;
+
+
 
 import javax.net.ssl.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
+import java.nio.file.Files;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Calendar;
-import java.util.Map;
 import java.time.*;
+import java.util.Properties;
 
 
+@Slf4j
 @Service
 public class RateService
 {
     @Value("${api.key}")
     private String apiKey;
-    private static final int MAX_RETRIES = 15;  // 최대 재시도 횟수
+    private static final int MAX_RETRIES = 3;  // 최대 재시도 횟수
 
     int attempts = 0;
     boolean success = false;
 
-    public String getObject() {
-        try {
-            // HTTPS SSL 인증서 우회 설정 (실제 환경에서는 사용하지 않음)
-            TrustManager[] trustAllCerts = new TrustManager[]
-            {
-                    new X509TrustManager()
-                    {
-                        public X509Certificate[] getAcceptedIssuers() { return null; }
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-                    }
-            };
+    public String getObject() throws Exception {
 
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, trustAllCerts, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-            HostnameVerifier allHostsValid = (hostname, session) -> true;
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        try
+        {
+            // 리소스 파일 로딩 (krearn.crt) - JAR 내의 리소스 읽기
+            Resource resource = new ClassPathResource("krearn.crt");
 
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
-            Date today = new Date(); // 현재 날짜
+            String encodedSrtContent = null;
+            try (InputStream inputStream = resource.getInputStream()) {
+                // JAR 내부의 리소스를 InputStream으로 읽기
+                byte[] bytes = inputStream.readAllBytes();  // InputStream에서 바이트 배열로 읽기
+                encodedSrtContent = Base64.getEncoder().encodeToString(bytes);  // Base64로 인코딩
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Error reading or encoding certificate: " + e.getMessage());
+            }  // 나머지 코드
+            Date today = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(today);
 
@@ -68,40 +97,33 @@ public class RateService
 
             int attempts = 0;
             boolean success = false;
-            String response = "";
+//            SslContext context = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+//            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
+            String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
+            System.out.println(formattedDate);
+            String url1 = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
+            HttpHeaders headers = new HttpHeaders();
+            String responce2 = "";
+            headers.set("X-SRT-Content", encodedSrtContent);
+            RestTemplate restTemplate = new RestTemplate();
 
-            while (attempts < MAX_RETRIES && !success)
-            {
-                try
-                {
+            while (attempts < MAX_RETRIES && !success) {
+                try {
                     attempts++;
+                    responce2 = restTemplate.getForObject(url1, String.class);
 
-                    String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
-                    System.out.println(formattedDate);
-                    String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
+                    success = true;
 
-                    response = restTemplate.getForObject(url, String.class);
-                    success = true; // 성공적으로 응답을 받으면 success를 true로 설정
-
-                } catch (RestClientException e) {
-                    // 요청 실패 시 예외 처리
-                    System.out.println("Request failed. Attempt " + attempts + " of " + MAX_RETRIES);
+                } catch (WebClientResponseException e)
+                {
+                    System.out.println("Request failed. Attempt " + attempts + " of " + MAX_RETRIES + ". Error: " + e.getMessage());
                     if (attempts < MAX_RETRIES) {
-                        // 재시도 전 잠시 대기 (3초, 5초, 7초 대기)
-                        int waitTime = 0;
-                        if (attempts == 1) {
-                            waitTime = 3000;  // 3초 대기
-                        } else if (attempts == 2) {
-                            waitTime = 5000;  // 5초 대기
-                        } else if (attempts == 3) {
-                            waitTime = 7000;  // 7초 대기
-                        }
-
+                        int waitTime = (attempts == 1) ? 3000 : (attempts == 2) ? 5000 : 7000;
                         System.out.println("Retrying in " + waitTime / 1000 + " seconds...");
                         try {
-                            Thread.sleep(waitTime);  // 대기 시간 설정
+                            Thread.sleep(waitTime);
                         } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt(); // 예외 처리
+                            Thread.currentThread().interrupt();
                         }
                     } else {
                         System.out.println("Maximum retry attempts reached. Request failed.");
@@ -109,13 +131,49 @@ public class RateService
                 }
             }
 
-            return response;
+            return responce2;
 
         } catch (Exception e) {
             throw new RuntimeException("Error in getObject method: " + e.getMessage(), e);
         }
     }
+    // ssl security Exception 방지
+    public void disableSslVerification(){
+        // TODO Auto-generated method stub
+        try
+        {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(X509Certificate[] certs, String authType){
+                }
+                public void checkServerTrusted(X509Certificate[] certs, String authType){
+                }
+            }
+            };
 
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session){
+                    return true;
+                }
+            };
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
     private String getFormattedDate(DayOfWeek dayOfWeek, LocalTime currentTime, Calendar calendar, SimpleDateFormat formatter)
     {
         String formattedDate = "";
@@ -154,4 +212,48 @@ public class RateService
 
         return formattedDate;
     }
+    //SSL 인증을 무시하고 HTTPS를 http처럼 post 요청하기
+    public static void  ignoreSsl() throws  Exception
+    {
+        HostnameVerifier hv = new HostnameVerifier() {
+            public boolean verify(String urlHostName, SSLSession sslSession)
+            {
+                return true;
+            };
+        };
+    }
+    private static void trustAllHttpsCertificates() throws Exception
+    {
+        TrustManager[] trustManagers = new TrustManager[1];
+        TrustManager tm = new miTm();
+        trustManagers[0] = tm;
+        SSLContext sc = SSLContext.getInstance("TLS");
+        sc.init(null, trustManagers, null);
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    }
+    static class miTm implements TrustManager, X509TrustManager
+    {
+        public X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+        public boolean isServerTrusted(X509Certificate[] certs) {
+            return true;
+        }
+        public boolean isClientTrusted(X509Certificate[] certs)
+        {
+            return true;
+        }
+        @Override
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            return;
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            return;
+        }
+    }
+
+
+
 }

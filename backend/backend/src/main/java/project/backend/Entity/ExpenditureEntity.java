@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-@Setter
 public class ExpenditureEntity
 {
     @Id
@@ -32,8 +31,8 @@ public class ExpenditureEntity
     @NonNull
     private LocalDate date;
     @NonNull
-    private int KRW;
-    private int amount;
+    private int  KRW;
+    private long amount;
     private String currency;
     @NonNull
     private String description;
