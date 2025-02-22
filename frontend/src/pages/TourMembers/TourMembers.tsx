@@ -6,6 +6,7 @@ import Button from "../../components/Common/Button";
 import { useParams } from "react-router-dom";
 import CryptoJS, { enc } from "crypto-js";
 import axios from "axios";
+import { FaRegCopy } from "react-icons/fa6";
 
 const CodeWrap = styled.div`
   width: 90%;
@@ -13,6 +14,7 @@ const CodeWrap = styled.div`
   border-radius: 20px;
   margin-bottom: 40px;
   padding: 20px;
+  position: relative;
 `;
 const CurrentMembersWrap = styled.div`
   padding: 0px 20px;
@@ -75,9 +77,22 @@ const UserContainer = styled.ul`
   scrollbar-width: none;
 `;
 
+const ClipboardButton = styled.button`
+  background-color: transparent;
+  border: none;
+  width: 35px;
+  height: 35px;
+  & svg {
+    font-size: 20px;
+    color: #8b8b8b;
+  }
+  position: absolute;
+  bottom: 0;
+  right: 0px;
+  transform: translateY(-50%);
+`;
 
 export default function TourMembers() {
-
   const [travelCode, setTravelCode] = useState<string>("");
   const [userName, setUserName] = useState<string[]>([]);
   const [userProfile, setUserProfile] = useState<string[]>([]);
@@ -151,22 +166,23 @@ export default function TourMembers() {
       setApplicantsName(response.data.data[0].userList);
       console.log(response.data.data[0].userList);
 
-      if(response.data.data !== null){
-        axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/profile`,
-          response.data.data[0].userList,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        ).then((res) => {
-          setApplicantsProfile(res.data.data);
-          console.log(res);
-        })
+      if (response.data.data !== null) {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_BASE_URL}/auth/profile`,
+            response.data.data[0].userList,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => {
+            setApplicantsProfile(res.data.data);
+            console.log(res.data.data);
+          });
       }
-
-      
     } catch (error) {
       console.error("Error fetching applicants:", error);
     }
@@ -180,6 +196,12 @@ export default function TourMembers() {
     }
   }, [encrypted]);
 
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(travelCode)
+      .then(() => alert("코드가 클립보드에 복사되었습니다."))
+      .catch((err) => console.error("클립보드 복사에 실패하였습니다.", err));
+  };
 
   return (
     <TourMembersWrap>
@@ -188,7 +210,11 @@ export default function TourMembers() {
         <CodeWrap>
           <h2 className="TourMemberTitle">초대코드</h2>
           <span className="InviteCode">{decrypt(encrypted!)}</span>
+          <ClipboardButton onClick={copyToClipboard}>
+            <FaRegCopy />
+          </ClipboardButton>
         </CodeWrap>
+
         <CurrentMembersWrap>
           {/* <h3>
             현재 참여 인원 <span>({userData.length}명)</span>
