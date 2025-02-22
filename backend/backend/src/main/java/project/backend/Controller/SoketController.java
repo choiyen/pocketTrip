@@ -1,6 +1,7 @@
 package project.backend.Controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import project.backend.Service.ApiService;
 
 
 @RestController
@@ -34,10 +36,16 @@ public class SoketController
     @Value("${port.url}")
     String url2;
 
+    private final ApiService apiService;
+
 
     private ResponseDTO responseDTO = new ResponseDTO<>();
 
-    RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    public SoketController(ApiService apiService) {
+        this.apiService = apiService;
+    }
 
 
     // /travelPlan 경로로 들어오는 메시지를 처리
@@ -62,17 +70,15 @@ public class SoketController
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            restTemplate.getMessageConverters()
-                    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
             String url = url2 + "/plan/select/" + travelCode;
             // GET 요청 보내기
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = apiService.<String>exchange(url, "POST", entity);
             //System.out.println(response.getBody());
             if(response.getStatusCode() == HttpStatus.OK)
             {
                 url = url2 +"/expenditures/" + travelCode;
                 // GET 요청 보내기
-                ResponseEntity<String> response2 = restTemplate.exchange(url,HttpMethod.GET,entity, String.class);
+                ResponseEntity<String> response2 = apiService.<String>exchange(url, "GET", entity);
                 //System.out.println(response2.getBody());
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
@@ -114,25 +120,14 @@ public class SoketController
             String url = "";
             HttpEntity<ExpendituresDTO> entity = new HttpEntity<>(expendituresDTO, headers);
 
-            restTemplate.getMessageConverters()
-                    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
-            // 2. JSON 처리용 MappingJackson2HttpMessageConverter 추가
-            ObjectMapper objectMapper = new ObjectMapper();
-            MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-
-            // 3. HTTP 메시지 컨버터에 추가
-            List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-            converters.add(jsonConverter);
-
             url = url2 + "/expenditures/" + travelCode;
 
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = apiService.<ExpendituresDTO>exchange(url, "POST", entity);
 
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
-                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
+                ResponseEntity<String> response2 = apiService.<String>exchange(url, "GET", entity2);
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(response2.getBody())));
@@ -163,28 +158,18 @@ public class SoketController
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
-            restTemplate.getMessageConverters()
-                    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
-            // 2. JSON 처리용 MappingJackson2HttpMessageConverter 추가
-            ObjectMapper objectMapper = new ObjectMapper();
-            MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-
             // 3. HTTP 메시지 컨버터에 추가
-            List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-            converters.add(jsonConverter);
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Object> entity = new HttpEntity<>(expendituresDTO, headers);
 
-            System.out.println("ssss" + entity);
             String url = url2 + "/expenditures/" + travelCode + "/" + expenditureId;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+            ResponseEntity<String> response = apiService.<Object>exchange(url, "PUT", entity);
             System.out.println("dddd" + response.getBody());
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
                 url = url2 + "/expenditures/" + travelCode;
-                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
+                ResponseEntity<String> response2 = apiService.<String>exchange(url, "GET", entity2);
                 if (response2.getStatusCode() == HttpStatus.OK) {
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", Collections.singletonList(response2.getBody())));
                 }
@@ -214,18 +199,17 @@ public class SoketController
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
-            restTemplate.getMessageConverters()
-                    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+            headers.setContentType(MediaType.APPLICATION_JSON);
             String url = url2 + "/expenditures/" + travelCode + "/" + expenditureId;
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+            ResponseEntity<String> response = apiService.<String>exchange(url, "DELETE", entity);
 
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
                 url =  url2 + "/expenditures/" + travelCode;
-                ResponseEntity<String> response2 = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
+                ResponseEntity<String> response2 = apiService.<String>exchange(url, "GET", entity2);
                 if(response2.getStatusCode() == HttpStatus.OK)
                 {
                     List<Object> objects = new ArrayList<>();
