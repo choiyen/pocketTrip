@@ -42,7 +42,7 @@ const Unit = styled.div`
 const Text = styled.div`
   font-size: 36px;
   margin: 0 0 0 10px;
-  overflow-x: scroll;
+
   overflow-y: hidden;
   width: 40vw;
 
@@ -52,6 +52,8 @@ const Text = styled.div`
 `;
 
 const Output = styled.div`
+  overflow-x: auto;
+  scrollbar-width: none;
   background-color: #f4f4f4;
   width: 100%;
   height: 120px;

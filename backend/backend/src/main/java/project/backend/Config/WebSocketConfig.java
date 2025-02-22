@@ -22,6 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
     @Autowired
     private TokenProvider tokenProvider;
 
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/queue");  // 메시지 브로커를 "/topic"으로 설정
