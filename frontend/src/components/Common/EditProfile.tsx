@@ -24,34 +24,35 @@ export default function EditProfile() {
   const [userEmail, setUserEmail] = useState("");
   const [userPhoneNumber, setUserPhoneNumber] = useState("");
   const [userPassword, setuserPassword] = useState("");
-  const [previewImage, setPreviewImage] = useState("/ProfileImage.png"); // 임시 미리보기 이미지
+  const [previewImage, setPreviewImage] = useState(""); // 임시 미리보기 이미지
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch: AppDispatch = useDispatch();
 
   const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`, 
-      {
+    axios
+      .get(`${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
-      }
-    ).then((res) => {
-      if(res.data.data[0] != null){
-        setUsername(res.data.data[0].name);
-        setUserEmail(res.data.data[0].email);
-        setUserPhoneNumber(res.data.data[0].phone);
-        // setuserPassword(res.data.data[0].password);
-        setPreviewImage(res.data.data[0].profile);
-      }
+      })
+      .then((res) => {
+        if (res.data.data[0] != null) {
+          setUsername(res.data.data[0].name);
+          setUserEmail(res.data.data[0].email);
+          setUserPhoneNumber(res.data.data[0].phone);
+          // setuserPassword(res.data.data[0].password);
+          setPreviewImage(res.data.data[0].profile);
+        }
 
-      console.log(res);
-    }).catch((e) => {
-      console.error(e);
-    })
-  }, [])
+        console.log(res);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -119,6 +120,8 @@ export default function EditProfile() {
           },
         }
       );
+
+      console.log(response.data);
 
       if (response.status === 200) {
         alert("변경 사항이 저장되었습니다!");
@@ -191,61 +194,10 @@ export default function EditProfile() {
             value={userPhoneNumber}
             onChange={handlePhoneNumberChange}
           />
-          {/* <Table>
-            <tbody>
-              <tr>
-                <td>이름</td>
-                <td>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    style={{ color: "grey" }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>아이디</td>
-                <td>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    style={{ color: "grey" }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>전화번호</td>
-                <td>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>비밀번호</td>
-                <td>
-                  <input
-                    type="password"
-                    id="password"
-                    value={pwInput}
-                    onChange={handlePasswordChange}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </Table> */}
         </ProfileInfo>
-        {/* <SaveButton onClick={handleSave} disabled={!isModified}>
-          저장하기
-        </SaveButton> */}
         <BoxWrap>
           <CancleButton size="S" name="취소" onClick={() => ChangeState()} />
-          <Button size="S" name="저장" onClick={handleSave} />
+          <Button size="S" name="저장" onClick={() => handleSave()} />
         </BoxWrap>
       </ProfileContainer>
     </div>
@@ -290,6 +242,17 @@ const BoxWrap = styled.div`
   /* @media (min-width: 768px) {
     flex-direction: row;
   } */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    margin-bottom: 100px;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    margin-bottom: 100px;
+  }
+
+  @media (min-width: 1440px) {
+    margin-bottom: 100px;
+  }
 `;
 const CancleButton = styled(Button)`
   background-color: #e8e8e8;

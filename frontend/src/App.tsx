@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles/reset.css";
 import "./styles/global.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -6,6 +6,7 @@ import MainPage from "./pages/Home/MainPage";
 import MyPage from "./pages/Mypage/MyPage";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import Find from "./pages/Find/Find";
 import { useSelector } from "react-redux";
 import { RootState } from "./store";
 import AlertBox from "./components/Common/AlertBox";
@@ -17,10 +18,11 @@ import Where5 from "./pages/Where/Where5";
 import Where6 from "./pages/Where/Where6";
 import Tour from "./pages/Tour/Tour";
 import Categories from "./pages/Tour/Categories";
-import AccountBook from "./pages/Tour/AccountBook";
+// import AccountBook from "./pages/Tour/AccountBook";
 import TourMembers from "./pages/TourMembers/TourMembers";
 import MoneyChart from "./pages/MoneyChart/MoneyChart";
 import RequireAuth from "./components/Common/RequireAuth";
+import { socketService } from "./pages/Tour/socketService";
 
 function App() {
   const alertState = useSelector(
@@ -42,12 +44,24 @@ function App() {
     setTravelData((prevData) => ({ ...prevData, ...data }));
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return console.error("❌ 토큰이 없습니다.");
+
+    socketService.connect(token);
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
           <Route path="/Login" element={<Login />} />
           <Route path="/Login/Register" element={<Register />} />
+          <Route path="/Login/Find" element={<Find />} />
           <Route
             path="/"
             element={
@@ -148,22 +162,22 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
+          {/* <Route
             path="/Tour/:encrypted/accountbook"
             element={
               <RequireAuth>
                 <AccountBook />
               </RequireAuth>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="/Tour/:encrypted/Categories"
             element={
               <RequireAuth>
                 <Categories />
               </RequireAuth>
             }
-          />
+          /> */}
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}

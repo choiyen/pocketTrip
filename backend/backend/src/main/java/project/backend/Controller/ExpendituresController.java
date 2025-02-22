@@ -2,7 +2,9 @@ package project.backend.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +14,10 @@ import project.backend.DTO.ResponseDTO;
 import project.backend.Entity.ExpenditureEntity;
 import project.backend.Service.ExpenditureService;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
@@ -29,10 +34,14 @@ public class ExpendituresController {
 
     private ResponseDTO responseDTO = new ResponseDTO<>();
 
+    @Value("${encrypt.key}")
+    private String key;
+
     // 지출 추가
     @PostMapping("/{travelCode}")
-    @CacheEvict(value = "Expenditure", allEntries = true)
-    public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode) {
+    public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode)
+    {
+        System.out.println(expendituresDTO);
         try {
             int leftLimit = 48; // numeral '0'
             int rightLimit = 122; // letter 'z'
@@ -51,10 +60,9 @@ public class ExpendituresController {
                     break;
                 }
             }
-
             ExpenditureEntity expenditure = ExpenditureEntity.builder()
-                    .travelCode(travelCode)
-                    .expenditureId(generatedString)
+                    .travelCode(ExpenditureService.encrypt(travelCode, key))
+                    .expenditureId(ExpenditureService.encrypt(generatedString,key))
                     .purpose(expendituresDTO.getPurpose())
                     .method(expendituresDTO.getMethod())
                     .isPublic(expendituresDTO.isPublic())
@@ -69,8 +77,8 @@ public class ExpendituresController {
             ExpenditureEntity createExpenditure = expenditureService.create(email, expenditure).block();
 
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
-                    .travelCode(createExpenditure.getTravelCode())
-                    .expenditureId(createExpenditure.getExpenditureId())
+                    .travelCode(travelCode)
+                    .expenditureId(decrypt(createExpenditure.getExpenditureId(),key))
                     .purpose(createExpenditure.getPurpose())
                     .method(createExpenditure.getMethod())
                     .isPublic(createExpenditure.isPublic())
@@ -84,6 +92,7 @@ public class ExpendituresController {
 
             List<Object> list = new ArrayList<>();
             list.add(responsedDTO);
+            evictCache(true);
             return ResponseEntity.ok().body(responseDTO.Response("success", "정상적으로 지출 추가가 완료되었습니다.", list));
         }
         catch (Exception e) {
@@ -93,13 +102,44 @@ public class ExpendituresController {
 
     // 지출 목록
     @GetMapping("/{travelCode}")
-    @Cacheable(value = "Expenditure", key = "#Expenditure")
+//     @Cacheable(value = "Expenditure", key = "#travelCode")
     public ResponseEntity<?> findAllExpenditures(@AuthenticationPrincipal String email, @PathVariable String travelCode) {
 
         try
         {
-            List<ExpenditureEntity> expenditures = expenditureService.findAllByTravelCode(travelCode).collectList().block();
-            return ResponseEntity.ok().body(responseDTO.Response("info", "지출 목록 전송 완료!!", expenditures));
+            System.out.println(travelCode);
+            System.out.println(ExpenditureService.encrypt(travelCode, key));
+            Boolean bool = expenditureService.SelectTravelCode(ExpenditureService.encrypt(travelCode, key));
+            System.out.println("현재 상태: " + bool);
+            if(bool)
+            {
+                List<ExpenditureEntity> expenditures = expenditureService.findAllByTravelCode(ExpenditureService.encrypt(travelCode,key)).collectList().block();
+                List<ExpendituresDTO> expendituresDTOS = new ArrayList<>();
+                for(ExpenditureEntity expenditure : expenditures)
+                {
+                    ExpendituresDTO expendituresDTO = ExpendituresDTO.builder()
+                            .travelCode(decrypt(expenditure.getTravelCode(),key))
+                            .expenditureId(decrypt(expenditure.getExpenditureId(),key))
+                            .purpose(expenditure.getPurpose())
+                            .method(expenditure.getMethod())
+                            .isPublic(expenditure.isPublic())
+                            .payer(expenditure.getPayer())
+                            .date(expenditure.getDate())
+                            .KRW(expenditure.getKRW())
+                            .amount(expenditure.getAmount())
+                            .currency(expenditure.getCurrency())
+                            .description(expenditure.getDescription())
+                            .build();
+                    expendituresDTOS.add(expendituresDTO);
+                }
+
+                return ResponseEntity.ok().body(expendituresDTOS);
+            }
+            else
+            {
+                List<String> list = new ArrayList<>();
+                return ResponseEntity.ok().body(list);
+            }
         }
         catch (Exception e)
         {
@@ -110,12 +150,15 @@ public class ExpendituresController {
 
     //지출수정
     @PutMapping("/{travelCode}/{expenditureId}")
-    @CacheEvict(value = "Expenditure", key = "#Expenditure")
+    @CachePut(value = "Expenditure", key = "#travelCode")
     public ResponseEntity<?> updateExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode, @PathVariable String expenditureId) {
         try {
+
+            System.out.println("object :" + expendituresDTO);
+
             ExpenditureEntity expenditure = ExpenditureEntity.builder()
-                    .travelCode(travelCode)
-                    .expenditureId(expenditureId)
+                    .travelCode(ExpenditureService.encrypt(travelCode,key))
+                    .expenditureId(ExpenditureService.encrypt(expenditureId,key))
                     .purpose(expendituresDTO.getPurpose())
                     .method(expendituresDTO.getMethod())
                     .isPublic(expendituresDTO.isPublic())
@@ -127,11 +170,13 @@ public class ExpendituresController {
                     .description(expendituresDTO.getDescription())
                     .build();
 
-            ExpenditureEntity updateExpenditure = expenditureService.updateExpenditure(email, expenditureId, expenditure).block();
+
+
+            ExpenditureEntity updateExpenditure = expenditureService.updateExpenditure(email, ExpenditureService.encrypt(expenditureId,key), expenditure).block();
 
             ExpendituresDTO responsedDTO = ExpendituresDTO.builder()
-                    .travelCode(updateExpenditure.getTravelCode())
-                    .expenditureId(updateExpenditure.getExpenditureId())
+                    .travelCode(decrypt(updateExpenditure.getTravelCode(),key))
+                    .expenditureId(decrypt(updateExpenditure.getExpenditureId(),key))
                     .purpose(updateExpenditure.getPurpose())
                     .method(updateExpenditure.getMethod())
                     .isPublic(updateExpenditure.isPublic())
@@ -151,20 +196,43 @@ public class ExpendituresController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
-    // 지출 삭제
-    @DeleteMapping("/{travelCode}/{expenditureId}")
-    @CacheEvict(value = "Expenditure", allEntries = true)
-    public ResponseEntity<?> deleteExpenditure(@AuthenticationPrincipal String email, @PathVariable String travelCode,@PathVariable String expenditureId) {
-        try {
-            List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email, travelCode, expenditureId).collectList().block();
 
-            return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", deletedExpenditure));
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @CacheEvict(value = "Expenditure", allEntries = true, condition = "#cash == true")
+    public void evictCache(boolean cash)
+    {
+        // cash가 true일 때만 이 메소드가 호출되고 캐시가 삭제됩니다.
     }
 
+    // 지출 삭제
+    @DeleteMapping("/{travelCode}/{expenditureId}")
+    public ResponseEntity<?> deleteExpenditure(@AuthenticationPrincipal String email, @PathVariable String travelCode,@PathVariable String expenditureId) {
+        try
+        {
+            boolean bool = expenditureService.SelectExpenditureId(ExpenditureService.encrypt(expenditureId,key));
+
+            if(bool == true)
+            {
+                List<ExpenditureEntity> deletedExpenditure = expenditureService.deleteExpenditure(email,  ExpenditureService.encrypt(travelCode,key), ExpenditureService.encrypt(expenditureId,key)).collectList().block();
+                evictCache(bool);
+                return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", deletedExpenditure));
+            }
+            else
+            {
+                throw new Exception("삭제할 Expenditure 목록이 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
+    // 복호화: 암호화된 문자열을 AES 알고리즘을 사용하여 복호화
+    private static String decrypt(String encryptedData, String key) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
+        byte[] decryptedData = cipher.doFinal(decodedBytes);
+        return new String(decryptedData);
+    }
 
 //마지막 과제 : 카드 별, 현금 별로 데이터 뽑아오는 함수 추가
 

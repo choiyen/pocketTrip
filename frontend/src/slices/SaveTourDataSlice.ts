@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface TravelPlan {
   id: string;
   travelCode: string;
+  img?: string;
   title: string;
   founder: string;
   location: string;

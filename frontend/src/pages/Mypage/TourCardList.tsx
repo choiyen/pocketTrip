@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 interface TravelPlan {
   travel: {
     id: string;
+    encryptCode: string;
     travelCode: string;
     title: string;
     location: string;
@@ -60,6 +61,17 @@ const Travel = styled(Link)<{ $bgImg?: string }>`
   justify-content: space-between;
   align-items: flex-end;
   color: white;
+  @media (min-width: 768px) and (max-width: 1023px) {
+    width: 85vw;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    width: 74vw;
+  }
+
+  @media (min-width: 1440px) {
+    width: 53vw;
+  }
 `;
 
 const Title = styled.h2`
@@ -84,9 +96,7 @@ const Expense = styled.strong`
   margin-top: 10px;
 `;
 
-const Location = styled.div`
-  padding: 20px;
-`;
+const Location = styled.div``;
 
 const SmallUserBox = styled(CardUserList)`
   /* transform: scale(0.8); */
@@ -100,8 +110,8 @@ export default function TourCardList({
   return (
     <TrvelWrap>
       <Travel
-        to={`/Tour/${travel.id}`}
-        $bgImg={travel.bgImg}
+        to={`/Tour/${travel.encryptCode}`}
+        $bgImg={travel.bgImg ? travel.bgImg : "/japan.jpg"}
         state={{ from: "/mypage" }}
       >
         <div
@@ -117,14 +127,18 @@ export default function TourCardList({
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
-          <SmallUserBox user={travel.profiles} $size={"S"} />
-          <Expense>₩ {formattedBudget[index]}</Expense>
-        </div>
-        <div>
+
+          {/* 백엔드 수정 후 user 추가 */}
+          <SmallUserBox $size={"S"} />
+
           <Location>{travel.location}</Location>
         </div>
       </Travel>
-      <OptionButton className="travelButton" editType="editTourCardList" />
+      <OptionButton
+        className="travelButton"
+        editType="editTourCardList"
+        travelCode={travel.travelCode}
+      />
     </TrvelWrap>
   );
 }

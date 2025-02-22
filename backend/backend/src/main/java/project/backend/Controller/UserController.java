@@ -10,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import project.backend.DTO.ResponseDTO;
-import project.backend.DTO.UserDTO;
-import project.backend.DTO.UserTravelsDTO;
+import project.backend.DTO.*;
 import project.backend.Entity.UserEntity;
 import project.backend.Entity.UserTravelsEntity;
 import project.backend.Security.TokenProvider;
@@ -43,46 +41,65 @@ public class UserController {
     @Autowired
     private UserTravelsService userTravelsService;
 
+
+
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<?> registeredUser(@RequestBody UserDTO userDTO){
         try
         {
-            UserEntity user = UserEntity.builder()
-                    .name(userDTO.getName())
-                    .email(userDTO.getEmail())
-                    .password(passwordEncoder.encode(userDTO.getPassword()))
-                    .profile(userDTO.getProfile())
-                    .phone(userDTO.getPhone())
-                    .build();
+            Boolean userBool = userService.getUserID(userDTO.getEmail());
 
-            UserTravelsEntity userTravels = UserTravelsEntity.builder()
-                    .email(userDTO.getEmail())
-                    .travelList(new ArrayList<String>())
-                    .build();
+            if(userBool == true)
+            {
+                throw new RuntimeException("아이디 중복!! 회원가입을 다시 시도해주세요.");
+            }
+            else
+            {
+                UserEntity user = UserEntity.builder()
+                        .name(userDTO.getName())
+                        .email(userDTO.getEmail())
+                        .password(passwordEncoder.encode(userDTO.getPassword()))
+                        .profile(userDTO.getProfile())
+                        .phone(userDTO.getPhone())
+                        .build();
 
-            UserEntity registerUser = userService.createUser(user);
+                UserEntity registerUser = userService.createUser(user);
+                if(registerUser != null)
+                {
+                    UserTravelsEntity userTravels = UserTravelsEntity.builder()
+                            .email(userDTO.getEmail())
+                            .travelList(new ArrayList<String>())
+                            .build();
+                    UserTravelsEntity registerUserTravels = userTravelsService.createUserTravels(userTravels);
 
-            UserTravelsEntity registerUserTravels = userTravelsService.createUserTravels(userTravels);
+                    if(registerUserTravels != null)
+                    {
+                        UserTravelsDTO responsedUserTravelsDTO = UserTravelsDTO.builder()
+                                .email(registerUserTravels.getEmail())
+                                .travelList(registerUserTravels.getTravelList())
+                                .build();
 
-            UserDTO responsedUserDTO = UserDTO.builder()
-                    .name(registerUser.getName())
-                    .email(registerUser.getEmail())
-                    .password(registerUser.getPassword())
-                    .phone(registerUser.getPhone())
-                    .profile(registerUser.getProfile())
-                    .build();
+                        List<Object> list = new ArrayList<>();
+                        list.add(userDTO);
+                        list.add(responsedUserTravelsDTO);
+                        return ResponseEntity.ok().body(responseDTO.Response("success", "우리 앱을 이용해주셔서 감사합니다. 여러분의 기입을 환영합니다.", list));
 
-            UserTravelsDTO responsedUserTravelsDTO = UserTravelsDTO.builder()
-                    .email(registerUserTravels.getEmail())
-                    .travelList(registerUserTravels.getTravelList())
-                    .build();
+                    }
+                    else
+                    {
+                        userService.deteleUserID(registerUser.getEmail());// user 여행 목록이 저장되지 않았으므로 user 목록 삭제
+                        throw new Exception("해당 user의 여행 목록 생성 실패");
+                    }
+                }
+                else
+                {
+                    throw new Exception("user 정보가 저장되지 않습니다.");
+                }
 
-            List<Object> list = new ArrayList<>();
-            list.add(responsedUserDTO);
-            list.add(responsedUserTravelsDTO);
+            }
 
-            return ResponseEntity.ok().body(responseDTO.Response("success", "우리 앱을 이용해주셔서 감사합니다. 여러분의 기입을 환영합니다.", list));
+
 
         }
         catch (Exception e)
@@ -121,7 +138,6 @@ public class UserController {
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
         try{
             UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), passwordEncoder);
-            System.out.println(user.getEmail());
             if(user != null)
             {
                 String token = tokenProvider.createToken(user);
@@ -158,6 +174,7 @@ public class UserController {
                     .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .phone(userDTO.getPhone())
+                    .profile(userDTO.getProfile())
                     .build();
 
             UserEntity editUser = userService.updateUser(email, user);
@@ -167,6 +184,7 @@ public class UserController {
                     .email(editUser.getEmail())
                     .password(editUser.getPassword())
                     .phone(editUser.getPhone())
+                    .profile(editUser.getProfile())
                     .build();
 
             List<Object> list = new ArrayList<>();
@@ -209,4 +227,55 @@ public class UserController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/signnot")
+    public ResponseEntity<?> signProfile(@AuthenticationPrincipal String email, @RequestBody String Password)
+    {
+        try
+        {
+            userService.deteleUserID(email);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 삭제"));
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
+
+
+    @PostMapping("/findID")
+    public ResponseEntity<?> findEmail(@RequestBody FindIDDTO findIDDTO)
+    {
+        try
+        {
+            String email = userService.getUserEmailByNameAndPhone(findIDDTO);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "이메일 찾기 완료!", Collections.singletonList(email)));
+        }
+        catch (Exception e)
+        {
+            return  ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/findPW")
+    public ResponseEntity<?> changePassword(@RequestBody FindPWDTO findPWDTO)
+    {
+        try
+        {
+            String PW = userService.changePassword(findPWDTO, passwordEncoder);
+            if(PW.equals("Email is not find"))
+            {
+                throw new RuntimeException("이메일이나 전화번호를 다시 확인해주세요. 정보를 찾을 수 없습니다.");
+            }
+            else
+            {
+                return ResponseEntity.ok().body(responseDTO.Response("success", "임시 비밀번호 발급 완료!", Collections.singletonList(PW)));
+            }
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
+
 }

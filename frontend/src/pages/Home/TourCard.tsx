@@ -43,8 +43,9 @@ const Card = styled(Link)<{ $bgImg: string }>`
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.09);
 
   h2 {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: bold;
+    margin-bottom: 10px;
   }
   p {
     font-size: 24px;
@@ -55,12 +56,29 @@ const Card = styled(Link)<{ $bgImg: string }>`
 const TitleWrap = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+
+  .location {
+    /* font-size: 32px; 
+    font-weight: 900;; */
+    font-size: 25px;
+    font-weight: 500;
+    color: #c5c5c5;
+  }
 `;
 
 const Container = styled.div`
   position: relative;
   width: 80%;
   margin: 0 auto;
+
+  @media (min-width: 768px) {
+    width: 100%;
+    margin: 0;
+  }
+  @media (min-width: 1024px) {
+  }
 `;
 const StyledOptionButton = styled(OptionButton)`
   position: absolute;
@@ -102,11 +120,11 @@ export default function TourCard({ Tourdata }: TourCardProps) {
     <Container>
       <Card to={`/Tour/${encryptCode}`} state={{ from: "/" }} $bgImg={bgImg}>
         <div>
+          <h2>{name}</h2>
           <TitleWrap>
-            <h2>{location}</h2>
+            <h3 className="location">{location}</h3>
             <CardUserList user={ImgArr} $size="L" />
           </TitleWrap>
-          <p>{formattedBudget} ₩</p>
           <TourDateUi
             $precent={progress ? progress.toFixed(2) + "%" : "0%"}
             startDate={startDate}
@@ -117,7 +135,11 @@ export default function TourCard({ Tourdata }: TourCardProps) {
           {/* 진행률 기입 시 자동 변경 */}
         </div>
       </Card>
-      <StyledOptionButton remove={false} editType="editTourCard" />
+      <StyledOptionButton
+        remove={false}
+        editType="editTourCard"
+        travelCode={travelCode}
+      />
     </Container>
   );
 }

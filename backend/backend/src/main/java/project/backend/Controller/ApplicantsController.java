@@ -42,6 +42,41 @@ public class ApplicantsController
     @Autowired
     private AppllicantsService appllicantsService;
 
+
+
+
+    @PostMapping("/select/{Travelcode}")
+    public ResponseEntity<?> ApplicantsSelect(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode )
+    {
+        try
+        {
+
+            TravelPlanEntity travelPlan = travelPlanService.TravelPlanSelect(encrypt(Travelcode, key)).block();
+            if(travelPlan.getFounder().equals(userId))
+            {
+                if(appllicantsService.ApplicantExistance(encrypt(Travelcode, key)).block())
+                {
+                    Mono<ApplicantsEntity> applicants = appllicantsService.applicantsSelect(encrypt(Travelcode, key));
+                    ApplicantsDTO applicantsDTO = ConvertTo(applicants).block();
+                    return ResponseEntity.ok().body(responseDTO.Response("success", "전송완료", Collections.singletonList(applicantsDTO)));
+                }
+                else
+                {
+                    log.warn("The data with Travelcode {} is not present in the Applicants document", Travelcode);
+                    throw new Exception("현재 신청한 여행자가 존재하지 않습니다.");
+                }
+
+            }
+            else
+            {
+                throw new Exception("관리자 권한이 없어서 불러올 수 없습니다.");
+            }
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+        }
+    }
     //Travel에 데이터가 있을 때만 DB에서 insert 되게 설정
     @PostMapping("/insert/{Travelcode}")
     public ResponseEntity<?> ApplicantsInsert(@AuthenticationPrincipal String userId, @PathVariable(value = "Travelcode") String Travelcode)
@@ -54,6 +89,7 @@ public class ApplicantsController
                 Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(Travelcode, key));
                 if(travelPlanEntityMono.block().getFounder().equals(userId))
                 {
+                    log.warn("The data with Travelcode {} is not present in the Applicants document", Travelcode);
                     throw new RemoteException("여행을 주관하는 사람은 이미 참석하는 사람입니다.");
                 }
                 else
