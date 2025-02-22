@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip } from "chart.js";
 import styled from "styled-components";
 import { BsFire } from "react-icons/bs";
+import axios from "axios";
+
+interface responseData {
+  visitCount: number;
+  visitRatio: number;
+  _id: string;
+}
 
 // Chart.js 등록
 ChartJS.register(ArcElement, Tooltip);
@@ -92,11 +99,46 @@ interface ChartProps {
   };
 }
 export default function DoughnutChart({ popularCountry }: ChartProps) {
+  const [rankData, setRankData] = useState<{
+    labels: string[];
+    data: number[];
+  }>({ labels: [], data: [] });
+
+  const getData = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/plan/count/location`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const totalRank = response.data.data;
+      const labelsArr = totalRank
+        .map((item: responseData) => item._id)
+        .slice(0, 3);
+      const dataArr = totalRank
+        .map((item: responseData) => item.visitRatio)
+        .slice(0, 3);
+      setRankData({ labels: [...labelsArr], data: [...dataArr] });
+    } catch (err) {
+      console.error("도넛 차트 데이터 불러오기 오류", err);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   const data = {
-    labels: popularCountry.labels,
+    labels: rankData.labels,
     datasets: [
       {
-        data: popularCountry.data, // 퍼센트 데이터
+        data: rankData.data, // 퍼센트 데이터
         backgroundColor: [
           "#FFCC00", //
           "#C0C0C0", // 파랑
