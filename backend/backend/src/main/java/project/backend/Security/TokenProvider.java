@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import project.backend.Config.jwt.JwtProperties;
 import project.backend.Entity.UserEntity;
 import project.backend.Service.UserService;
+import org.springframework.stereotype.Component; // ✅ 추가
+
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -16,6 +18,7 @@ import java.util.Date;
 
 @Slf4j
 @Service
+@Component 
 public class TokenProvider {
 
     @Autowired
