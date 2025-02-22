@@ -22,6 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
     @Autowired
     private TokenProvider tokenProvider;
 
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/queue");  // 메시지 브로커를 "/topic"으로 설정
@@ -31,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://13.124.212.22:81", "http://localhost:3000")  // 특정 출처만 허용
+                .setAllowedOrigins("http://13.124.212.22:81", "http://localhost:3000", "http://localhost:9000")  // 특정 출처만 허용
                 .withSockJS(); // SockJS 사용 설정
     }
 }

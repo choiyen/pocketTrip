@@ -219,12 +219,8 @@ public class UserController {
     {
         try
         {
-            List<String> emailprofile = new ArrayList<>();
-            for(String email : emails)
-            {
-                emailprofile.add(userService.getprofileByEmail(email));
-            }
-            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 수정 완료!", emailprofile));
+            List<String> emailprofile = userService.getprofileByEmail(emails);
+            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
         }
         catch (Exception e)
         {
