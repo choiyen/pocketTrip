@@ -114,7 +114,8 @@ public class UserController {
         System.out.println("Authenticated email: " + email);  // 이메일 값 확인
 
         try {
-            if (email == null) {
+            if (email == null)
+            {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "인증된 이메일이 없습니다."));
             }
 
