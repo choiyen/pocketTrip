@@ -113,16 +113,16 @@ public class UserController {
     public ResponseEntity<?> UserProfile(@AuthenticationPrincipal String email) {
         System.out.println("Authenticated email: " + email);  // 이메일 값 확인
 
-        try {
+        try
+        {
             if (email == null)
             {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "인증된 이메일이 없습니다."));
             }
-
             UserEntity user = userService.getUserInfo(email);
             System.out.println("User: " + user);  // 유저 정보 확인
-
-            if (user == null) {
+            if (user == null)
+            {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "해당 이메일의 유저를 찾을 수 없습니다."));
             }
 
@@ -211,7 +211,7 @@ public class UserController {
         refreshTokenCookie.setMaxAge(0); // 쿠키의 유효 시간을 0으로 설정, 브라우저가 즉시 이 쿠키를 삭제
         response.addCookie(refreshTokenCookie); // 수정된 쿠키(refreshTokenCookie)를 응답에 추가, 클라이언트에게 쿠키를 전송
 
-        return ResponseEntity.ok("로그아웃 성공");
+        return ResponseEntity.ok().body(responseDTO.Response("success", "로그아웃 완료"));
     } // 프론트엔드 연결 후 기능 정상 동작 여부 확인해야 함.
 
 
@@ -220,7 +220,11 @@ public class UserController {
     {
         try
         {
-            List<String> emailprofile = userService.getprofileByEmail(emails);
+            List<String> emailprofile = new ArrayList<>();
+            for(String email : emails)
+            {
+                emailprofile.add(userService.getprofileByEmail(email));//이메일 별로 처리 로직 변경
+            }
             return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
         }
         catch (Exception e)
