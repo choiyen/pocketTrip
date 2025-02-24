@@ -23,6 +23,7 @@ public class TravelPlanEntity
 {
     @Id
     private String id;
+
     @NonNull
     @Indexed(unique = true)
     private String travelCode;
@@ -41,7 +42,6 @@ public class TravelPlanEntity
 
     @NonNull
     private boolean isCalculate;
-
     private int currentCurrency;
 }
 //끝날짜는 그냥 홀연히 통장 잔고만 정해놓고 떠나는 경우도 있을 것 같아서 Null 가능
