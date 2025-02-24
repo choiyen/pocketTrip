@@ -214,19 +214,37 @@ public class UserController {
     } // 프론트엔드 연결 후 기능 정상 동작 여부 확인해야 함.
 
 
+    // @PostMapping("/profile")
+    // public ResponseEntity<?> signprofile(@RequestBody List<String> emails)
+    // {
+    //     try
+    //     {
+    //         List<String> emailprofile = userService.getprofileByEmail(emails);
+    //         return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+    //     }
+    // }
+
     @PostMapping("/profile")
-    public ResponseEntity<?> signprofile(@RequestBody List<String> emails)
+public ResponseEntity<?> signprofile(@RequestBody List<String> emails)
+{
+    try
     {
-        try
-        {
-            List<String> emailprofile = userService.getprofileByEmail(emails);
-            return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
+        List<String> emailprofile = new ArrayList<>();
+        for (String email : emails) {
+            emailprofile.add(userService.getprofileByEmail(email)); // 각 이메일에 대해 처리
         }
-        catch (Exception e)
-        {
-            return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
-        }
+        return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
     }
+    catch (Exception e)
+    {
+        return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
+    }
+}
+
 
     @DeleteMapping("/signnot")
     public ResponseEntity<?> signProfile(@AuthenticationPrincipal String email, @RequestBody String Password)
