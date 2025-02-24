@@ -30,7 +30,7 @@ export default function MyPage() {
   const navigate = useNavigate();
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
   const [userName, setUserName] = useState("");
-  const [userProfile, setUserProfile] = useState("/ProfileImage.jpg");
+  const [userProfile, setUserProfile] = useState("");
 
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
@@ -88,7 +88,6 @@ export default function MyPage() {
     );
     const UserData = response.data.data[0];
     if (UserData) {
-      console.log(UserData.profile);
       setUserName(UserData.name);
       setUserProfile(UserData.profile);
     }
@@ -176,7 +175,10 @@ export default function MyPage() {
         />
         <Profile>
           <ImgContainer>
-            <img src={userProfile} alt="프로필사진" />
+            <img
+              src={userProfile ? userProfile : "/ProfileImage.png"}
+              alt="프로필사진"
+            />
           </ImgContainer>
           <span>{userName}</span>
         </Profile>
@@ -212,7 +214,7 @@ export default function MyPage() {
             <path
               d="M58.1718 178.562C58.1718 147.384 66.6618 130.063 89.6161 112.743C108.168 98.5711 118.23 89.1234 118.23 74.0071C118.23 58.2609 106.91 48.4982 87.1005 48.4982C66.0329 48.4982 54.713 63.2997 54.713 79.3608H0C0 34.0117 35.8464 0 86.7861 0C141.185 0 172 31.1775 172 74.0071C172 97.3114 160.68 115.892 140.241 131.638C117.287 149.589 110.055 160.926 110.055 178.562H58.1718ZM85.8428 268C66.6618 268 52.5119 254.143 52.5119 234.933C52.5119 215.723 66.6618 201.551 85.8428 201.551C105.024 201.551 119.174 215.723 119.174 234.933C119.174 254.143 105.024 268 85.8428 268Z"
               fill="#E8E8E8"
-              fill-opacity="0.45"
+              fillOpacity="0.45"
             />
           </svg>
           <div>
