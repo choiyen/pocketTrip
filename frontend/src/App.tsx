@@ -25,6 +25,17 @@ import RequireAuth from "./components/Common/RequireAuth";
 import { socketService } from "./pages/Tour/socketService";
 
 function App() {
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return console.error("❌ 토큰이 없습니다.");
+
+    socketService.connect(token);
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, []);
+
   const alertState = useSelector(
     (state: RootState) => state.AlertControl.alertState
   );
@@ -43,17 +54,6 @@ function App() {
   const updateTravelData = (data: any) => {
     setTravelData((prevData) => ({ ...prevData, ...data }));
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) return console.error("❌ 토큰이 없습니다.");
-
-    socketService.connect(token);
-
-    return () => {
-      socketService.disconnect();
-    };
-  }, []);
 
   return (
     <div className="App">
