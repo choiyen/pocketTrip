@@ -129,7 +129,6 @@ export default function EditTourCard({
   ChangeState,
   travel,
 }: EditTourCardProps) {
-  console.log(travel);
   // const { img = "japan.jpg" } = travel;
   const startDateObj = new Date(travel.startDate);
   const endDateObj = new Date(travel.endDate);
@@ -144,7 +143,6 @@ export default function EditTourCard({
   const [search, setSearch] = useState<string>(""); // 검색어
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
   const [formData, setFormData] = useState<FormData>(new FormData());
-  const formDatas = new FormData();
 
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
@@ -211,53 +209,62 @@ export default function EditTourCard({
   };
 
   useEffect(() => {
-    if (formData) {
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
-    }
+    // 데이터가 들어있을 경우에만 실행
+    if (!formData || !formData.has("location")) return;
+
+    // 폼데이터 속 데이터들 미리보기
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+
+    // 업로드 시도
+    const upDateData = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}/plan/update/${travel.travelCode}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 🔹 Bearer Token 추가
+            },
+          }
+        );
+        if (response.status === 200) {
+          alert("변경 사항이 저장되었습니다!");
+          console.log(response.data);
+        } else {
+          alert("저장에 실패했습니다.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    upDateData();
   }, [formData]);
 
   const handleSaveData = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      formDatas.append("location", location);
-      formDatas.append("title", tourName);
-      formDatas.append(
-        "startDate",
-        String(new Date(String(startDate)).toISOString().split("T")[0])
-      ); // ✅ YYYY-MM-DD 변환
-      formDatas.append(
-        "endDate",
-        String(new Date(String(endDate)).toISOString().split("T")[0])
-      ); // ✅ YYYY-MM-DD 변환
-      formDatas.append("expense", String(moneyMethod));
-      formDatas.append("founder", travel.founder);
-      formDatas.append("isCalculate", "false");
-      formDatas.append("travelCode", travel.travelCode);
-      if (Imagefile) {
-        formDatas.append("image", Imagefile);
-      }
-      setFormData(formDatas);
-      const response = await axios.put(
-        `${process.env.REACT_APP_API_BASE_URL}/plan/update/${travel.travelCode}`,
-        formDatas,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // 🔹 Bearer Token 추가
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      if (response.status === 200) {
-        alert("변경 사항이 저장되었습니다!");
-        console.log(response.data);
-      } else {
-        alert("저장에 실패했습니다.");
-      }
-    } catch (err) {
-      console.error(err);
+    // 새 객체를 만들어 useState 업데이트 시도
+    const formDatas = new FormData();
+    // formData 객체에 데이터 정리
+    formDatas.append("location", location);
+    formDatas.append("title", tourName);
+    formDatas.append(
+      "startDate",
+      String(new Date(String(startDate)).toISOString().split("T")[0])
+    ); // ✅ YYYY-MM-DD 변환
+    formDatas.append(
+      "endDate",
+      String(new Date(String(endDate)).toISOString().split("T")[0])
+    ); // ✅ YYYY-MM-DD 변환
+    formDatas.append("expense", String(moneyMethod));
+    formDatas.append("founder", travel.founder);
+    formDatas.append("isCalculate", "false");
+    formDatas.append("travelCode", travel.travelCode);
+    if (Imagefile) {
+      formDatas.append("image", Imagefile);
     }
+    setFormData(formDatas);
   };
 
   return (
