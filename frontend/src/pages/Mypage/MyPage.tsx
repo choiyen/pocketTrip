@@ -51,8 +51,8 @@ export default function MyPage() {
     return encrypted.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   };
 
+  // 유저의 모든 여행 기록을 받아온다.
   const getTravelData = async (token: string) => {
-    // 유저의 모든 여행 기록을 받아온다.
     const response = await axios.post(
       `${process.env.REACT_APP_API_BASE_URL}/plan/find`,
       {},
@@ -77,7 +77,6 @@ export default function MyPage() {
   };
 
   const getUserData = async (token: string) => {
-    // 유저의 모든 여행 기록을 받아온다.
     const response = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/auth/userprofile`,
       {
@@ -89,6 +88,7 @@ export default function MyPage() {
     );
     const UserData = response.data.data[0];
     if (UserData) {
+      console.log(UserData.profile);
       setUserName(UserData.name);
       setUserProfile(UserData.profile);
     }
