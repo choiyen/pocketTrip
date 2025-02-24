@@ -265,7 +265,7 @@ export default function Header({
               님! ✈️
             </h2>
             <img
-              src={"./" + userData?.profile}
+              src={"./" + (userData ? userData.profile : "ProfileImage.png")}
               alt="프로필 사진"
               width="50px"
               height="50px"
