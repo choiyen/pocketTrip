@@ -170,6 +170,8 @@ public class UserController {
     public ResponseEntity<?> editUser(@AuthenticationPrincipal String email, @RequestBody UserDTO userDTO){
         try
         {
+            System.out.println("받은 프로필 파일: " + userDTO.getProfile()); // database-storage.png 제대로 들어오는거 확인
+
             UserEntity user = UserEntity.builder()
                     .name(userDTO.getName())
                     .email(userDTO.getEmail())
@@ -224,6 +226,7 @@ public class UserController {
             for(String email : emails)
             {
                 emailprofile.add(userService.getprofileByEmail(email));//이메일 별로 처리 로직 변경
+
             }
             return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 불러오기 완료!", emailprofile));
         }
@@ -282,5 +285,4 @@ public class UserController {
             return ResponseEntity.badRequest().body(responseDTO.Response("error", e.getMessage()));
         }
     }
-
 }
