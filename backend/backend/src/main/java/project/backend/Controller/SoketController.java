@@ -72,8 +72,6 @@ public class SoketController
             String url = url2 + "/plan/select/" + travelCode;
             // GET 요청 보내기
             ResponseEntity<String> response = apiService.<String>exchange(url, "POST", entity);
-            System.out.println(response.getBody());
-            System.out.println(response.getStatusCode());
             if(response.getStatusCode() == HttpStatus.OK)
             {
                 url = url2 +"/expenditures/" + travelCode;
