@@ -132,21 +132,20 @@ public class TravelPlanController
             }
             System.out.println(userId);
             TravelPlanEntity travelPlan = ConvertTo(userId, encrypt(generatedString, key), travelPlanDTO);
-            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
-
-            UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
-
             List<Object> list = new ArrayList<>();
-            if (image != null && !image.isEmpty())
+            if (image != null && !image.isEmpty() && travelPlan.getImg().equals("/japan.jpg") != true)
             {
                 // 이미지가 있는 경우에만 처리
                 String ImageUrl = s3ImageService.upload(image);
+                TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(ConvertTo(travelPlan, ImageUrl)).block();
                 list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1, ImageUrl)));
             }
             else
             {
+                TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
                 list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
             }
+            UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
             list.add(userTravels);
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
         }
@@ -222,43 +221,45 @@ public class TravelPlanController
                 if(Oldtravelplan.getFounder().equals(userId) || Oldtravelplan.getParticipants().isEmpty() == false)
                 {
                     TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
-                    TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                     List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().equals("/japan.jpg") != true)
                         {
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
                         String ImageUrl = s3ImageService.upload(image);
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlan, ImageUrl)).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
 
                     }
                     else
                     {
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
                     }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
-                else if(Oldtravelplan.getParticipants().contains(userId) == true)
+                else if(Oldtravelplan.getParticipants().contains(userId) == true  && Oldtravelplan.getImg().equals("/japan.jpg") != true)
                 {
                     TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
-                    TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                     List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().equals("/japan.jpg") != true)
                         {
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
                         String ImageUrl = s3ImageService.upload(image);
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlan, ImageUrl)).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
 
                     }
                     else
                     {
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
                     }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
@@ -472,6 +473,25 @@ public class TravelPlanController
         }
 
     }
+
+    private TravelPlanEntity ConvertTo(TravelPlanEntity travelPlanEntity, String ImageUrl)
+    {
+        TravelPlanEntity travelPlan = TravelPlanEntity.builder()
+                .travelCode(travelPlanEntity.getTravelCode())
+                .location(travelPlanEntity.getLocation())
+                .startDate(travelPlanEntity.getStartDate())
+                .endDate(travelPlanEntity.getEndDate())
+                .expense(travelPlanEntity.getExpense())
+                .founder(travelPlanEntity.getFounder())
+                .title(travelPlanEntity.getTitle())
+                .participants(travelPlanEntity.getParticipants())
+                .isCalculate(travelPlanEntity.isCalculate())
+                .img(ImageUrl)
+                .build();
+
+        return travelPlan;
+    }
+
 
     private TravelPlanEntity ConvertTo(String userid, String RandomString, TravelPlanDTO travelPlanDTO)
     {
