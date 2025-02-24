@@ -106,6 +106,7 @@ class SocketService {
     }
 
     this.client.subscribe(`/user/queue/${travelCodes}`, (message) => {
+      console.log(JSON.parse(message.body));
       const messages = message.body;
       const response = JSON.parse(messages).body.data;
       const Tourdata = JSON.parse(response[0]);
