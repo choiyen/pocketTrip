@@ -103,8 +103,9 @@ public class TravelPlanController
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
     @CacheEvict(value = "travelCode", allEntries = true)
-    public ResponseEntity<?> TravelInsert(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @RequestBody TravelPlanDTO travelPlanDTO)
+    public ResponseEntity<?> TravelInsert(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @RequestPart("TravelPlanDTO") TravelPlanDTO travelPlanDTO)
     {
+
         try
         {
             int leftLimit = 48; // numeral '0'
