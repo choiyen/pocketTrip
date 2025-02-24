@@ -129,10 +129,11 @@ export default function EditTourCard({
   ChangeState,
   travel,
 }: EditTourCardProps) {
-  const { img = "japan.jpg" } = travel;
+  console.log(travel);
+  // const { img = "japan.jpg" } = travel;
   const startDateObj = new Date(travel.startDate);
   const endDateObj = new Date(travel.endDate);
-  const [fileName, setFileName] = useState<string | null>(img); // 썸네일
+  const [Imagefile, setImageFile] = useState<File>(); // 썸네일
   const [location, setSelectedCountry] = useState<string>(travel.location); // 나라 선택
   const [tourName, setTourName] = useState<string>(travel.title); // 여행 이름
   const [startDate, setStartDate] = useState<Date | null>(startDateObj); // 여행 시작일
@@ -142,6 +143,9 @@ export default function EditTourCard({
   const [countries, setCountries] = useState<string[]>([]); // 나라 목록
   const [search, setSearch] = useState<string>(""); // 검색어
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
+  const [formData, setFormData] = useState<FormData>(new FormData());
+  const formDatas = new FormData();
+
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
     const fetchCountries = async () => {
@@ -174,12 +178,6 @@ export default function EditTourCard({
     setTourName(e.target.value);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setFileName(event.target.files[0].name);
-    }
-  };
-
   const handleDateChange = (date: Date | null) => {
     console.log(date);
     if (date) {
@@ -205,6 +203,63 @@ export default function EditTourCard({
     setMoneyMethod(e.target.valueAsNumber);
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      setImageFile(file);
+    }
+  };
+
+  useEffect(() => {
+    if (formData) {
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
+    }
+  }, [formData]);
+
+  const handleSaveData = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      formDatas.append("location", location);
+      formDatas.append("title", tourName);
+      formDatas.append(
+        "startDate",
+        String(new Date(String(startDate)).toISOString().split("T")[0])
+      ); // ✅ YYYY-MM-DD 변환
+      formDatas.append(
+        "endDate",
+        String(new Date(String(endDate)).toISOString().split("T")[0])
+      ); // ✅ YYYY-MM-DD 변환
+      formDatas.append("expense", String(moneyMethod));
+      formDatas.append("founder", travel.founder);
+      formDatas.append("isCalculate", "false");
+      formDatas.append("travelCode", travel.travelCode);
+      if (Imagefile) {
+        formDatas.append("image", Imagefile);
+      }
+      setFormData(formDatas);
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/plan/update/${travel.travelCode}`,
+        formDatas,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 🔹 Bearer Token 추가
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.status === 200) {
+        alert("변경 사항이 저장되었습니다!");
+        console.log(response.data);
+      } else {
+        alert("저장에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Container>
       <input
@@ -216,7 +271,7 @@ export default function EditTourCard({
       <label htmlFor="file-upload" className="selectFile">
         <div>
           <FcAddImage size={"100px"} />
-          {fileName ? fileName : "파일을 선택하세요"}
+          {Imagefile ? Imagefile.name : "파일을 선택하세요"}
         </div>
       </label>
 
@@ -281,7 +336,7 @@ export default function EditTourCard({
           $bgColor="transparent"
           onClick={ChangeState}
         />
-        <Button size="S" name="확인" />
+        <Button size="S" name="확인" onClick={() => handleSaveData()} />
       </ButtonWrap>
     </Container>
   );

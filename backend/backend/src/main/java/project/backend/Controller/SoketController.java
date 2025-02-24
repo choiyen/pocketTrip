@@ -65,7 +65,7 @@ public class SoketController
     {
         try
         {
-            //System.out.println(authHeader);
+
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
@@ -73,7 +73,8 @@ public class SoketController
             String url = url2 + "/plan/select/" + travelCode;
             // GET 요청 보내기
             ResponseEntity<String> response = apiService.<String>exchange(url, "POST", entity);
-            //System.out.println(response.getBody());
+            System.out.println("겟 바디 요청 결과" + response.getBody());
+            System.out.println("겟 스테이터스 코드 요청 결과" + response.getStatusCode());
             if(response.getStatusCode() == HttpStatus.OK)
             {
                 url = url2 +"/expenditures/" + travelCode;
