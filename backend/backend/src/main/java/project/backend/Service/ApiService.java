@@ -33,9 +33,15 @@ public class ApiService<T> {
 
     public ResponseEntity<String> exchange(String url, String type, HttpEntity<T> entity)
     {
-        try {
+        try
+        {
+
+            System.out.println(url);
+            System.out.println(type);
+            System.out.println(entity);
             if(type.equals("GET"))
             {
+
                 return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
             }
             else if(type.equals("POST"))
