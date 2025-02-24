@@ -15,6 +15,7 @@ import axios from "axios";
 import { setTravelData } from "../../slices/SaveTourDataSlice";
 import CryptoJS from "crypto-js";
 import { saveUser } from "../../slices/userDataSlice";
+import { socketService } from "../Tour/socketService";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
@@ -109,11 +110,16 @@ export default function MainPage() {
   );
 
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return console.error("❌ 토큰이 없습니다.");
+
+    socketService.connect(token);
+  }, []);
+
+  useEffect(() => {
     dispatch(ChangeCurrentPage("home"));
     const token = localStorage.getItem("accessToken");
-    // if (!ReduxTravelData) {
     getTravelData(token as string); // 여행 정보 요청
-    // }
     getUserProfile(token as string); // 유저 정보 요청
   }, []);
 
