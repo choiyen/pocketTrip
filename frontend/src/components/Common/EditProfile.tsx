@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Button from "./Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
@@ -25,6 +25,7 @@ export default function EditProfile() {
   const [userPhoneNumber, setUserPhoneNumber] = useState("");
   const [userPassword, setuserPassword] = useState("");
   const [previewImage, setPreviewImage] = useState(""); // 임시 미리보기 이미지
+  const [uploadImage, setUploadImage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch: AppDispatch = useDispatch();
 
@@ -77,6 +78,7 @@ export default function EditProfile() {
     const file = e.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
+      setUploadImage(file.name);
       setPreviewImage((prevImage) => {
         if (prevImage) {
           URL.revokeObjectURL(prevImage);
@@ -100,6 +102,14 @@ export default function EditProfile() {
   //     setFormData((prev) => ({ ...prev, [id]: value }));
   //   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+  };
+
   const handleSave = async () => {
     try {
       const updatedData = {
@@ -107,7 +117,7 @@ export default function EditProfile() {
         email: userEmail,
         phone: userPhoneNumber,
         password: userPassword, // 비밀번호 포함
-        profile: previewImage, // 변경된 이미지 적용
+        profile: uploadImage, // 변경된 이미지 적용
       };
       console.log(updatedData);
       const response = await axios.put(
@@ -120,7 +130,6 @@ export default function EditProfile() {
           },
         }
       );
-
       console.log(response.data);
 
       if (response.status === 200) {
