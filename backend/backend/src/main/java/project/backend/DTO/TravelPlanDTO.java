@@ -24,7 +24,7 @@ public class TravelPlanDTO
     private Set<String> participants;
     private boolean isCalculate;
     private List<String> profiles;
-    private int currentCurrency;
+    private Number currentCurrency = 0;
 
     @Override
     public String toString() {
