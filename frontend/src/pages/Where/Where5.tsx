@@ -49,7 +49,25 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
             },
           }
         );
-        setImages(getRandomElement(response.data.results).urls.regular);
+        // 나라 이미지가 없을 경우 추가 검색 실시
+        if (response.data.results.length === 0) {
+          const response = await axios.get(
+            `https://api.unsplash.com/search/photos`,
+            {
+              params: {
+                query: `travel`, // 여행 키워드로 이미지 검색 재실시
+                per_page: 10,
+              },
+              headers: {
+                Authorization: `Client-ID ${ACCESS_KEY}`,
+              },
+            }
+          );
+          setImages(getRandomElement(response.data.results).urls.regular);
+        } else {
+          setImages(getRandomElement(response.data.results).urls.regular);
+        }
+        //
       } catch (error) {
         console.error("Unsplash API 요청 실패:", error);
       }
