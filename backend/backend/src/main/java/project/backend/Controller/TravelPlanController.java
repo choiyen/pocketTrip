@@ -204,9 +204,9 @@ public class TravelPlanController
     {
         try
         {
-            System.out.println(newtravelPlanDTO);
             if(travelPlanService.SelectTravelCode(travelcode) == true)
             {
+                System.out.println(newtravelPlanDTO);
 
                 TravelPlanEntity Oldtravelplan = travelPlanService.TravelPlanSelect(encrypt(travelcode, key)).block();
                 TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
@@ -219,7 +219,7 @@ public class TravelPlanController
                     {
                         //System.out.println("before image : " + image);
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
+                        if(Oldtravelplan.getImg() != null && Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
                         {
                             //System.out.println("affter image : " + image);
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
@@ -241,11 +241,12 @@ public class TravelPlanController
                 {
                     if (image != null && !image.isEmpty())
                     {
-                        // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
-                        {
-                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
-                        }
+//                        // 이미지가 있는 경우에만 처리
+//                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true && newtravelPlanDTO.getImg() != null)
+//                        {
+//                            System.out.println("dfsdfdfs");
+//                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+//                        }
                         String ImageUrl = s3ImageService.upload(image);
                         TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlan, ImageUrl)).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
