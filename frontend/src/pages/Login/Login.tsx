@@ -24,7 +24,8 @@ const LoginPage: React.FC = () => {
   // const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
   const [formData, setFormData] = useState({
     email: "test@",
-    password: "Rjlrd41ZTW",
+    password: "Rjlrd41ZTW", // 개발용
+    // password: "qPMIlgHviq", // 배표용
   });
 
   const [errorMessage, setErrorMessage] = useState<string>(""); // 에러 메시지 상태 추가

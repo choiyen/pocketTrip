@@ -21,7 +21,13 @@ interface TravelPlan {
   index: number;
 }
 const TrvelWrap = styled.div`
+  width: 50%;
+  margin: 0 auto;
   position: relative;
+
+  @media (max-width: 767px) {
+    width: auto;
+  }
   .travelButton {
     position: absolute;
     z-index: 1;
@@ -42,6 +48,7 @@ const TrvelWrap = styled.div`
 const Travel = styled(Link)<{ $bgImg?: string }>`
   width: 85vw;
   /* background-color: #0077cc; */
+  height: 300px;
   background: ${(props) =>
     props.$bgImg
       ? `linear-gradient(
@@ -61,17 +68,19 @@ const Travel = styled(Link)<{ $bgImg?: string }>`
   justify-content: space-between;
   align-items: flex-end;
   color: white;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
+  /* 
   @media (min-width: 768px) and (max-width: 1023px) {
     width: 85vw;
   }
 
-  @media (min-width: 1024px) and (max-width: 1439px) {
-    width: 74vw;
-  }
 
   @media (min-width: 1440px) {
     width: 53vw;
-  }
+  } */
 `;
 
 const Title = styled.h2`
