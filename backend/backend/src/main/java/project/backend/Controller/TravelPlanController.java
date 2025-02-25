@@ -497,7 +497,7 @@ public class TravelPlanController
                 .title(travelPlanDTO.getTitle())
                 .founder(userid)
                 .participants(userset)
-                .img("/japan.jpg")
+                .img(travelPlanDTO.getImg())
                 .isCalculate(travelPlanDTO.isCalculate())
                 .currentCurrency(travelPlanDTO.getCurrentCurrency())
                 .build();
