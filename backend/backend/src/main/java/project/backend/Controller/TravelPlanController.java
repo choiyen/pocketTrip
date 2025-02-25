@@ -213,7 +213,7 @@ public class TravelPlanController
                 List<Object> list = new ArrayList<>();
 
                 //System.out.println(Oldtravelplan.getFounder());
-                if(Oldtravelplan.getFounder().equals(userId) || Oldtravelplan.getParticipants().isEmpty() == false)
+                if(Oldtravelplan.getFounder().equals(userId))
                 {
                     if (image != null && !image.isEmpty())
                     {
