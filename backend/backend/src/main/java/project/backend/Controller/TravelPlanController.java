@@ -103,7 +103,7 @@ public class TravelPlanController
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
     @CacheEvict(value = "travelCode", allEntries = true)
-    public ResponseEntity<?> TravelInsert(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @RequestPart("TravelPlanDTO") TravelPlanDTO travelPlanDTO)
+    public ResponseEntity<?> TravelInsert(@AuthenticationPrincipal String userId, @RequestBody TravelPlanDTO travelPlanDTO)
     {
 
         try
@@ -134,18 +134,8 @@ public class TravelPlanController
             System.out.println(userId);
             TravelPlanEntity travelPlan = ConvertTo(userId, encrypt(generatedString, key), travelPlanDTO);
             List<Object> list = new ArrayList<>();
-            if (image != null && !image.isEmpty() && travelPlan.getImg().equals("/japan.jpg") != true)
-            {
-                // 이미지가 있는 경우에만 처리
-                String ImageUrl = s3ImageService.upload(image);
-                TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(ConvertTo(travelPlan, ImageUrl)).block();
-                list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1, ImageUrl)));
-            }
-            else
-            {
-                TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
-                list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
-            }
+            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
+            list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
             UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
             list.add(userTravels);
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
@@ -210,7 +200,7 @@ public class TravelPlanController
     //유출되도 상관 없을 것 같은 데이터(기능 동작 확인)
     @PutMapping("/update/{travelcode}")
     @CacheEvict(value = "travelCode", key = "#travelcode")
-    public ResponseEntity<?> TravelUpdate(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode, @RequestBody TravelPlanDTO newtravelPlanDTO)
+    public ResponseEntity<?> TravelUpdate(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode, @ModelAttribute TravelPlanDTO newtravelPlanDTO)
     {
         try
         {
