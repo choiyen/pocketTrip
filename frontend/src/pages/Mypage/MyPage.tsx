@@ -21,7 +21,7 @@ interface TravelPlan {
   endDate: string;
   expense: number;
   profiles: string[];
-  bgImg?: string;
+  img: string;
 }
 
 export default function MyPage() {

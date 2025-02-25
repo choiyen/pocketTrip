@@ -46,6 +46,8 @@ interface TravelPlan {
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
   encryptCode: string;
+  img: string;
+  currentCurrency: number;
 }
 
 interface User {
@@ -240,6 +242,7 @@ export default function MainPage() {
     startDate: CurrentTour?.startDate, // 여행 시작일
     endDate: CurrentTour?.endDate, // 여행 종료일
     encryptCode: CurrentTour.encryptCode,
+    img: CurrentTour.img,
   };
 
   // 유저 데이터
