@@ -4,10 +4,10 @@ import Button from "../../components/Common/Button";
 import { setTravelData } from "../../slices/travelSlice";
 import "./Where5.css";
 import axios from "axios";
+import { countryNamesInKorea } from "../Data/countryKoreaNames";
 
 interface Where5Props {
   travelData: {
-    // isDomestic: boolean;
     location: string;
     startDate: Date | null;
     endDate: Date | null;
@@ -19,30 +19,37 @@ interface Where5Props {
 }
 
 const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
-  const [expense, setBudget] = useState<number>(travelData.expense); // 예산 상태
+  const [expense, setBudget] = useState<number>(0); // 예산 상태
   const navigate = useNavigate();
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState();
 
   const goToWhere4 = () => {
     navigate("/where4");
   };
 
+  // 사진 배열속 랜덤한 사진 고르는 함수
+  function getRandomElement(arr: any) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // unsplash 이미지 API로 나라별 이미지 고르기
   useEffect(() => {
-    console.log(travelData);
     const fetchImages = async () => {
       try {
         const ACCESS_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
         const response = await axios.get(
           `https://api.unsplash.com/search/photos`,
           {
-            params: { query: travelData.location, per_page: 10 },
+            params: {
+              query: `${countryNamesInKorea[travelData.location]}`,
+              per_page: 10,
+            },
             headers: {
               Authorization: `Client-ID ${ACCESS_KEY}`,
             },
           }
         );
-        setImages(response.data.results[0].urls.regular);
-        console.log(response.data.results);
+        setImages(getRandomElement(response.data.results).urls.regular);
       } catch (error) {
         console.error("Unsplash API 요청 실패:", error);
       }
@@ -54,9 +61,9 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
     const token = localStorage.getItem("accessToken");
 
     // travelData를 업데이트하고, state에 담아서 Where6으로 전달
-    const updatedTravelData = {
-      ...travelData,
-    };
+    // const updatedTravelData = {
+    //   ...travelData,
+    // };
     updateTravelData({
       expense: Number(expense),
       isCalculate: false,

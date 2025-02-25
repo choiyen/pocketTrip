@@ -25,6 +25,7 @@ import RequireAuth from "./components/Common/RequireAuth";
 import { socketService } from "./pages/Tour/socketService";
 
 function App() {
+  const token = localStorage.getItem("accessToken");
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) return console.error("❌ 토큰이 없습니다.");
@@ -64,19 +65,11 @@ function App() {
           <Route path="/Login/Find" element={<Find />} />
           <Route
             path="/"
-            element={
-              <RequireAuth>
-                <MainPage />
-              </RequireAuth>
-            }
+            element={<RequireAuth>{token && <MainPage />}</RequireAuth>}
           />
           <Route
             path="/mypage"
-            element={
-              <RequireAuth>
-                <MyPage />
-              </RequireAuth>
-            }
+            element={<RequireAuth>{token && <MyPage />}</RequireAuth>}
           />
           <Route
             path="/Where1"

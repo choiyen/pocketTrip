@@ -14,7 +14,7 @@ interface EditTourCardProps {
 
 interface TravelPlan {
   id: string;
-  img?: string;
+  img: string;
   travelCode: string;
   title: string;
   founder: string;
@@ -25,6 +25,7 @@ interface TravelPlan {
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
   encryptCode: string;
+  currentCurrency: number;
 }
 /*
 배경이미지 > 파일 인풋
@@ -61,6 +62,16 @@ const Container = styled.div`
       display: block;
       margin: 0 auto 20px;
     }
+  }
+
+  .fileName {
+    margin: 0 auto;
+    line-height: 1.2;
+    width: 50%;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 
@@ -133,10 +144,12 @@ export default function EditTourCard({
   const startDateObj = new Date(travel.startDate);
   const endDateObj = new Date(travel.endDate);
   const [Imagefile, setImageFile] = useState<File>(); // 썸네일
+  const [ImageURL, setImageURL] = useState<string>(travel.img); // 썸네일
   const [location, setSelectedCountry] = useState<string>(travel.location); // 나라 선택
   const [tourName, setTourName] = useState<string>(travel.title); // 여행 이름
   const [startDate, setStartDate] = useState<Date | null>(startDateObj); // 여행 시작일
   const [endDate, setEndDate] = useState<Date | null>(endDateObj); // 여행 종료일
+  const [currency, setCurrency] = useState<number>(travel.currentCurrency); // 여행 예산
   const [moneyMethod, setMoneyMethod] = useState<number>(travel.expense); // 여행 예산
 
   const [countries, setCountries] = useState<string[]>([]); // 나라 목록
@@ -202,10 +215,15 @@ export default function EditTourCard({
     setMoneyMethod(e.target.valueAsNumber);
   };
 
+  const handleCurrentCurrency = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrency(e.target.valueAsNumber);
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       setImageFile(file);
+      setImageURL(file.name);
     }
   };
 
@@ -244,6 +262,7 @@ export default function EditTourCard({
     upDateData();
   }, [formData]);
 
+  // 저장을 위해 데이터 정리
   const handleSaveData = async () => {
     // 새 객체를 만들어 useState 업데이트 시도
     const formDatas = new FormData();
@@ -262,6 +281,7 @@ export default function EditTourCard({
     formDatas.append("founder", travel.founder);
     formDatas.append("isCalculate", "false");
     formDatas.append("travelCode", travel.travelCode);
+    formDatas.append("currentCurrency", String(travel.currentCurrency));
     if (Imagefile) {
       formDatas.append("image", Imagefile);
     }
@@ -279,7 +299,9 @@ export default function EditTourCard({
       <label htmlFor="file-upload" className="selectFile">
         <div>
           <FcAddImage size={"100px"} />
-          {Imagefile ? Imagefile.name : "파일을 선택하세요"}
+          <span className="fileName">
+            {ImageURL ? ImageURL : "파일을 선택하세요"}
+          </span>
         </div>
       </label>
 
@@ -327,6 +349,15 @@ export default function EditTourCard({
           minDate={startDate ? startDate : undefined} // startDate가 null이면 undefined로 처리
         />
       </DateSection>
+
+      <Label htmlFor="currency">현재 설정 환율(₩)</Label>
+      <InputText
+        id="currency"
+        type="number"
+        value={currency}
+        onChange={handleCurrentCurrency}
+        placeholder="원하는 환율값을 입력해주세요"
+      />
 
       <Label htmlFor="moneyCount">여행 예산</Label>
       <InputText
