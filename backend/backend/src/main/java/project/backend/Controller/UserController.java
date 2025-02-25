@@ -172,7 +172,7 @@ public class UserController {
     // 수정
     @PutMapping("/edit")
     @Cacheable(value = "email", key = "#email")
-    public ResponseEntity<?> editUser(@RequestPart(value = "image", required = false) MultipartFile image,  @AuthenticationPrincipal String email, @RequestBody UserDTO userDTO){
+    public ResponseEntity<?> editUser(@RequestPart(value = "image", required = false) MultipartFile image,  @AuthenticationPrincipal String email, @ModelAttribute UserDTO userDTO){
         try
         {
             List<Object> list = new ArrayList<>();
