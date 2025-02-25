@@ -143,6 +143,7 @@ export default function EditTourCard({
   const [search, setSearch] = useState<string>(""); // 검색어
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
   const [formData, setFormData] = useState<FormData>(new FormData());
+  console.log(travel);
 
   // API 호출로 나라 목록 불러오기
   useEffect(() => {

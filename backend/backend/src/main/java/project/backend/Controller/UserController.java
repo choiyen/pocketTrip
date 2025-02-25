@@ -172,43 +172,66 @@ public class UserController {
     // 수정
     @PutMapping("/edit")
     @Cacheable(value = "email", key = "#email")
-    public ResponseEntity<?> editUser(@RequestPart(value = "image", required = false) MultipartFile image,  @AuthenticationPrincipal String email, @RequestBody UserDTO userDTO){
+    public ResponseEntity<?> editUser(@RequestPart(value = "image", required = false) MultipartFile image,  @AuthenticationPrincipal String email, @ModelAttribute UserDTO userDTO){
         try
         {
+            List<Object> list = new ArrayList<>();
             System.out.println("받은 프로필 파일: " + userDTO.getProfile()); // database-storage.png 제대로 들어오는거 확인
 
             UserEntity users = userService.selectUser(email);
             if(image != null && image.isEmpty() != true)
             {
-                s3ImageService.deleteImageFromS3(users.getProfile());
+                // 이미지가 있는 경우에만 처리
+                if(users.getProfile().equals(userDTO.getProfile()) == false && users.getProfile().equals("/ProfileImage.png") != true)
+                {
+                    s3ImageService.deleteImageFromS3(users.getProfile());
+                }
+                String ImageUrl = s3ImageService.upload(image);
+                UserEntity user = UserEntity.builder()
+                        .name(userDTO.getName())
+                        .email(userDTO.getEmail())
+                        .password(passwordEncoder.encode(userDTO.getPassword()))
+                        .phone(userDTO.getPhone())
+                        .profile(ImageUrl)
+                        .build();
+
+                UserEntity editUser = userService.updateUser(email, user);
+
+                UserDTO responsedUserDTO = UserDTO.builder()
+                        .name(editUser.getName())
+                        .email(editUser.getEmail())
+                        .password(editUser.getPassword())
+                        .phone(editUser.getPhone())
+                        .profile(editUser.getProfile())
+                        .build();
+
+                list.add(responsedUserDTO);
+
+
             }
             else
             {
+                UserEntity user = UserEntity.builder()
+                        .name(userDTO.getName())
+                        .email(userDTO.getEmail())
+                        .password(passwordEncoder.encode(userDTO.getPassword()))
+                        .phone(userDTO.getPhone())
+                        .profile(userDTO.getProfile())
+                        .build();
 
+                UserEntity editUser = userService.updateUser(email, user);
+
+                UserDTO responsedUserDTO = UserDTO.builder()
+                        .name(editUser.getName())
+                        .email(editUser.getEmail())
+                        .password(editUser.getPassword())
+                        .phone(editUser.getPhone())
+                        .profile(editUser.getProfile())
+                        .build();
+                list.add(responsedUserDTO);
             }
 
 
-
-            UserEntity user = UserEntity.builder()
-                    .name(userDTO.getName())
-                    .email(userDTO.getEmail())
-                    .password(passwordEncoder.encode(userDTO.getPassword()))
-                    .phone(userDTO.getPhone())
-                    .profile(userDTO.getProfile())
-                    .build();
-
-            UserEntity editUser = userService.updateUser(email, user);
-
-            UserDTO responsedUserDTO = UserDTO.builder()
-                    .name(editUser.getName())
-                    .email(editUser.getEmail())
-                    .password(editUser.getPassword())
-                    .phone(editUser.getPhone())
-                    .profile(editUser.getProfile())
-                    .build();
-
-            List<Object> list = new ArrayList<>();
-            list.add(responsedUserDTO);
             return ResponseEntity.ok().body(responseDTO.Response("info", "회원정보 수정 완료!", list));
 
         }
