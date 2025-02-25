@@ -60,7 +60,7 @@ public class TravelPlanController
 
     //https://innovation123.tistory.com/197
     //시작 날짜를 기준으로 데이터 정렬하여 프론트엔드로 전송
-    @Cacheable(value = "travelCode")
+    //@Cacheable(value = "travelCode")
     @PostMapping("/find")
     public ResponseEntity<?> TravelDTO(@AuthenticationPrincipal String userId)
     {
@@ -102,7 +102,7 @@ public class TravelPlanController
     }
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
-    @CacheEvict(value = "travelCode", allEntries = true)
+    //@CacheEvict(value = "travelCode", allEntries = true)
     public ResponseEntity<?> TravelInsert(@AuthenticationPrincipal String userId, @RequestBody TravelPlanDTO travelPlanDTO)
     {
 
@@ -478,6 +478,7 @@ public class TravelPlanController
                 .participants(travelPlanEntity.getParticipants())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .img(ImageUrl)
+                .currentCurrency(travelPlanEntity.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -498,6 +499,7 @@ public class TravelPlanController
                 .participants(userset)
                 .img("/japan.jpg")
                 .isCalculate(travelPlanDTO.isCalculate())
+                .currentCurrency(travelPlanDTO.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -515,6 +517,7 @@ public class TravelPlanController
                 .participants(travelPlan1.getParticipants())
                 .isCalculate(travelPlan1.isCalculate())
                 .img(travelPlan1.getImg())
+                .currentCurrency(travelPlan1.getCurrentCurrency())
                 .build();
 
         return travelPlanDTO;
@@ -534,6 +537,7 @@ public class TravelPlanController
                 .isCalculate(travelPlan.isCalculate())
                 .profiles(travelPlan.getProfiles())
                 .img(travelPlan.getImg())
+                .currentCurrency(travelPlan.getCurrentCurrency())
                 .build();
 
         return travelPlans;
@@ -553,6 +557,7 @@ public class TravelPlanController
                                         .isCalculate(travelPlanDTO.isCalculate())
                                         .img(travelPlanDTO.getImg())
                                         .profiles(profilelist)
+                                        .currentCurrency(travelPlanDTO.getCurrentCurrency())
                                         .build();
 
         return travelPlanDTO1;
@@ -572,6 +577,7 @@ public class TravelPlanController
                 .isCalculate(travelPlan1.isCalculate())
                 .img(travelPlan1.getImg())
                 .profiles(profilelist)
+                .currentCurrency(travelPlan1.getCurrentCurrency())
                 .build();
 
         return travelPlanDTO1;
@@ -591,6 +597,7 @@ public class TravelPlanController
                 .isCalculate(travelPlan.isCalculate())
                 .id(travelPlan.getId())
                 .img(travelPlan.getImg())
+                .currentCurrency(travelPlan.getCurrentCurrency())
                 .build();
 
         return  travelPlan1;
@@ -610,6 +617,7 @@ public class TravelPlanController
                 .isCalculate(NewDTO.isCalculate())
                 .id(OldEntity.getId())
                 .img(NewDTO.getImg())
+                .currentCurrency(NewDTO.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -629,6 +637,7 @@ public class TravelPlanController
                 .img(travelPlanEntity.getImg())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .id(travelPlanEntity.getId())
+                .currentCurrency(travelPlanEntity.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -648,6 +657,7 @@ public class TravelPlanController
                 .participants(travelPlanEntity.getParticipants())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .img(imgUri)
+                .currentCurrency(travelPlanEntity.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -692,6 +702,7 @@ public class TravelPlanController
                 .participants(applicantsEntity.block().getUserList())
                 .isCalculate(travelPlanEntityMono.block().isCalculate())
                 .id(travelPlanEntityMono.block().getId())
+                .currentCurrency(travelPlanEntityMono.block().getCurrentCurrency())
                 .build();
         return travelPlan;
     }
@@ -713,6 +724,7 @@ public class TravelPlanController
                 .isCalculate(travelPlanEntityMono.block().isCalculate())
                 .id(travelPlanEntityMono.block().getId())
                 .img(travelPlanEntityMono.block().getImg())
+                .currentCurrency(travelPlanEntityMono.block().getCurrentCurrency())
                 .build();
         return travelPlan;
     }
