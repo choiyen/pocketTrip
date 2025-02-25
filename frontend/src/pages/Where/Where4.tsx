@@ -28,7 +28,6 @@ const Where4: React.FC<Where4Props> = ({ travelData, updateTravelData }) => {
     updateTravelData({
       title: title, // 지갑 이름 업데이트
     });
-
     // Where5 페이지로 이동
     navigate("/Where5");
   };
