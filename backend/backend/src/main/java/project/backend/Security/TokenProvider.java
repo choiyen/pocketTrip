@@ -31,13 +31,8 @@ public class TokenProvider {
     public String createToken(UserEntity userEntity)
     {
         String secretKey = jwtProperties.getSecretKey();
-        System.out.println("JWT Secret: " + secretKey);
-
         Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
         // 기한 : 지금으로부터 1시간
-
-        System.out.println("JWT Secret: " + jwtProperties.getSecretKey());
-
         // 생성
         return Jwts.builder().signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
                 .setSubject(userEntity.getEmail())
