@@ -276,7 +276,7 @@ export default function Categories({
     };
     try {
       const token = localStorage.getItem("accessToken");
-      console.log("현재 이메일:" + selectedUser?.email);
+      // console.log("현재 이메일:" + selectedUser?.email);
       socketService.addSpend(travel.travelCode, expendituresData, token);
       // subscribeToNewLogs();
 
