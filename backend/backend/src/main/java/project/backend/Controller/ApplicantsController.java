@@ -85,7 +85,6 @@ public class ApplicantsController
         {
             if(travelPlanService.SelectTravelCode(Travelcode) == true)
             {
-                System.out.println("스크릿 키 : " + key);
                 Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(Travelcode, key));
                 if(travelPlanEntityMono.block().getFounder().equals(userId))
                 {

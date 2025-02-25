@@ -41,7 +41,6 @@ public class ExpendituresController {
     @PostMapping("/{travelCode}")
     public ResponseEntity<?> createExpenditure(@AuthenticationPrincipal String email, @RequestBody ExpendituresDTO expendituresDTO, @PathVariable String travelCode)
     {
-        System.out.println(expendituresDTO);
         try {
             int leftLimit = 48; // numeral '0'
             int rightLimit = 122; // letter 'z'
@@ -107,8 +106,6 @@ public class ExpendituresController {
 
         try
         {
-            System.out.println(travelCode);
-            System.out.println(ExpenditureService.encrypt(travelCode, key));
             Boolean bool = expenditureService.SelectTravelCode(ExpenditureService.encrypt(travelCode, key));
             System.out.println("현재 상태: " + bool);
             if(bool)

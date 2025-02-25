@@ -116,8 +116,6 @@ public class UserController {
 
     @GetMapping("/userprofile")
     public ResponseEntity<?> UserProfile(@AuthenticationPrincipal String email) {
-        System.out.println("Authenticated email: " + email);  // 이메일 값 확인
-
         try
         {
             if (email == null)
@@ -125,7 +123,6 @@ public class UserController {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "인증된 이메일이 없습니다."));
             }
             UserEntity user = userService.getUserInfo(email);
-            System.out.println("User: " + user);  // 유저 정보 확인
             if (user == null)
             {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "해당 이메일의 유저를 찾을 수 없습니다."));

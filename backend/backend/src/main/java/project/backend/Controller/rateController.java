@@ -41,7 +41,6 @@ public class rateController {
         try
         {
             String rate = rateService.getObject();
-            System.out.println(rate);
             ObjectMapper objectMapper = new ObjectMapper();
             list = objectMapper.readValue(rate, List.class);
 
