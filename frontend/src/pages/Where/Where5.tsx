@@ -21,10 +21,34 @@ interface Where5Props {
 const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
   const [expense, setBudget] = useState<number>(travelData.expense); // 예산 상태
   const navigate = useNavigate();
+  const [images, setImages] = useState([]);
 
   const goToWhere4 = () => {
     navigate("/where4");
   };
+
+  useEffect(() => {
+    console.log(travelData);
+    const fetchImages = async () => {
+      try {
+        const ACCESS_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
+        const response = await axios.get(
+          `https://api.unsplash.com/search/photos`,
+          {
+            params: { query: travelData.location, per_page: 10 },
+            headers: {
+              Authorization: `Client-ID ${ACCESS_KEY}`,
+            },
+          }
+        );
+        setImages(response.data.results[0].urls.regular);
+        console.log(response.data.results);
+      } catch (error) {
+        console.error("Unsplash API 요청 실패:", error);
+      }
+    };
+    fetchImages();
+  }, []);
 
   const goToWhere6 = async () => {
     const token = localStorage.getItem("accessToken");
@@ -32,20 +56,24 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
     // travelData를 업데이트하고, state에 담아서 Where6으로 전달
     const updatedTravelData = {
       ...travelData,
+    };
+    updateTravelData({
       expense: Number(expense),
       isCalculate: false,
-    };
-    updateTravelData(updatedTravelData); // 상태 업데이트
+      img: images,
+    }); // 상태 업데이트
     try {
+      console.log(travelData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/plan/insert`,
-        updatedTravelData,
+        travelData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      console.log(response.data.data[0]);
       // Where6 페이지로 이동하면서 데이터 전달
       navigate("/Where6", { state: response.data.data[0] });
     } catch (error) {
