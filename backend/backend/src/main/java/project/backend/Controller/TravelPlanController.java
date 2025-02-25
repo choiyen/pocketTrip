@@ -242,7 +242,7 @@ public class TravelPlanController
                     if (image != null && !image.isEmpty())
                     {
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().equals("https://images.unsplash.com/") != true)
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
                         {
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
