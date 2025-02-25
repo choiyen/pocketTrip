@@ -115,7 +115,7 @@ public class TravelPlanController
             String generatedString;
               // 16 바이트 키 (AES-128)
 
-            System.out.println(travelPlanDTO);
+            //System.out.println(travelPlanDTO);
 
             while (true)
             {
@@ -131,7 +131,7 @@ public class TravelPlanController
                     break;
                 }
             }
-            System.out.println(userId);
+            //System.out.println(userId);
             TravelPlanEntity travelPlan = ConvertTo(userId, encrypt(generatedString, key), travelPlanDTO);
             List<Object> list = new ArrayList<>();
             TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
@@ -209,16 +209,18 @@ public class TravelPlanController
             {
 
                 TravelPlanEntity Oldtravelplan = travelPlanService.TravelPlanSelect(encrypt(travelcode, key)).block();
-                System.out.println(Oldtravelplan.getFounder());
+                //System.out.println(Oldtravelplan.getFounder());
                 if(Oldtravelplan.getFounder().equals(userId) || Oldtravelplan.getParticipants().isEmpty() == false)
                 {
                     TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
                     List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
+                        //System.out.println("before image : " + image);
                         // 이미지가 있는 경우에만 처리
                         if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
                         {
+                            //System.out.println("affter image : " + image);
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
                         String ImageUrl = s3ImageService.upload(image);

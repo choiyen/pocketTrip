@@ -22,7 +22,6 @@ public class AppllicantsService
     {
         if(applicantsRepository.existsByTravelCode(TravelCode).block() == true)
         {
-            System.out.println("out");
             ApplicantsEntity applicantsEntity = applicantsRepository.findByTravelCode(TravelCode).block();
             if(applicantsEntity.getUserList().contains(userid) == true)
             {
@@ -52,7 +51,6 @@ public class AppllicantsService
                     .build();
             // 새로운 id를 생성하여 중복 오류 방지
             Mono<ApplicantsEntity> applicantsEntityMono2 = applicantsRepository.save(applicants);
-            System.out.println(applicantsEntityMono2.block().getId());
             ApplicantsEntity applicantsEntityMono = applicantsRepository.findByTravelCode(TravelCode).block();
             return Mono.just(applicantsEntityMono);
         }

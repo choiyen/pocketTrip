@@ -67,7 +67,6 @@ public class ExpenditureService {
     {
 
         ExpenditureEntity originalExpenditure = expendituresRepository.findByExpenditureId(expenditureId).block();
-        System.out.println(originalExpenditure);
         if(originalExpenditure == null)
         {
             throw new RuntimeException("Expenditure not found");

@@ -59,7 +59,6 @@ public class UserService {
         if(originalUser == null) {
             log.warn("User with email {} does not exist", email);
         }
-        System.out.println(originalUser);
         return originalUser;
     }
 

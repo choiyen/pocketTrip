@@ -110,7 +110,6 @@ public class SoketController
     {
         try
         {
-            System.out.println("Userssssss" + expendituresDTO);
             String token = authHeader != null ? authHeader : "";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", token);
@@ -162,7 +161,6 @@ public class SoketController
 
             String url = url2 + "/expenditures/" + travelCode + "/" + expenditureId;
             ResponseEntity<String> response = apiService.<Object>exchange(url, "PUT", entity);
-            System.out.println("dddd" + response.getBody());
             if (response.getStatusCode() == HttpStatus.OK)
             {
                 HttpEntity<String> entity2 = new HttpEntity<>(headers);
