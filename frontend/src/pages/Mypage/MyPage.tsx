@@ -104,61 +104,6 @@ export default function MyPage() {
     getTravelData(token as string); // 여행 정보 요청
   }, []);
 
-  // const travelList: TravelPlan[] = [
-  //   {
-  //     id: "1",
-  //     travelCode: "sdsdds",
-  //     name: "일본여행지갑",
-  //     startDate: "2025-01-18",
-  //     endDate: "2025-02-20",
-  //     expense: 2000000,
-  //     ImgArr: [
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //     ], // 참여인원들 프로필 이미지 주소
-  //     bgImg: "/japan.jpg",
-  //   },
-  //   {
-  //     id: "2",
-  //     travelCode: "ddddddd",
-  //     name: "미국 여행의 방",
-  //     startDate: "2024-10-20",
-  //     endDate: "2024-10-25",
-  //     expense: 1000000,
-  //     ImgArr: [
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //     ], // 참여인원들 프로필 이미지 주소
-  //   },
-  //   {
-  //     id: "3",
-  //     travelCode: "sdfsdfdfdfdf",
-  //     name: "프랑스 여행의 방",
-  //     startDate: "2024-05-02",
-  //     endDate: "2024-05-10",
-  //     expense: 2500000,
-  //     ImgArr: [
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //     ], // 참여인원들 프로필 이미지 주소
-  //   },
-  // ];
-
   const formattedBudget: string[] = [];
   TourDataArr.map((item, index) => {
     formattedBudget.push(new Intl.NumberFormat().format(item.expense));
@@ -273,15 +218,15 @@ const Profile = styled.div`
 
 const TravelListContainer = styled.div`
   width: 100%;
-  height: 60vh;
+  /* height: 60vh; */
   // background: black;
-  overflow: scroll;
-  @media (min-width: 768px) and (max-width: 1023px) {
+  /* overflow: scroll; */
+  /* @media (min-width: 768px) and (max-width: 1023px) {
     height: 70vh;
   }
   @media (min-width: 1024px) {
     height: 50vh;
-  }
+  } */
 `;
 
 const NoTravelList = styled.div`

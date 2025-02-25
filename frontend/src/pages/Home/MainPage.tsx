@@ -108,19 +108,40 @@ export default function MainPage() {
   const [alertType, setAlertType] = useState<"success" | "error" | "info">(
     "success"
   );
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) return console.error("❌ 토큰이 없습니다.");
 
+    // 소켓 연결
     socketService.connect(token);
+
+    dispatch(ChangeCurrentPage("home"));
+    getTravelData(token as string); // 여행 정보 요청
+    getUserProfile(token as string); // 유저 정보 요청
   }, []);
 
   useEffect(() => {
-    dispatch(ChangeCurrentPage("home"));
-    const token = localStorage.getItem("accessToken");
-    getTravelData(token as string); // 여행 정보 요청
-    getUserProfile(token as string); // 유저 정보 요청
+    const fetchImages = async () => {
+      try {
+        const ACCESS_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
+        const response = await axios.get(
+          `https://api.unsplash.com/search/photos`,
+          {
+            params: { query: "japan", per_page: 10 },
+            headers: {
+              Authorization: `Client-ID ${ACCESS_KEY}`,
+            },
+          }
+        );
+        setImages(response.data.results);
+        console.log(response.data.results);
+      } catch (error) {
+        console.error("Unsplash API 요청 실패:", error);
+      }
+    };
+    fetchImages();
   }, []);
 
   // 위에서 필요한 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
