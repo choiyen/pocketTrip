@@ -36,7 +36,6 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
       isCalculate: false,
     };
     updateTravelData(updatedTravelData); // 상태 업데이트
-    console.log(updatedTravelData);
 
     try {
       const response = await axios.post(
@@ -45,7 +44,6 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );
