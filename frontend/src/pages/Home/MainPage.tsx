@@ -46,6 +46,8 @@ interface TravelPlan {
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
   encryptCode: string;
+  img: string;
+  currentCurrency: number;
 }
 
 interface User {
@@ -108,7 +110,6 @@ export default function MainPage() {
   const [alertType, setAlertType] = useState<"success" | "error" | "info">(
     "success"
   );
-  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -120,28 +121,6 @@ export default function MainPage() {
     dispatch(ChangeCurrentPage("home"));
     getTravelData(token as string); // 여행 정보 요청
     getUserProfile(token as string); // 유저 정보 요청
-  }, []);
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const ACCESS_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
-        const response = await axios.get(
-          `https://api.unsplash.com/search/photos`,
-          {
-            params: { query: "japan", per_page: 10 },
-            headers: {
-              Authorization: `Client-ID ${ACCESS_KEY}`,
-            },
-          }
-        );
-        setImages(response.data.results);
-        console.log(response.data.results);
-      } catch (error) {
-        console.error("Unsplash API 요청 실패:", error);
-      }
-    };
-    fetchImages();
   }, []);
 
   // 위에서 필요한 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
@@ -263,6 +242,7 @@ export default function MainPage() {
     startDate: CurrentTour?.startDate, // 여행 시작일
     endDate: CurrentTour?.endDate, // 여행 종료일
     encryptCode: CurrentTour.encryptCode,
+    img: CurrentTour.img,
   };
 
   // 유저 데이터

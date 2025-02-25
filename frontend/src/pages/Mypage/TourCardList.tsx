@@ -15,7 +15,7 @@ interface TravelPlan {
     endDate: string;
     expense: number;
     profiles: string[];
-    bgImg?: string;
+    img: string;
   };
   formattedBudget: string[];
   index: number;
@@ -120,7 +120,7 @@ export default function TourCardList({
     <TrvelWrap>
       <Travel
         to={`/Tour/${travel.encryptCode}`}
-        $bgImg={travel.bgImg ? travel.bgImg : "/japan.jpg"}
+        $bgImg={travel.img ? travel.img : "/japan.jpg"}
         state={{ from: "/mypage" }}
       >
         <div
