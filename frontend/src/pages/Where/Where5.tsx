@@ -36,7 +36,6 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
       isCalculate: false,
     };
     updateTravelData(updatedTravelData); // 상태 업데이트
-
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/plan/insert`,

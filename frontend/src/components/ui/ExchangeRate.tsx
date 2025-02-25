@@ -18,14 +18,31 @@ const Container = styled.div`
   }
 `;
 
-export default function ExchangeRate({ pound }: { pound: string }) {
+export default function ExchangeRate({
+  pound,
+  SetCurrencyValue,
+  currencyValue,
+}: {
+  pound: string;
+  SetCurrencyValue: (e: number) => void;
+  currencyValue: number;
+}) {
+  const ChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    SetCurrencyValue(parseFloat(e.target.value));
+  };
   return (
     <Container>
       <div>
         1 <span>{pound}</span>
       </div>
       =
-      <input type="number" id="exchange" placeholder="환율을 입력하세요" />
+      <input
+        type="number"
+        id="exchange"
+        placeholder="환율을 입력하세요"
+        onChange={ChangeHandler}
+        value={currencyValue}
+      />
     </Container>
   );
 }
