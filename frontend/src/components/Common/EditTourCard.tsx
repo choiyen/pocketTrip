@@ -6,6 +6,7 @@ import axios from "axios";
 import { countryNamesInKorean } from "../../pages/Data/countryNames";
 import DatePicker from "react-datepicker";
 import Button from "./Button";
+import imageCompression from "browser-image-compression";
 
 interface EditTourCardProps {
   ChangeState: () => void;
@@ -143,7 +144,7 @@ export default function EditTourCard({
   // const { img = "japan.jpg" } = travel;
   const startDateObj = new Date(travel.startDate);
   const endDateObj = new Date(travel.endDate);
-  const [Imagefile, setImageFile] = useState<File>(); // 썸네일
+  const [Imagefile, setImageFile] = useState<File | string>(travel.img); // 썸네일
   const [ImageURL, setImageURL] = useState<string>(travel.img); // 썸네일
   const [location, setSelectedCountry] = useState<string>(travel.location); // 나라 선택
   const [tourName, setTourName] = useState<string>(travel.title); // 여행 이름
@@ -156,8 +157,7 @@ export default function EditTourCard({
   const [search, setSearch] = useState<string>(""); // 검색어
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
   const [formData, setFormData] = useState<FormData>(new FormData());
-  console.log(travel);
-
+  console.log(travel.img);
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
     const fetchCountries = async () => {
@@ -191,7 +191,6 @@ export default function EditTourCard({
   };
 
   const handleDateChange = (date: Date | null) => {
-    console.log(date);
     if (date) {
       const localDate = new Date(
         date.getTime() - date.getTimezoneOffset() * 60000
@@ -219,11 +218,35 @@ export default function EditTourCard({
     setCurrency(e.target.valueAsNumber);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // 압축된 Blob 파일을 다시 File 형식으로 변환
+  const convertBlobToFile = (blob: Blob, originalFileName: string) => {
+    return new File([blob], originalFileName, {
+      type: blob.type,
+      lastModified: Date.now(),
+    });
+  };
+
+  // 파일이 존재할 경우 압축 후 Blob된걸 File 형식으로 다시 변환
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      setImageFile(file);
-      setImageURL(file.name);
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+      try {
+        const compressedBlob = await imageCompression(file, options);
+        const compressedFile = convertBlobToFile(compressedBlob, file.name);
+
+        setImageFile(compressedFile);
+        setImageURL(compressedFile.name);
+      } catch (error) {
+        console.error("이미지 압축 실패", error);
+        event.target.value = "";
+      }
     }
   };
 
@@ -238,6 +261,7 @@ export default function EditTourCard({
 
     // 업로드 시도
     const upDateData = async () => {
+      if (!formData) return;
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.put(
@@ -273,6 +297,7 @@ export default function EditTourCard({
       "startDate",
       String(new Date(String(startDate)).toISOString().split("T")[0])
     ); // ✅ YYYY-MM-DD 변환
+
     formDatas.append(
       "endDate",
       String(new Date(String(endDate)).toISOString().split("T")[0])
