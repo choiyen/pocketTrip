@@ -204,6 +204,7 @@ public class TravelPlanController
     {
         try
         {
+            System.out.println(newtravelPlanDTO);
             if(travelPlanService.SelectTravelCode(travelcode) == true)
             {
 
@@ -216,7 +217,7 @@ public class TravelPlanController
                     if (image != null && !image.isEmpty())
                     {
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().equals("/japan.jpg") != true)
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
                         {
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
@@ -703,6 +704,7 @@ public class TravelPlanController
                 .isCalculate(travelPlanEntityMono.block().isCalculate())
                 .id(travelPlanEntityMono.block().getId())
                 .currentCurrency(travelPlanEntityMono.block().getCurrentCurrency())
+                .img(travelPlanEntityMono.block().getImg())
                 .build();
         return travelPlan;
     }
