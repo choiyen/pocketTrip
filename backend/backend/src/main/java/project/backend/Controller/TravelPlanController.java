@@ -209,11 +209,12 @@ public class TravelPlanController
             {
 
                 TravelPlanEntity Oldtravelplan = travelPlanService.TravelPlanSelect(encrypt(travelcode, key)).block();
+                TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
+                List<Object> list = new ArrayList<>();
+
                 //System.out.println(Oldtravelplan.getFounder());
                 if(Oldtravelplan.getFounder().equals(userId) || Oldtravelplan.getParticipants().isEmpty() == false)
                 {
-                    TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
-                    List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
                         //System.out.println("before image : " + image);
@@ -230,19 +231,18 @@ public class TravelPlanController
                     }
                     else
                     {
+
                         TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
                     }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
-                else if(Oldtravelplan.getParticipants().contains(userId) == true  && Oldtravelplan.getImg().equals("/japan.jpg") != true)
+                else if(Oldtravelplan.getParticipants().contains(userId) == true)
                 {
-                    TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
-                    List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().equals("/japan.jpg") != true)
+                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().equals("https://images.unsplash.com/") != true)
                         {
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
@@ -619,7 +619,7 @@ public class TravelPlanController
                 .participants(OldEntity.getParticipants())
                 .isCalculate(NewDTO.isCalculate())
                 .id(OldEntity.getId())
-                .img(NewDTO.getImg())
+                .img(OldEntity.getImg())
                 .currentCurrency(NewDTO.getCurrentCurrency())
                 .build();
 
