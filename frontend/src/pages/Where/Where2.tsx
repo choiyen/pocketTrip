@@ -45,17 +45,19 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
   const isButtonDisabled = !location;
   const [pound, setPound] = useState<string>("$");
+  const [currencyValue, SetCurrencyValue] = useState<number>(0);
 
   // 페이지 이동 함수
   const goToWhere1 = () => {
     navigate("/where1");
   };
   const goToWhere3 = () => {
+    if (!currencyValue) return;
     // 나라가 선택되면 travelData 업데이트
     updateTravelData({
       location: location,
+      currentCurrency: currencyValue,
     });
-
     navigate("/Where3");
   };
 
@@ -134,7 +136,11 @@ const Where2: React.FC<Where2Props> = ({ travelData, updateTravelData }) => {
         location={location}
       />
 
-      <ExchangeRate pound={pound} />
+      <ExchangeRate
+        pound={pound}
+        SetCurrencyValue={SetCurrencyValue}
+        currencyValue={currencyValue}
+      />
 
       {/* 확인 버튼 */}
       <div className="button-container">
