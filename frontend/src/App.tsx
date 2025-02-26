@@ -49,6 +49,7 @@ function App() {
     endDate: null, // 여행 종료 날짜
     title: "", // 여행지갑 이름
     expense: 0, // 예산
+    img: "",
   });
 
   // 상태를 업데이트하는 함수
