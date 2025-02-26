@@ -34,7 +34,6 @@ export default function MyPage() {
 
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
-
   // 암호화
   const encrypt = (data: string) => {
     const encrypted = CryptoJS.AES.encrypt(
@@ -280,6 +279,13 @@ const NoTravelList = styled.div`
 `;
 
 const TravelList = styled.div`
+  @media (min-width: 1024px) {
+    width: 60%;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
   display: flex;
   flex-direction: column;
   align-items: center;

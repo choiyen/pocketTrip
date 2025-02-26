@@ -14,6 +14,7 @@ interface Where5Props {
     title: string;
     expense: number;
     isCalculate?: boolean;
+    img: string;
   };
   updateTravelData: (data: any) => void;
 }
@@ -21,7 +22,7 @@ interface Where5Props {
 const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
   const [expense, setBudget] = useState<number>(0); // 예산 상태
   const navigate = useNavigate();
-  const [images, setImages] = useState();
+  const [images, setImages] = useState("");
 
   const goToWhere4 = () => {
     navigate("/where4");
@@ -82,12 +83,15 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
     // const updatedTravelData = {
     //   ...travelData,
     // };
+    console.log(expense);
     updateTravelData({
       expense: Number(expense),
       isCalculate: false,
       img: images,
     }); // 상태 업데이트
     try {
+      travelData.expense = Number(expense);
+      travelData.img = images;
       console.log(travelData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/plan/insert`,
