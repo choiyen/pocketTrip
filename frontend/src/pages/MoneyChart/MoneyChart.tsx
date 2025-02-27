@@ -208,13 +208,10 @@ const MoneyChart = () => {
     })),
   ];
 
-  useEffect(() => {
-    console.log(`Tour ID: ${id}`);
-  }, [id]);
+  useEffect(() => {}, [id]);
 
   const location = useLocation();
   const logs = location.state?.logs || [];
-  console.log("받은 logs 데이터 : ", logs);
 
   return (
     <div

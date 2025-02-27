@@ -164,7 +164,6 @@ export default function TourMembers() {
       );
 
       setApplicantsName(response.data.data[0].userList);
-      console.log(response.data.data[0].userList);
 
       if (response.data.data !== null) {
         await axios
@@ -180,7 +179,6 @@ export default function TourMembers() {
           )
           .then((res) => {
             setApplicantsProfile(res.data.data);
-            console.log(res.data.data);
           });
       }
     } catch (error) {
