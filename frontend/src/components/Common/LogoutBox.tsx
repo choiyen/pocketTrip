@@ -41,39 +41,40 @@ const BoxWrap = styled.div`
 `;
 
 export default function LogoutBox() {
-    const dispatch: AppDispatch = useDispatch();
-    const [isBoxVisible, setIsBoxVisible] = useState(true);
-    const CloseLogout = () => {
-        dispatch(ChangeLogoutState());
-        setIsBoxVisible(false);
-    };
-    const handleLogout = () => {
-        axios.delete(`${process.env.REACT_APP_API_BASE_URL}/auth/signout`, {
-            withCredentials: true
-        }).then((res) => {
-            localStorage.removeItem("accessToken");
-            sessionStorage.removeItem("accessToken");
-            console.log(res);
+  const dispatch: AppDispatch = useDispatch();
+  const [isBoxVisible, setIsBoxVisible] = useState(true);
+  const CloseLogout = () => {
+    dispatch(ChangeLogoutState());
+    setIsBoxVisible(false);
+  };
+  const handleLogout = () => {
+    axios
+      .delete(`${process.env.REACT_APP_API_BASE_URL}/auth/signout`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        localStorage.removeItem("accessToken");
+        sessionStorage.removeItem("accessToken");
 
-            window.location.reload();
-
-        }).catch((error) => {
-            console.error("로그아웃 실패:", error);
-        })
-        dispatch(ChangeLogoutState()); // 로그아웃 후 박스 닫기
-    };
-    return (
-        <BoxWrap>
-            <FcFullTrash size={"80px"} />
-            <h2>로그아웃</h2>
-            <p>정말 로그아웃하시겠습니까?</p>
-            <Button size="L" name="로그아웃" $bgColor="red" onClick={handleLogout} />
-            <Button
-                size="L"
-                name="취소"
-                $bgColor="transparent"
-                onClick={() => CloseLogout()}
-            />
-        </BoxWrap>
-    );
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("로그아웃 실패:", error);
+      });
+    dispatch(ChangeLogoutState()); // 로그아웃 후 박스 닫기
+  };
+  return (
+    <BoxWrap>
+      <FcFullTrash size={"80px"} />
+      <h2>로그아웃</h2>
+      <p>정말 로그아웃하시겠습니까?</p>
+      <Button size="L" name="로그아웃" $bgColor="red" onClick={handleLogout} />
+      <Button
+        size="L"
+        name="취소"
+        $bgColor="transparent"
+        onClick={() => CloseLogout()}
+      />
+    </BoxWrap>
+  );
 }

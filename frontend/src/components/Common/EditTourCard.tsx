@@ -157,7 +157,6 @@ export default function EditTourCard({
   const [search, setSearch] = useState<string>(""); // 검색어
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
   const [formData, setFormData] = useState<FormData>(new FormData());
-  console.log(travel.img);
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
     const fetchCountries = async () => {
@@ -254,11 +253,6 @@ export default function EditTourCard({
     // 데이터가 들어있을 경우에만 실행
     if (!formData || !formData.has("location")) return;
 
-    // 폼데이터 속 데이터들 미리보기
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-
     // 업로드 시도
     const upDateData = async () => {
       if (!formData) return;
@@ -275,7 +269,6 @@ export default function EditTourCard({
         );
         if (response.status === 200) {
           alert("변경 사항이 저장되었습니다!");
-          console.log(response.data);
         } else {
           alert("저장에 실패했습니다.");
         }

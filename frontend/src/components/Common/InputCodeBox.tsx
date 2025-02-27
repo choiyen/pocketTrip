@@ -113,22 +113,23 @@ export default function InputCodeBox({ setInputCodeVisible }: InputCodeProps) {
 
   const submitCode = () => {
     const token = localStorage.getItem("accessToken");
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/apply/insert/${values.join("")}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((res) => {
-      console.log(res.data);
-      if(res.data.resultType === "success"){
-        closeInputCode();
-      }
-    })
+    axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_URL}/apply/insert/${values.join("")}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.resultType === "success") {
+          closeInputCode();
+        }
+      });
   };
-
 
   return (
     <BoxWrap>
@@ -149,14 +150,14 @@ export default function InputCodeBox({ setInputCodeVisible }: InputCodeProps) {
           />
         ))}
       </InputWrap>
-        
+
       <Button
         size="S"
         name="취소"
         $bgColor="transparent"
         onClick={() => closeInputCode()}
       />
-      <Button size="S" name="입력" onClick={() => submitCode()}/>
+      <Button size="S" name="입력" onClick={() => submitCode()} />
     </BoxWrap>
   );
 }
