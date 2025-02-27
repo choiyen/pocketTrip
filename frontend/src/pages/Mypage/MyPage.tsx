@@ -293,12 +293,21 @@ const TravelList = styled.div`
 
 const AddTravel = styled.div`
   width: 85vw;
-  height: 100px;
+  height: 300px;
   background-color: #dfdfdf;
   border-radius: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+
+  @media (max-width: 767px) {
+    width: auto;
+  }
+  @media (min-width: 1024px) {
+    max-width: 450px;
+    width: 45%;
+  }
 
   & div {
     background-color: #6e6e6e66;
