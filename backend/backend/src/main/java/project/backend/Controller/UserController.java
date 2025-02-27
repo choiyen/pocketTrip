@@ -274,11 +274,16 @@ public class UserController {
     }
 
     @DeleteMapping("/signnot")
-    public ResponseEntity<?> signProfile(@AuthenticationPrincipal String email, @RequestBody String Password)
+    public ResponseEntity<?> signProfile(@AuthenticationPrincipal String email)
     {
         try
         {
+            UserEntity users = userService.getUserInfo(email);
             userService.deteleUserID(email);
+            if(users.getProfile().equals("/ProfileImage.png") != true)
+            {
+                s3ImageService.deleteImageFromS3(users.getProfile());
+            }
             return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 삭제"));
         }
         catch (Exception e)
