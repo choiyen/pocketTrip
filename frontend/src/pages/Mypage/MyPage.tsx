@@ -292,7 +292,8 @@ const TravelList = styled.div`
 `;
 
 const AddTravel = styled.div`
-  width: 85vw;
+  margin: 0 auto;
+  width: 50%;
   height: 300px;
   background-color: #dfdfdf;
   border-radius: 15px;
@@ -302,7 +303,7 @@ const AddTravel = styled.div`
   cursor: pointer;
 
   @media (max-width: 767px) {
-    width: auto;
+    width: 85vw;
   }
   @media (min-width: 1024px) {
     max-width: 450px;
@@ -318,13 +319,6 @@ const AddTravel = styled.div`
     font-size: 25px;
     text-align: center;
     line-height: 30px;
-  }
-  @media (min-width: 768px) and (max-width: 1023px) {
-    width: 85vw;
-  }
-
-  @media (min-width: 1024px) and (max-width: 1439px) {
-    width: 74vw;
   }
 
   @media (min-width: 1440px) {
