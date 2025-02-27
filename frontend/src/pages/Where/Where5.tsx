@@ -79,11 +79,6 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
   const goToWhere6 = async () => {
     const token = localStorage.getItem("accessToken");
 
-    // travelData를 업데이트하고, state에 담아서 Where6으로 전달
-    // const updatedTravelData = {
-    //   ...travelData,
-    // };
-    console.log(expense);
     updateTravelData({
       expense: Number(expense),
       isCalculate: false,
@@ -92,7 +87,6 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
     try {
       travelData.expense = Number(expense);
       travelData.img = images;
-      console.log(travelData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/plan/insert`,
         travelData,
@@ -102,7 +96,6 @@ const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
           },
         }
       );
-      console.log(response.data.data[0]);
       // Where6 페이지로 이동하면서 데이터 전달
       navigate("/Where6", { state: response.data.data[0] });
     } catch (error) {

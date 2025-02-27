@@ -58,20 +58,16 @@ export default function UserListItem({
   const token = localStorage.getItem("accessToken");
 
   const accept = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_BASE_URL}/plan/check/${travelCode}`,
-        email,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "text/plain",
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res.data);
-      });
+    axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/plan/check/${travelCode}`,
+      email,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "text/plain",
+        },
+      }
+    );
   };
 
   const refuse = () => {};

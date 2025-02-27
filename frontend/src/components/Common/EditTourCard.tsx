@@ -253,11 +253,6 @@ export default function EditTourCard({
     // 데이터가 들어있을 경우에만 실행
     if (!formData || !formData.has("location")) return;
 
-    // 폼데이터 속 데이터들 미리보기
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-
     // 업로드 시도
     const upDateData = async () => {
       if (!formData) return;
