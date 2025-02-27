@@ -64,6 +64,17 @@ const TourWrap = styled.div`
     filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.1));
   }
 `;
+
+const Wrapper = styled.div`
+  @media (min-width: 768px) {
+    width: 60%;
+    margin: 0 auto;
+  }
+  @media (min-width: 1024px) {
+    width: 70%;
+    margin: 0 auto;
+  }
+`;
 export default function TourInfo({ Tourdata }: TourCardProps) {
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
   const startDate = new Date(Tourdata.startDate);
@@ -81,15 +92,17 @@ export default function TourInfo({ Tourdata }: TourCardProps) {
       : 0;
   return (
     <TourWrap>
-      <h2>여행지</h2>
-      <h3>{Tourdata.location}</h3>
-      <TourDateUi
-        $precent={progress ? progress.toFixed(2) + "%" : "10%"}
-        startDate={Tourdata.startDate}
-        endDate={Tourdata.endDate}
-        $bgColor="black"
-        $backGraphColor="#E9E9E9"
-      />
+      <Wrapper>
+        <h2>여행지</h2>
+        <h3>{Tourdata.location}</h3>
+        <TourDateUi
+          $precent={progress ? progress.toFixed(2) + "%" : "10%"}
+          startDate={Tourdata.startDate}
+          endDate={Tourdata.endDate}
+          $bgColor="black"
+          $backGraphColor="#E9E9E9"
+        />
+      </Wrapper>
     </TourWrap>
   );
 }
