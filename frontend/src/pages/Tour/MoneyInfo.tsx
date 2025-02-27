@@ -37,6 +37,9 @@ const MoneyInfoWrap = styled.div`
     font-weight: bold;
     position: relative;
     margin-bottom: 30px;
+    @media (min-width: 1024px) {
+      font-size: 50px;
+    }
 
     &::before {
       content: "₩";
@@ -46,8 +49,17 @@ const MoneyInfoWrap = styled.div`
       left: -10px;
       transform: translateX(-100%);
       font-weight: 400;
+
+      @media (min-width: 1024px) {
+        transform: translate(-100%, 25%);
+      }
     }
   }
+`;
+
+const StyledButton = styled(Button)`
+  width: clamp(120px, 50vw, 300px);
+  height: 50px;
 `;
 
 export default function MoneyInfo({
@@ -74,7 +86,7 @@ export default function MoneyInfo({
     <MoneyInfoWrap>
       <h2>현재예산 (초기값 : {initialBudget})</h2>
       <strong>{formattedBudget}</strong>
-      <Button size="M" name="가계부 작성" onClick={ChangeState} />
+      <StyledButton size="M" name="가계부 작성" onClick={ChangeState} />
     </MoneyInfoWrap>
   );
 }
