@@ -32,10 +32,6 @@ const Button = styled.button`
   font-size: 18px;
   background-color: transparent;
   border: none;
-  &svg {
-    mix-blend-mode: difference;
-    fill: white;
-  }
 `;
 const OptionMenu = styled.ul`
   background-color: white;
