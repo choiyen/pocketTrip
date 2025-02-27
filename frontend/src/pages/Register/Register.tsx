@@ -47,7 +47,6 @@ const Register: React.FC = () => {
       }));
       return;
     }
-    console.log(formData);
     axios
       .post(
         `${process.env.REACT_APP_API_BASE_URL}/auth/signup`,
@@ -66,11 +65,10 @@ const Register: React.FC = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          console.log(response);
           if (response.data.resultType === "success") {
             setIsSuccess(true);
           } else {
-            console.log(response.data.message);
+            console.warn(response.data.message);
           }
         }
       })

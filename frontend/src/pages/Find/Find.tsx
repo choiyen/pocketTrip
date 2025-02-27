@@ -25,8 +25,6 @@ const Find: React.FC = () => {
 
   // 아이디 찾기 요청 함수
   const findEmail = async () => {
-    console.log("이메일 찾기:", usernameId, phoneNumberId);
-
     try {
       // const response = await axios.post("http://localhost:9000/auth/findID", {
       //   name: usernameId,
@@ -40,7 +38,6 @@ const Find: React.FC = () => {
         }
       );
 
-      console.log(response); // 응답 데이터를 확인
       if (response.data.resultType === "success") {
         // 응답 데이터를 파싱하여 이메일을 추출
         const email = JSON.parse(response.data.data[0]).email;
@@ -57,8 +54,6 @@ const Find: React.FC = () => {
 
   // 비밀번호 찾기 요청 함수 (임시 비밀번호 발급)
   const requestPasswordReset = async () => {
-    console.log("비밀번호 찾기:", emailAddrPw, phoneNumberPw);
-
     try {
       // const response = await axios.post("http://localhost:9000/auth/findPW", {
       //   email: emailAddrPw,
@@ -71,8 +66,6 @@ const Find: React.FC = () => {
           phone: phoneNumberPw,
         }
       );
-
-      console.log(response); // 응답 데이터 확인
 
       if (response.data.resultType === "success") {
         const data = response.data.data[0]; // 응답에서 첫 번째 데이터 가져오기
