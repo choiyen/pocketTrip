@@ -20,7 +20,7 @@ const CurrentMembersWrap = styled.div`
   padding: 0px 20px;
   height: 50vh;
   overflow: scroll;
-
+  scrollbar-width: none;
   ul {
     border-radius: 20px;
     padding: 10px;
@@ -32,6 +32,15 @@ const CurrentMembersWrap = styled.div`
   }
 `;
 const TourMembersWrap = styled.div`
+  margin: 0 auto;
+  @media (max-width: 767px) {
+    width: auto;
+  }
+  @media (min-width: 1024px) {
+    max-width: 650px;
+    width: 45%;
+  }
+
   .TourMemberTitle {
     font-size: 16px;
     color: #919191;
@@ -164,7 +173,6 @@ export default function TourMembers() {
       );
 
       setApplicantsName(response.data.data[0].userList);
-      console.log(response.data.data[0].userList);
 
       if (response.data.data !== null) {
         await axios
@@ -180,7 +188,6 @@ export default function TourMembers() {
           )
           .then((res) => {
             setApplicantsProfile(res.data.data);
-            console.log(res.data.data);
           });
       }
     } catch (error) {
@@ -201,6 +208,24 @@ export default function TourMembers() {
       .writeText(travelCode)
       .then(() => alert("코드가 클립보드에 복사되었습니다."))
       .catch((err) => console.error("클립보드 복사에 실패하였습니다.", err));
+  };
+
+  const DeleteFunc = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/plan/delete/${travelCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.error("여행 삭제 실패");
+    }
   };
 
   return (
@@ -245,7 +270,12 @@ export default function TourMembers() {
           </UserContainer>
         </CurrentMembersWrap>
 
-        <StyledButtons size="L" name="여행 나가기" $bgColor="red" />
+        <StyledButtons
+          size="L"
+          name="여행 나가기"
+          $bgColor="red"
+          onClick={() => DeleteFunc()}
+        />
       </ContentBox>
     </TourMembersWrap>
   );
