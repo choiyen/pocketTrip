@@ -434,9 +434,9 @@ public class TravelPlanController
     {
         try
         {
-            if(travelPlanService.SelectTravelCode(travelCode) == true)
+            if(travelPlanService.SelectTravelCode(encrypt(travelCode,key)) == true)
             {
-                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(travelCode);
+                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(travelCode,key));
                 if(travelPlanEntityMono.block().getFounder().equals(userId) || travelPlanEntityMono.block().getParticipants().contains(userId))
                 {
                     travelPlanService.TravelPlanDelete(encrypt(travelCode, key));
