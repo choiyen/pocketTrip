@@ -16,7 +16,7 @@ public class TravelPlanDTO
     private String travelCode;
     private String title;
     private String location;
-    private String img = "/japan.jpg";
+    private String img;
     private LocalDate startDate;
     private LocalDate endDate;
     private int expense;

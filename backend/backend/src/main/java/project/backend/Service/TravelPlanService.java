@@ -85,8 +85,11 @@ public class TravelPlanService
         }
     }
 
-    public boolean SelectTravelCode(String travelCode) throws Exception {
+    public boolean SelectTravelCode(String travelCode) throws Exception
+    {
+        System.out.println(encrypt(travelCode,key));
         Boolean bool = travelPlanRepository.existsByTravelCode(encrypt(travelCode,key)).block();
+        System.out.println(bool);
         return  bool;
     }
 
