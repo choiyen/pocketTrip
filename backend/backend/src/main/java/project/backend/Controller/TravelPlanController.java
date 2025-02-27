@@ -1,5 +1,6 @@
 package project.backend.Controller;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -204,9 +205,9 @@ public class TravelPlanController
     {
         try
         {
-            System.out.println(newtravelPlanDTO);
             if(travelPlanService.SelectTravelCode(travelcode) == true)
             {
+                System.out.println(newtravelPlanDTO);
 
                 TravelPlanEntity Oldtravelplan = travelPlanService.TravelPlanSelect(encrypt(travelcode, key)).block();
                 TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
@@ -219,7 +220,7 @@ public class TravelPlanController
                     {
                         //System.out.println("before image : " + image);
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
+                        if(Oldtravelplan.getImg() != null && Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
                         {
                             //System.out.println("affter image : " + image);
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
@@ -241,11 +242,12 @@ public class TravelPlanController
                 {
                     if (image != null && !image.isEmpty())
                     {
-                        // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
-                        {
-                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
-                        }
+//                        // 이미지가 있는 경우에만 처리
+//                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true && newtravelPlanDTO.getImg() != null)
+//                        {
+//                            System.out.println("dfsdfdfs");
+//                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+//                        }
                         String ImageUrl = s3ImageService.upload(image);
                         TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlan, ImageUrl)).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
@@ -433,18 +435,25 @@ public class TravelPlanController
     {
         try
         {
-            if(travelPlanService.SelectTravelCode(travelCode) == true)
+
+            System.out.println("현재 위치 :" + travelCode);
+            if(travelPlanService.SelectTravelCode(travelCode))
             {
-                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(travelCode);
+                System.out.println("현재 위치 :" + travelCode);
+
+                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(travelCode,key));
                 if(travelPlanEntityMono.block().getFounder().equals(userId) || travelPlanEntityMono.block().getParticipants().contains(userId))
                 {
                     travelPlanService.TravelPlanDelete(encrypt(travelCode, key));
                     if(appllicantsService.ApplicantExistance(encrypt(travelCode, key)).block() == true)
                     //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
                     {
-                        appllicantsService.TravelPlanAllDelete(travelCode);
+                        if(travelPlanEntityMono.block().getImg().contains("https://images.unsplash.com/") != true)
+                        {
+                            s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
+                        }
+                        appllicantsService.TravelPlanAllDelete(encrypt(travelCode,key));
                     }
-                    s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
                     List<Object> list = new ArrayList<>();
                     list.add(travelPlanEntityMono);
                     return ResponseEntity.ok().body(responseDTO.Response("info", "정상적으로 데이터 제거가 완료되었습니다.", list));
