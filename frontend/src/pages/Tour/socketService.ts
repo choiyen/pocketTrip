@@ -37,7 +37,6 @@ class SocketService {
   // 소켓 연결 시도한다.
   public connect(token: string) {
     if (this.client && this.client.connected) {
-      console.log("✅ 이미 WebSocket 연결됨");
       return;
     }
 
@@ -45,13 +44,10 @@ class SocketService {
     this.client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: { Authorization: `Bearer ${token}` },
-      // debug: (msg) => console.log(msg),
       reconnectDelay: 5000,
     });
 
-    this.client.onConnect = () => {
-      console.log("✅ WebSocket 연결 성공!");
-    };
+    this.client.onConnect = () => {};
 
     this.client.onStompError = (frame) => {
       console.error("❌ WebSocket 오류:", frame);
@@ -108,7 +104,6 @@ class SocketService {
     this.client.subscribe(`/user/queue/${travelCodes}`, (message) => {
       const messages = message.body;
       const response = JSON.parse(messages).body.data;
-      // console.log(JSON.parse(messages));
       const Tourdata = JSON.parse(response[0]);
       const TourDataResult = Tourdata.data[0];
       const spendData = JSON.parse(response[1]);
@@ -158,7 +153,7 @@ class SocketService {
   public disconnect() {
     if (this.client) {
       this.client.deactivate();
-      console.log("🚫 WebSocket 연결 종료");
+      console.warn("🚫 WebSocket 연결 종료");
     }
   }
 }

@@ -66,7 +66,6 @@ const LoginPage: React.FC = () => {
             }
             navigate("/");
           } else {
-            console.log(response.data.message);
             setErrorMessage("아이디나 비밀번호가 틀립니다."); // 로그인 실패 시 에러 메시지 설정
           }
         }

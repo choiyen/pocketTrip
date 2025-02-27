@@ -47,8 +47,6 @@ export default function EditProfile() {
           // setuserPassword(res.data.data[0].password);
           setPreviewImage(res.data.data[0].profile);
         }
-
-        console.log(res);
       })
       .catch((e) => {
         console.error(e);
@@ -119,7 +117,6 @@ export default function EditProfile() {
         password: userPassword, // 비밀번호 포함
         profile: uploadImage, // 변경된 이미지 적용
       };
-      console.log(updatedData);
       const response = await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/auth/edit`,
         updatedData,
@@ -130,7 +127,6 @@ export default function EditProfile() {
           },
         }
       );
-      console.log(response.data);
 
       if (response.status === 200) {
         alert("변경 사항이 저장되었습니다!");
