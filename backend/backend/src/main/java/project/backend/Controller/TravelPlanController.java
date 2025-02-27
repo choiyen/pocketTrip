@@ -1,5 +1,6 @@
 package project.backend.Controller;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -434,8 +435,12 @@ public class TravelPlanController
     {
         try
         {
-            if(travelPlanService.SelectTravelCode(encrypt(travelCode,key)) == true)
+
+            System.out.println("현재 위치 :" + travelCode);
+            if(travelPlanService.SelectTravelCode(travelCode))
             {
+                System.out.println("현재 위치 :" + travelCode);
+
                 Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(travelCode,key));
                 if(travelPlanEntityMono.block().getFounder().equals(userId) || travelPlanEntityMono.block().getParticipants().contains(userId))
                 {
@@ -443,9 +448,12 @@ public class TravelPlanController
                     if(appllicantsService.ApplicantExistance(encrypt(travelCode, key)).block() == true)
                     //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
                     {
+                        if(travelPlanEntityMono.block().getImg().contains("https://images.unsplash.com/") != true)
+                        {
+                            s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
+                        }
                         appllicantsService.TravelPlanAllDelete(encrypt(travelCode,key));
                     }
-                    s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
                     List<Object> list = new ArrayList<>();
                     list.add(travelPlanEntityMono);
                     return ResponseEntity.ok().body(responseDTO.Response("info", "정상적으로 데이터 제거가 완료되었습니다.", list));

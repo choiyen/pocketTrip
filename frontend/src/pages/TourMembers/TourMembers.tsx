@@ -223,7 +223,8 @@ export default function TourMembers() {
         }
       );
       console.log(response);
-    } catch (error) {
+    } catch (error) 
+    {
       console.error("여행 삭제 실패");
     }
   };
