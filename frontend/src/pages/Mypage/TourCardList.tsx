@@ -28,6 +28,10 @@ const TrvelWrap = styled.div`
   @media (max-width: 767px) {
     width: auto;
   }
+  @media (min-width: 1024px) {
+    max-width: 450px;
+    width: 45%;
+  }
   .travelButton {
     position: absolute;
     z-index: 1;
@@ -89,6 +93,11 @@ const Title = styled.h2`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  @media (min-width: 1024px) {
+    font-size: 24px;
+    line-height: 30px;
+  }
 `;
 
 const Duration = styled.span`
@@ -97,12 +106,16 @@ const Duration = styled.span`
   color: white;
   line-height: 1.5;
   margin: 5px 0 20px;
+
+  @media (min-width: 1024px) {
+    font-size: 15px;
+  }
 `;
 
 const Expense = styled.strong`
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 500;
-  margin-top: 10px;
+  margin: 10px 0;
 `;
 
 const Location = styled.div``;
@@ -129,14 +142,14 @@ export default function TourCardList({
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            justifyContent: "space-around",
+            justifyContent: "flex-end",
           }}
         >
           <Title>{travel.title}</Title>
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
-
+          <Expense>{formattedBudget[index]}₩</Expense>
           {/* 백엔드 수정 후 user 추가 */}
           <SmallUserBox $size={"S"} />
 

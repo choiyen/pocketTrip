@@ -60,28 +60,6 @@ interface PaymentState {
 }
 type selectedUserType = { name: string; email: string };
 
-// const data = [
-//   {
-//     id: "1",
-//     travelCode: "sdsdds",
-//     title: "일본여행지갑", // 여행지갑 이름
-//     location: "일본", // 여행지 이름
-//     expense: 2000000, // 현재 누적 금액
-//     ImgArr: [
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//     ], // 참여인원들 프로필 이미지 주소
-//     startDate: "2025-01-18", // 여행 시작일
-//     endDate: "2025-02-20", // 여행 종료일
-//     bgImg: "./japan.jpg",
-//   }
-// ];
-
 export default function Tour() {
   const SOCKET_URL = process.env.REACT_APP_API_BASE_URL;
   const token = localStorage.getItem("accessToken");
