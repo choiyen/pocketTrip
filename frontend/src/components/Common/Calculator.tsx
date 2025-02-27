@@ -273,16 +273,6 @@ export default function Calculator() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (currency !== undefined) {
-  //     console.log("환율 변경:", currency);
-  //   }
-  // }, [currency]);
-
-  // useEffect(() => {
-  //   console.log("result:", result, "currency:", currency, "output2:", output2);
-  // }, [result, currency]);
-
   const handleCurrencySelect = (currency: number, unit: string) => {
     setCurrency(currency);
     setUnit(unit);

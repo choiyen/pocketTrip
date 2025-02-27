@@ -24,7 +24,8 @@ const LoginPage: React.FC = () => {
   // const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
   const [formData, setFormData] = useState({
     email: "test@",
-    password: "Rjlrd41ZTW", // 개발용
+    password: `${process.env.REACT_APP_PASSWORD}`, // 개발용
+    // password: "Rjlrd41ZTW", // 개발용
     // password: "qPMIlgHviq", // 배표용
   });
 
@@ -66,7 +67,6 @@ const LoginPage: React.FC = () => {
             }
             navigate("/");
           } else {
-            console.log(response.data.message);
             setErrorMessage("아이디나 비밀번호가 틀립니다."); // 로그인 실패 시 에러 메시지 설정
           }
         }
