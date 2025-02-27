@@ -443,7 +443,7 @@ public class TravelPlanController
                     if(appllicantsService.ApplicantExistance(encrypt(travelCode, key)).block() == true)
                     //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
                     {
-                        appllicantsService.TravelPlanAllDelete(travelCode);
+                        appllicantsService.TravelPlanAllDelete(encrypt(travelCode,key));
                     }
                     s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
                     List<Object> list = new ArrayList<>();
