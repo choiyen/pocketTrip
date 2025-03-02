@@ -3,7 +3,7 @@ import Header from "../../components/Common/Header";
 import UserListItem from "./UserListItem";
 import styled from "styled-components";
 import Button from "../../components/Common/Button";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CryptoJS, { enc } from "crypto-js";
 import axios from "axios";
 import { FaRegCopy } from "react-icons/fa6";
@@ -107,7 +107,7 @@ export default function TourMembers() {
   const [userProfile, setUserProfile] = useState<string[]>([]);
   const [applicantsName, setApplicantsName] = useState<string[]>([]);
   const [applicantsProfile, setApplicantsProfile] = useState<string[]>([]);
-
+  const navigate = useNavigate();
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY!;
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
   const decrypt = (encryptedData: string) => {
@@ -222,9 +222,8 @@ export default function TourMembers() {
           },
         }
       );
-      console.log(response);
-    } catch (error) 
-    {
+      navigate("/mypage");
+    } catch (error) {
       console.error("여행 삭제 실패");
     }
   };
