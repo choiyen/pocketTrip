@@ -6,6 +6,7 @@ interface alertControlState {
 const initialState: alertControlState = {
   alertState: false,
 };
+
 const AlertControlSlice = createSlice({
   name: "AlertControl",
   initialState,
