@@ -102,14 +102,8 @@ export default function MainPage() {
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
   const [CurrentTour, setCurrentTour] = useState<TravelPlan>();
   const [nextTourData, setNextTourData] = useState<TravelPlan>();
-  // 알림창 관련 로직
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [InputCodeVisible, setInputCodeVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const [userDatas, setUserDatas] = useState<User>();
-  const [alertType, setAlertType] = useState<"success" | "error" | "info">(
-    "success"
-  );
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -142,15 +136,6 @@ export default function MainPage() {
       setNextTourData(NextTours[0]);
     }
   }, [CurrentTour]);
-
-  useEffect(() => {
-    if (isAlertVisible) {
-      const timer = setTimeout(() => {
-        setIsAlertVisible(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAlertVisible]);
 
   // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
   const getTravelData = async (token: string) => {
@@ -216,12 +201,6 @@ export default function MainPage() {
     return currentTourList;
   };
 
-  const handleAction = () => {
-    setAlertMessage("작업이 성공적으로 완료되었습니다.");
-    setAlertType("success");
-    setIsAlertVisible(true);
-  };
-
   // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
   // 현재 여행
   const data = CurrentTour && {
@@ -284,13 +263,6 @@ export default function MainPage() {
           <RankChart popularCountry={popularCountry} />
         </Wrap>
       </Section>
-      {isAlertVisible && (
-        <Alert
-          alertState={alertType}
-          message={alertMessage}
-          setIsAlertVisible={setIsAlertVisible}
-        />
-      )}
       {InputCodeVisible && (
         <InputCodeBox setInputCodeVisible={setInputCodeVisible} />
       )}
