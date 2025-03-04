@@ -33,12 +33,7 @@ public class ApiService<T> {
 
     public ResponseEntity<String> exchange(String url, String type, HttpEntity<T> entity)
     {
-        try
-        {
-
-            System.out.println(url);
-            System.out.println(type);
-            System.out.println(entity);
+        try {
             if(type.equals("GET"))
             {
 
