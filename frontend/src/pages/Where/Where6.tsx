@@ -38,12 +38,6 @@ export default function Where6() {
 
   const travelData = location.state || {}; // 전달받은 데이터
 
-  // useEffect(() => {
-  //   if (Object.keys(travelData).length > 0) {
-  //     dispatch(setTravelData(travelData));
-  //   }
-  // }, [dispatch, travelData]);
-
   const memoizedTravelData = useMemo(() => travelData, [travelData]);
 
   const goToIndex = async () => {

@@ -179,7 +179,6 @@ export default function AccountBook({
   };
 
   useEffect(() => {
-    console.log(travel.participants, travel.founder);
     // travel.participants.map((participant) => {
     //   memberArray.push(participant);
     // })
@@ -209,14 +208,8 @@ export default function AccountBook({
 
           // **여기서 API 호출 추가!**
           fetchExchangeRate(currencyCode);
-        } else {
-          // console.log("해당 국가의 통화 정보가 없습니다.");
         }
-      } else {
-        // console.log("해당 국가의 영어 이름을 찾을 수 없습니다.");
       }
-    } else {
-      // console.log("country 값이 전달되지 않았습니다.");
     }
   }, [travel.location]);
 
@@ -225,7 +218,6 @@ export default function AccountBook({
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/rate?currency=${selectedCurrency}`
       );
-      // console.log("API 응답 상태:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -233,15 +225,12 @@ export default function AccountBook({
       }
 
       const data = await response.json();
-      // console.log("받은 데이터:", data);
 
       // 🔥 selectedCurrency에서 괄호 안의 통화 코드만 추출 (정규식)
       const currencyCode =
         selectedCurrency === "KRW" || selectedCurrency === "USD"
           ? selectedCurrency
           : selectedCurrency.match(/\((.*?)\)/)?.[1]; // 예: "MYR"
-
-      // console.log("검색할 통화 코드:", currencyCode);
 
       if (!currencyCode) {
         console.error("❌ 통화 코드가 없습니다. 잘못된 선택입니다.");
@@ -254,7 +243,6 @@ export default function AccountBook({
       );
 
       if (currencyData) {
-        // console.log("✅ 찾은 환율 데이터:", currencyData);
         const exchangeRateValue = parseFloat(
           currencyData.환전판매환율.replace(/,/g, "")
         );
@@ -336,7 +324,6 @@ export default function AccountBook({
     };
     const formattedDate = today.toLocaleDateString("ko-KR", options);
 
-    console.log("현재는 우리다" + selectedUser);
     dispatch(
       SaveSpendData({
         amount,

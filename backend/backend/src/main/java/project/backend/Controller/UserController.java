@@ -3,6 +3,7 @@ package project.backend.Controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -10,10 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import project.backend.DTO.*;
 import project.backend.Entity.UserEntity;
 import project.backend.Entity.UserTravelsEntity;
 import project.backend.Security.TokenProvider;
+import project.backend.Service.S3ImageService;
 import project.backend.Service.UserService;
 import project.backend.Service.UserTravelsService;
 
@@ -33,6 +36,8 @@ public class UserController {
     private final Map<String, String> codeStorage = new HashMap<>(); // 전화번호와 인증 코드 저장
     private final Map<String, Long> expiryStorage = new HashMap<>(); // 코드 만료 시간 저장
 
+    @Autowired
+    private S3ImageService s3ImageService;
 
     @Autowired
     private TokenProvider tokenProvider;
@@ -111,8 +116,6 @@ public class UserController {
 
     @GetMapping("/userprofile")
     public ResponseEntity<?> UserProfile(@AuthenticationPrincipal String email) {
-        System.out.println("Authenticated email: " + email);  // 이메일 값 확인
-
         try
         {
             if (email == null)
@@ -120,7 +123,6 @@ public class UserController {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "인증된 이메일이 없습니다."));
             }
             UserEntity user = userService.getUserInfo(email);
-            System.out.println("User: " + user);  // 유저 정보 확인
             if (user == null)
             {
                 return ResponseEntity.badRequest().body(responseDTO.Response("error", "해당 이메일의 유저를 찾을 수 없습니다."));
@@ -167,31 +169,66 @@ public class UserController {
     // 수정
     @PutMapping("/edit")
     @Cacheable(value = "email", key = "#email")
-    public ResponseEntity<?> editUser(@AuthenticationPrincipal String email, @RequestBody UserDTO userDTO){
+    public ResponseEntity<?> editUser(@RequestPart(value = "image", required = false) MultipartFile image,  @AuthenticationPrincipal String email, @ModelAttribute UserDTO userDTO){
         try
         {
+            List<Object> list = new ArrayList<>();
             System.out.println("받은 프로필 파일: " + userDTO.getProfile()); // database-storage.png 제대로 들어오는거 확인
 
-            UserEntity user = UserEntity.builder()
-                    .name(userDTO.getName())
-                    .email(userDTO.getEmail())
-                    .password(passwordEncoder.encode(userDTO.getPassword()))
-                    .phone(userDTO.getPhone())
-                    .profile(userDTO.getProfile())
-                    .build();
+            UserEntity users = userService.selectUser(email);
+            if(image != null && image.isEmpty() != true)
+            {
+                // 이미지가 있는 경우에만 처리
+                if(users.getProfile().equals(userDTO.getProfile()) == false && users.getProfile().equals("/ProfileImage.png") != true)
+                {
+                    s3ImageService.deleteImageFromS3(users.getProfile());
+                }
+                String ImageUrl = s3ImageService.upload(image);
+                UserEntity user = UserEntity.builder()
+                        .name(userDTO.getName())
+                        .email(userDTO.getEmail())
+                        .password(passwordEncoder.encode(userDTO.getPassword()))
+                        .phone(userDTO.getPhone())
+                        .profile(ImageUrl)
+                        .build();
 
-            UserEntity editUser = userService.updateUser(email, user);
+                UserEntity editUser = userService.updateUser(email, user);
 
-            UserDTO responsedUserDTO = UserDTO.builder()
-                    .name(editUser.getName())
-                    .email(editUser.getEmail())
-                    .password(editUser.getPassword())
-                    .phone(editUser.getPhone())
-                    .profile(editUser.getProfile())
-                    .build();
+                UserDTO responsedUserDTO = UserDTO.builder()
+                        .name(editUser.getName())
+                        .email(editUser.getEmail())
+                        .password(editUser.getPassword())
+                        .phone(editUser.getPhone())
+                        .profile(editUser.getProfile())
+                        .build();
 
-            List<Object> list = new ArrayList<>();
-            list.add(responsedUserDTO);
+                list.add(responsedUserDTO);
+
+
+            }
+            else
+            {
+                UserEntity user = UserEntity.builder()
+                        .name(userDTO.getName())
+                        .email(userDTO.getEmail())
+                        .password(passwordEncoder.encode(userDTO.getPassword()))
+                        .phone(userDTO.getPhone())
+                        .profile(userDTO.getProfile())
+                        .build();
+
+                UserEntity editUser = userService.updateUser(email, user);
+
+                UserDTO responsedUserDTO = UserDTO.builder()
+                        .name(editUser.getName())
+                        .email(editUser.getEmail())
+                        .password(editUser.getPassword())
+                        .phone(editUser.getPhone())
+                        .profile(editUser.getProfile())
+                        .build();
+                list.add(responsedUserDTO);
+            }
+
+
             return ResponseEntity.ok().body(responseDTO.Response("info", "회원정보 수정 완료!", list));
 
         }
@@ -237,11 +274,16 @@ public class UserController {
     }
 
     @DeleteMapping("/signnot")
-    public ResponseEntity<?> signProfile(@AuthenticationPrincipal String email, @RequestBody String Password)
+    public ResponseEntity<?> signProfile(@AuthenticationPrincipal String email)
     {
         try
         {
+            UserEntity users = userService.getUserInfo(email);
             userService.deteleUserID(email);
+            if(users.getProfile().equals("/ProfileImage.png") != true)
+            {
+                s3ImageService.deleteImageFromS3(users.getProfile());
+            }
             return ResponseEntity.ok().body(responseDTO.Response("success", "회원정보 삭제"));
         }
         catch (Exception e)

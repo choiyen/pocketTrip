@@ -57,16 +57,31 @@ public class UserTravelsService {
     {
         UserTravelsEntity userTravels = userTravelsRepository.findByEmail(userId);
         ArrayList<String> list = new ArrayList<>();
-        list.addAll(userTravels.getTravelList());
+        if(userTravels != null && !userTravels.getTravelList().isEmpty())
+        {
+            list.addAll(userTravels.getTravelList());
+        }
         list.add(travelCode);
 
-        UserTravelsEntity userTravels1 = userTravels.builder()
-                .id(userTravels.getId())
-                .email(userId)
-                .travelList(list)
-                .build();
+        if(userTravels != null)
+        {
+            UserTravelsEntity userTravels1 = userTravels.builder()
+                    .id(userTravels.getId())
+                    .email(userId)
+                    .travelList(list)
+                    .build();
+            return userTravelsRepository.save(userTravels1);
 
-        return userTravelsRepository.save(userTravels1);
+        }
+        else
+        {
+            UserTravelsEntity userTravels1 = userTravels.builder()
+                    .email(userId)
+                    .travelList(list)
+                    .build();
+            return userTravelsRepository.save(userTravels1);
+        }
+
     }
 
     public  UserTravelsEntity DeleteUserTravels(String userId, String travelCode)

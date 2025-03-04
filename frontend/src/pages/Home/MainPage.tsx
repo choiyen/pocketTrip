@@ -46,6 +46,8 @@ interface TravelPlan {
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
   encryptCode: string;
+  img: string;
+  currentCurrency: number;
 }
 
 interface User {
@@ -100,25 +102,17 @@ export default function MainPage() {
   const [TourDataArr, setTourDataArr] = useState<TravelPlan[]>([]);
   const [CurrentTour, setCurrentTour] = useState<TravelPlan>();
   const [nextTourData, setNextTourData] = useState<TravelPlan>();
-  // 알림창 관련 로직
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [InputCodeVisible, setInputCodeVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const [userDatas, setUserDatas] = useState<User>();
-  const [alertType, setAlertType] = useState<"success" | "error" | "info">(
-    "success"
-  );
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) return console.error("❌ 토큰이 없습니다.");
 
+    // 소켓 연결
     socketService.connect(token);
-  }, []);
 
-  useEffect(() => {
     dispatch(ChangeCurrentPage("home"));
-    const token = localStorage.getItem("accessToken");
     getTravelData(token as string); // 여행 정보 요청
     getUserProfile(token as string); // 유저 정보 요청
   }, []);
@@ -142,15 +136,6 @@ export default function MainPage() {
       setNextTourData(NextTours[0]);
     }
   }, [CurrentTour]);
-
-  useEffect(() => {
-    if (isAlertVisible) {
-      const timer = setTimeout(() => {
-        setIsAlertVisible(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAlertVisible]);
 
   // 유저의 모든 여행 기록을 받아와서 암호화 코드를 추가 한다.
   const getTravelData = async (token: string) => {
@@ -216,12 +201,6 @@ export default function MainPage() {
     return currentTourList;
   };
 
-  const handleAction = () => {
-    setAlertMessage("작업이 성공적으로 완료되었습니다.");
-    setAlertType("success");
-    setIsAlertVisible(true);
-  };
-
   // axios 요청으로 현재 날짜 기준으로 해당하는 여행 정보를 하나만 불러온다.
   // 현재 여행
   const data = CurrentTour && {
@@ -242,6 +221,7 @@ export default function MainPage() {
     startDate: CurrentTour?.startDate, // 여행 시작일
     endDate: CurrentTour?.endDate, // 여행 종료일
     encryptCode: CurrentTour.encryptCode,
+    img: CurrentTour.img,
   };
 
   // 유저 데이터
@@ -283,13 +263,6 @@ export default function MainPage() {
           <RankChart popularCountry={popularCountry} />
         </Wrap>
       </Section>
-      {isAlertVisible && (
-        <Alert
-          alertState={alertType}
-          message={alertMessage}
-          setIsAlertVisible={setIsAlertVisible}
-        />
-      )}
       {InputCodeVisible && (
         <InputCodeBox setInputCodeVisible={setInputCodeVisible} />
       )}

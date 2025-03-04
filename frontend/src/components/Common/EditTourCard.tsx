@@ -6,6 +6,7 @@ import axios from "axios";
 import { countryNamesInKorean } from "../../pages/Data/countryNames";
 import DatePicker from "react-datepicker";
 import Button from "./Button";
+import imageCompression from "browser-image-compression";
 
 interface EditTourCardProps {
   ChangeState: () => void;
@@ -14,7 +15,7 @@ interface EditTourCardProps {
 
 interface TravelPlan {
   id: string;
-  img?: string;
+  img: string;
   travelCode: string;
   title: string;
   founder: string;
@@ -25,6 +26,7 @@ interface TravelPlan {
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
   encryptCode: string;
+  currentCurrency: number;
 }
 /*
 배경이미지 > 파일 인풋
@@ -61,6 +63,16 @@ const Container = styled.div`
       display: block;
       margin: 0 auto 20px;
     }
+  }
+
+  .fileName {
+    margin: 0 auto;
+    line-height: 1.2;
+    width: 50%;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 
@@ -129,19 +141,22 @@ export default function EditTourCard({
   ChangeState,
   travel,
 }: EditTourCardProps) {
-  const { img = "japan.jpg" } = travel;
+  // const { img = "japan.jpg" } = travel;
   const startDateObj = new Date(travel.startDate);
   const endDateObj = new Date(travel.endDate);
-  const [fileName, setFileName] = useState<string | null>(img); // 썸네일
+  const [Imagefile, setImageFile] = useState<File | string>(travel.img); // 썸네일
+  const [ImageURL, setImageURL] = useState<string>(travel.img); // 썸네일
   const [location, setSelectedCountry] = useState<string>(travel.location); // 나라 선택
   const [tourName, setTourName] = useState<string>(travel.title); // 여행 이름
   const [startDate, setStartDate] = useState<Date | null>(startDateObj); // 여행 시작일
   const [endDate, setEndDate] = useState<Date | null>(endDateObj); // 여행 종료일
+  const [currency, setCurrency] = useState<number>(travel.currentCurrency); // 여행 예산
   const [moneyMethod, setMoneyMethod] = useState<number>(travel.expense); // 여행 예산
 
   const [countries, setCountries] = useState<string[]>([]); // 나라 목록
   const [search, setSearch] = useState<string>(""); // 검색어
   const [isEditing, setIsEditing] = useState<boolean>(false); // 드롭다운 활성화 여부
+  const [formData, setFormData] = useState<FormData>(new FormData());
   // API 호출로 나라 목록 불러오기
   useEffect(() => {
     const fetchCountries = async () => {
@@ -174,14 +189,7 @@ export default function EditTourCard({
     setTourName(e.target.value);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setFileName(event.target.files[0].name);
-    }
-  };
-
   const handleDateChange = (date: Date | null) => {
-    console.log(date);
     if (date) {
       const localDate = new Date(
         date.getTime() - date.getTimezoneOffset() * 60000
@@ -205,6 +213,99 @@ export default function EditTourCard({
     setMoneyMethod(e.target.valueAsNumber);
   };
 
+  const handleCurrentCurrency = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrency(e.target.valueAsNumber);
+  };
+
+  // 압축된 Blob 파일을 다시 File 형식으로 변환
+  const convertBlobToFile = (blob: Blob, originalFileName: string) => {
+    return new File([blob], originalFileName, {
+      type: blob.type,
+      lastModified: Date.now(),
+    });
+  };
+
+  // 파일이 존재할 경우 압축 후 Blob된걸 File 형식으로 다시 변환
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+      try {
+        const compressedBlob = await imageCompression(file, options);
+        const compressedFile = convertBlobToFile(compressedBlob, file.name);
+
+        setImageFile(compressedFile);
+        setImageURL(compressedFile.name);
+      } catch (error) {
+        console.error("이미지 압축 실패", error);
+        event.target.value = "";
+      }
+    }
+  };
+
+  useEffect(() => {
+    // 데이터가 들어있을 경우에만 실행
+    if (!formData || !formData.has("location")) return;
+
+    // 업로드 시도
+    const upDateData = async () => {
+      if (!formData) return;
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}/plan/update/${travel.travelCode}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 🔹 Bearer Token 추가
+            },
+          }
+        );
+        if (response.status === 200) {
+          alert("변경 사항이 저장되었습니다!");
+        } else {
+          alert("저장에 실패했습니다.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    upDateData();
+  }, [formData]);
+
+  // 저장을 위해 데이터 정리
+  const handleSaveData = async () => {
+    // 새 객체를 만들어 useState 업데이트 시도
+    const formDatas = new FormData();
+    // formData 객체에 데이터 정리
+    formDatas.append("location", location);
+    formDatas.append("title", tourName);
+    formDatas.append(
+      "startDate",
+      String(new Date(String(startDate)).toISOString().split("T")[0])
+    ); // ✅ YYYY-MM-DD 변환
+
+    formDatas.append(
+      "endDate",
+      String(new Date(String(endDate)).toISOString().split("T")[0])
+    ); // ✅ YYYY-MM-DD 변환
+    formDatas.append("expense", String(moneyMethod));
+    formDatas.append("founder", travel.founder);
+    formDatas.append("isCalculate", "false");
+    formDatas.append("travelCode", travel.travelCode);
+    formDatas.append("currentCurrency", String(travel.currentCurrency));
+    if (Imagefile) {
+      formDatas.append("image", Imagefile);
+    }
+    setFormData(formDatas);
+  };
+
   return (
     <Container>
       <input
@@ -216,7 +317,9 @@ export default function EditTourCard({
       <label htmlFor="file-upload" className="selectFile">
         <div>
           <FcAddImage size={"100px"} />
-          {fileName ? fileName : "파일을 선택하세요"}
+          <span className="fileName">
+            {ImageURL ? ImageURL : "파일을 선택하세요"}
+          </span>
         </div>
       </label>
 
@@ -265,6 +368,15 @@ export default function EditTourCard({
         />
       </DateSection>
 
+      <Label htmlFor="currency">현재 설정 환율(₩)</Label>
+      <InputText
+        id="currency"
+        type="number"
+        value={currency}
+        onChange={handleCurrentCurrency}
+        placeholder="원하는 환율값을 입력해주세요"
+      />
+
       <Label htmlFor="moneyCount">여행 예산</Label>
       <InputText
         id="moneyCount"
@@ -281,7 +393,7 @@ export default function EditTourCard({
           $bgColor="transparent"
           onClick={ChangeState}
         />
-        <Button size="S" name="확인" />
+        <Button size="S" name="확인" onClick={() => handleSaveData()} />
       </ButtonWrap>
     </Container>
   );

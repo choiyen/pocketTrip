@@ -1,5 +1,6 @@
 package project.backend.Controller;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -60,7 +61,7 @@ public class TravelPlanController
 
     //https://innovation123.tistory.com/197
     //시작 날짜를 기준으로 데이터 정렬하여 프론트엔드로 전송
-    @Cacheable(value = "travelCode")
+    //@Cacheable(value = "travelCode")
     @PostMapping("/find")
     public ResponseEntity<?> TravelDTO(@AuthenticationPrincipal String userId)
     {
@@ -102,9 +103,10 @@ public class TravelPlanController
     }
     //정상적으로 동작 되어짐 확인
     @PostMapping("/insert")
-    @CacheEvict(value = "travelCode", allEntries = true)
-    public ResponseEntity<?> TravelInsert(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @RequestBody TravelPlanDTO travelPlanDTO)
+    //@CacheEvict(value = "travelCode", allEntries = true)
+    public ResponseEntity<?> TravelInsert(@AuthenticationPrincipal String userId, @RequestBody TravelPlanDTO travelPlanDTO)
     {
+
         try
         {
             int leftLimit = 48; // numeral '0'
@@ -114,7 +116,7 @@ public class TravelPlanController
             String generatedString;
               // 16 바이트 키 (AES-128)
 
-            System.out.println(travelPlanDTO);
+            //System.out.println(travelPlanDTO);
 
             while (true)
             {
@@ -130,23 +132,12 @@ public class TravelPlanController
                     break;
                 }
             }
-            System.out.println(userId);
+            //System.out.println(userId);
             TravelPlanEntity travelPlan = ConvertTo(userId, encrypt(generatedString, key), travelPlanDTO);
-            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
-
-            UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
-
             List<Object> list = new ArrayList<>();
-            if (image != null && !image.isEmpty())
-            {
-                // 이미지가 있는 경우에만 처리
-                String ImageUrl = s3ImageService.upload(image);
-                list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1, ImageUrl)));
-            }
-            else
-            {
-                list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
-            }
+            TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanInsert(travelPlan).block();
+            list.add(Collections.singletonList(ConvertTo(generatedString, travelPlan1)));
+            UserTravelsEntity userTravels = userTravelsService.insertUserTravels(userId, encrypt(generatedString, key));
             list.add(userTravels);
             return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
         }
@@ -210,55 +201,61 @@ public class TravelPlanController
     //유출되도 상관 없을 것 같은 데이터(기능 동작 확인)
     @PutMapping("/update/{travelcode}")
     @CacheEvict(value = "travelCode", key = "#travelcode")
-    public ResponseEntity<?> TravelUpdate(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode, @RequestBody TravelPlanDTO newtravelPlanDTO)
+    public ResponseEntity<?> TravelUpdate(@RequestPart(value = "image", required = false) MultipartFile image, @AuthenticationPrincipal String userId, @PathVariable(value = "travelcode") String travelcode, @ModelAttribute TravelPlanDTO newtravelPlanDTO)
     {
         try
         {
             if(travelPlanService.SelectTravelCode(travelcode) == true)
             {
+                System.out.println(newtravelPlanDTO);
 
                 TravelPlanEntity Oldtravelplan = travelPlanService.TravelPlanSelect(encrypt(travelcode, key)).block();
-                System.out.println(Oldtravelplan.getFounder());
-                if(Oldtravelplan.getFounder().equals(userId) || Oldtravelplan.getParticipants().isEmpty() == false)
+                TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
+                List<Object> list = new ArrayList<>();
+
+                //System.out.println(Oldtravelplan.getFounder());
+                if(Oldtravelplan.getFounder().equals(userId))
                 {
-                    TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
-                    TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
-                    List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
+                        //System.out.println("before image : " + image);
                         // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
+                        if(Oldtravelplan.getImg() != null && Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true)
                         {
+                            //System.out.println("affter image : " + image);
                             s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
                         }
                         String ImageUrl = s3ImageService.upload(image);
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlan, ImageUrl)).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
 
                     }
                     else
                     {
+
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
                     }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
                 }
                 else if(Oldtravelplan.getParticipants().contains(userId) == true)
                 {
-                    TravelPlanEntity travelPlan = ConvertTo(Oldtravelplan, newtravelPlanDTO);
-                    TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
-                    List<Object> list = new ArrayList<>();
                     if (image != null && !image.isEmpty())
                     {
-                        // 이미지가 있는 경우에만 처리
-                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false)
-                        {
-                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
-                        }
+//                        // 이미지가 있는 경우에만 처리
+//                        if(Oldtravelplan.getImg().equals(newtravelPlanDTO.getImg()) == false && Oldtravelplan.getImg().contains("https://images.unsplash.com/") != true && newtravelPlanDTO.getImg() != null)
+//                        {
+//                            System.out.println("dfsdfdfs");
+//                            s3ImageService.deleteImageFromS3(Oldtravelplan.getImg());
+//                        }
                         String ImageUrl = s3ImageService.upload(image);
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(ConvertTo(travelPlan, ImageUrl)).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1, ImageUrl)));
 
                     }
                     else
                     {
+                        TravelPlanEntity travelPlan1 = travelPlanService.TravelPlanUpdate(travelPlan).block();
                         list.add(Collections.singletonList(ConvertTo(travelcode, travelPlan1)));
                     }
                     return ResponseEntity.ok().body(responseDTO.Response("success", "전송 완료", list));
@@ -438,18 +435,25 @@ public class TravelPlanController
     {
         try
         {
-            if(travelPlanService.SelectTravelCode(travelCode) == true)
+
+            System.out.println("현재 위치 :" + travelCode);
+            if(travelPlanService.SelectTravelCode(travelCode))
             {
-                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(travelCode);
+                System.out.println("현재 위치 :" + travelCode);
+
+                Mono<TravelPlanEntity> travelPlanEntityMono = travelPlanService.TravelPlanSelect(encrypt(travelCode,key));
                 if(travelPlanEntityMono.block().getFounder().equals(userId) || travelPlanEntityMono.block().getParticipants().contains(userId))
                 {
                     travelPlanService.TravelPlanDelete(encrypt(travelCode, key));
                     if(appllicantsService.ApplicantExistance(encrypt(travelCode, key)).block() == true)
                     //mongoDB는 NoSql이라 관계에 의한 cascade 삭제를 지원하지 않아 관련 처리 진행
                     {
-                        appllicantsService.TravelPlanAllDelete(travelCode);
+                        if(travelPlanEntityMono.block().getImg().contains("https://images.unsplash.com/") != true)
+                        {
+                            s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
+                        }
+                        appllicantsService.TravelPlanAllDelete(encrypt(travelCode,key));
                     }
-                    s3ImageService.deleteImageFromS3(travelPlanEntityMono.block().getImg());
                     List<Object> list = new ArrayList<>();
                     list.add(travelPlanEntityMono);
                     return ResponseEntity.ok().body(responseDTO.Response("info", "정상적으로 데이터 제거가 완료되었습니다.", list));
@@ -473,6 +477,26 @@ public class TravelPlanController
 
     }
 
+    private TravelPlanEntity ConvertTo(TravelPlanEntity travelPlanEntity, String ImageUrl)
+    {
+        TravelPlanEntity travelPlan = TravelPlanEntity.builder()
+                .travelCode(travelPlanEntity.getTravelCode())
+                .location(travelPlanEntity.getLocation())
+                .startDate(travelPlanEntity.getStartDate())
+                .endDate(travelPlanEntity.getEndDate())
+                .expense(travelPlanEntity.getExpense())
+                .founder(travelPlanEntity.getFounder())
+                .title(travelPlanEntity.getTitle())
+                .participants(travelPlanEntity.getParticipants())
+                .isCalculate(travelPlanEntity.isCalculate())
+                .img(ImageUrl)
+                .currentCurrency(travelPlanEntity.getCurrentCurrency())
+                .build();
+
+        return travelPlan;
+    }
+
+
     private TravelPlanEntity ConvertTo(String userid, String RandomString, TravelPlanDTO travelPlanDTO)
     {
         Set userset = new HashSet<>();
@@ -485,8 +509,9 @@ public class TravelPlanController
                 .title(travelPlanDTO.getTitle())
                 .founder(userid)
                 .participants(userset)
-                .img("/japan.jpg")
+                .img(travelPlanDTO.getImg())
                 .isCalculate(travelPlanDTO.isCalculate())
+                .currentCurrency(travelPlanDTO.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -504,6 +529,7 @@ public class TravelPlanController
                 .participants(travelPlan1.getParticipants())
                 .isCalculate(travelPlan1.isCalculate())
                 .img(travelPlan1.getImg())
+                .currentCurrency(travelPlan1.getCurrentCurrency())
                 .build();
 
         return travelPlanDTO;
@@ -523,6 +549,7 @@ public class TravelPlanController
                 .isCalculate(travelPlan.isCalculate())
                 .profiles(travelPlan.getProfiles())
                 .img(travelPlan.getImg())
+                .currentCurrency(travelPlan.getCurrentCurrency())
                 .build();
 
         return travelPlans;
@@ -542,6 +569,7 @@ public class TravelPlanController
                                         .isCalculate(travelPlanDTO.isCalculate())
                                         .img(travelPlanDTO.getImg())
                                         .profiles(profilelist)
+                                        .currentCurrency(travelPlanDTO.getCurrentCurrency())
                                         .build();
 
         return travelPlanDTO1;
@@ -561,6 +589,7 @@ public class TravelPlanController
                 .isCalculate(travelPlan1.isCalculate())
                 .img(travelPlan1.getImg())
                 .profiles(profilelist)
+                .currentCurrency(travelPlan1.getCurrentCurrency())
                 .build();
 
         return travelPlanDTO1;
@@ -580,6 +609,7 @@ public class TravelPlanController
                 .isCalculate(travelPlan.isCalculate())
                 .id(travelPlan.getId())
                 .img(travelPlan.getImg())
+                .currentCurrency(travelPlan.getCurrentCurrency())
                 .build();
 
         return  travelPlan1;
@@ -598,7 +628,8 @@ public class TravelPlanController
                 .participants(OldEntity.getParticipants())
                 .isCalculate(NewDTO.isCalculate())
                 .id(OldEntity.getId())
-                .img(NewDTO.getImg())
+                .img(OldEntity.getImg())
+                .currentCurrency(NewDTO.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -618,6 +649,7 @@ public class TravelPlanController
                 .img(travelPlanEntity.getImg())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .id(travelPlanEntity.getId())
+                .currentCurrency(travelPlanEntity.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -637,6 +669,7 @@ public class TravelPlanController
                 .participants(travelPlanEntity.getParticipants())
                 .isCalculate(travelPlanEntity.isCalculate())
                 .img(imgUri)
+                .currentCurrency(travelPlanEntity.getCurrentCurrency())
                 .build();
 
         return travelPlan;
@@ -681,6 +714,8 @@ public class TravelPlanController
                 .participants(applicantsEntity.block().getUserList())
                 .isCalculate(travelPlanEntityMono.block().isCalculate())
                 .id(travelPlanEntityMono.block().getId())
+                .currentCurrency(travelPlanEntityMono.block().getCurrentCurrency())
+                .img(travelPlanEntityMono.block().getImg())
                 .build();
         return travelPlan;
     }
@@ -702,6 +737,7 @@ public class TravelPlanController
                 .isCalculate(travelPlanEntityMono.block().isCalculate())
                 .id(travelPlanEntityMono.block().getId())
                 .img(travelPlanEntityMono.block().getImg())
+                .currentCurrency(travelPlanEntityMono.block().getCurrentCurrency())
                 .build();
         return travelPlan;
     }

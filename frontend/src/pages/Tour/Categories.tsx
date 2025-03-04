@@ -276,14 +276,11 @@ export default function Categories({
     };
     try {
       const token = localStorage.getItem("accessToken");
-      console.log("현재 이메일:" + selectedUser?.email);
       socketService.addSpend(travel.travelCode, expendituresData, token);
       // subscribeToNewLogs();
 
       ChangeState();
       setAccountModalContent("AccountBook");
-
-      console.log("데이터 저장 성공:", expendituresData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("데이터 저장 실패:", error.response?.data);

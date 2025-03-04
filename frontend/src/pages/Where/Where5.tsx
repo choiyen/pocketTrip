@@ -4,48 +4,95 @@ import Button from "../../components/Common/Button";
 import { setTravelData } from "../../slices/travelSlice";
 import "./Where5.css";
 import axios from "axios";
+import { countryNamesInKorea } from "../Data/countryKoreaNames";
 
 interface Where5Props {
   travelData: {
-    // isDomestic: boolean;
     location: string;
     startDate: Date | null;
     endDate: Date | null;
     title: string;
     expense: number;
     isCalculate?: boolean;
+    img: string;
   };
   updateTravelData: (data: any) => void;
 }
 
 const Where5: React.FC<Where5Props> = ({ travelData, updateTravelData }) => {
-  const [expense, setBudget] = useState<number>(travelData.expense); // 예산 상태
+  const [expense, setBudget] = useState<number>(0); // 예산 상태
   const navigate = useNavigate();
+  const [images, setImages] = useState("");
 
   const goToWhere4 = () => {
     navigate("/where4");
   };
 
+  // 사진 배열속 랜덤한 사진 고르는 함수
+  function getRandomElement(arr: any) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // unsplash 이미지 API로 나라별 이미지 고르기
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const ACCESS_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
+        const response = await axios.get(
+          `https://api.unsplash.com/search/photos`,
+          {
+            params: {
+              query: `${countryNamesInKorea[travelData.location]}`,
+              per_page: 10,
+            },
+            headers: {
+              Authorization: `Client-ID ${ACCESS_KEY}`,
+            },
+          }
+        );
+        // 나라 이미지가 없을 경우 추가 검색 실시
+        if (response.data.results.length === 0) {
+          const response = await axios.get(
+            `https://api.unsplash.com/search/photos`,
+            {
+              params: {
+                query: `travel`, // 여행 키워드로 이미지 검색 재실시
+                per_page: 10,
+              },
+              headers: {
+                Authorization: `Client-ID ${ACCESS_KEY}`,
+              },
+            }
+          );
+          setImages(getRandomElement(response.data.results).urls.regular);
+        } else {
+          setImages(getRandomElement(response.data.results).urls.regular);
+        }
+        //
+      } catch (error) {
+        console.error("Unsplash API 요청 실패:", error);
+      }
+    };
+    fetchImages();
+  }, []);
+
   const goToWhere6 = async () => {
     const token = localStorage.getItem("accessToken");
 
-    // travelData를 업데이트하고, state에 담아서 Where6으로 전달
-    const updatedTravelData = {
-      ...travelData,
+    updateTravelData({
       expense: Number(expense),
       isCalculate: false,
-    };
-    updateTravelData(updatedTravelData); // 상태 업데이트
-    console.log(updatedTravelData);
-
+      img: images,
+    }); // 상태 업데이트
     try {
+      travelData.expense = Number(expense);
+      travelData.img = images;
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/plan/insert`,
-        updatedTravelData,
+        travelData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface TravelPlan {
   id: string;
   travelCode: string;
-  img?: string;
+  img: string;
   title: string;
   founder: string;
   location: string;
@@ -13,6 +13,7 @@ interface TravelPlan {
   calculate: boolean;
   participants: string[]; // 참가자 리스트 (배열)
   encryptCode: string;
+  currentCurrency: number;
 }
 
 const initialState: { value: TravelPlan[] } = {

@@ -23,8 +23,17 @@ import TourMembers from "./pages/TourMembers/TourMembers";
 import MoneyChart from "./pages/MoneyChart/MoneyChart";
 import RequireAuth from "./components/Common/RequireAuth";
 import { socketService } from "./pages/Tour/socketService";
+import Alert from "./components/Common/Alert";
 
 function App() {
+  // 알림창 관련 로직
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error" | "info">(
+    "success"
+  );
+
+  const token = localStorage.getItem("accessToken");
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) return console.error("❌ 토큰이 없습니다.");
@@ -35,6 +44,21 @@ function App() {
       socketService.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (isAlertVisible) {
+      const timer = setTimeout(() => {
+        setIsAlertVisible(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAlertVisible]);
+
+  const handleAction = () => {
+    setAlertMessage("작업이 성공적으로 완료되었습니다.");
+    setAlertType("success");
+    setIsAlertVisible(true);
+  };
 
   const alertState = useSelector(
     (state: RootState) => state.AlertControl.alertState
@@ -48,6 +72,7 @@ function App() {
     endDate: null, // 여행 종료 날짜
     title: "", // 여행지갑 이름
     expense: 0, // 예산
+    img: "",
   });
 
   // 상태를 업데이트하는 함수
@@ -64,19 +89,11 @@ function App() {
           <Route path="/Login/Find" element={<Find />} />
           <Route
             path="/"
-            element={
-              <RequireAuth>
-                <MainPage />
-              </RequireAuth>
-            }
+            element={<RequireAuth>{token && <MainPage />}</RequireAuth>}
           />
           <Route
             path="/mypage"
-            element={
-              <RequireAuth>
-                <MyPage />
-              </RequireAuth>
-            }
+            element={<RequireAuth>{token && <MyPage />}</RequireAuth>}
           />
           <Route
             path="/Where1"
@@ -162,25 +179,16 @@ function App() {
               </RequireAuth>
             }
           />
-          {/* <Route
-            path="/Tour/:encrypted/accountbook"
-            element={
-              <RequireAuth>
-                <AccountBook />
-              </RequireAuth>
-            }
-          /> */}
-          {/* <Route
-            path="/Tour/:encrypted/Categories"
-            element={
-              <RequireAuth>
-                <Categories />
-              </RequireAuth>
-            }
-          /> */}
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
+      {isAlertVisible && (
+        <Alert
+          alertState={alertType}
+          message={alertMessage}
+          setIsAlertVisible={setIsAlertVisible}
+        />
+      )}
     </div>
   );
 }

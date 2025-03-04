@@ -2,15 +2,13 @@ package project.backend.Config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
+
 import project.backend.Security.TokenProvider;
-import project.backend.Socket.HttpHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -32,8 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://13.124.212.22:81", "http://localhost:3000", "http://localhost:9000")  // 특정 출처만 허용
+                .setAllowedOrigins("http://13.124.212.22","http://13.124.212.22:81", "http://localhost:3000", "http://localhost:9000")  // 특정 출처만 허용
                 .withSockJS(); // SockJS 사용 설정
     }
 }
-

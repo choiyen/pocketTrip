@@ -14,7 +14,7 @@ interface TravelData {
   ImgArr: string[]; // 참여 인원들의 프로필 이미지 경로 배열
   startDate: string; // 여행 시작일 (ISO 날짜 형식)
   endDate: string; // 여행 종료일 (ISO 날짜 형식)
-  bgImg?: string;
+  img: string;
   travelCode: string;
   encryptCode: string;
 }
@@ -95,7 +95,7 @@ export default function TourCard({ Tourdata }: TourCardProps) {
     ImgArr,
     startDate,
     endDate,
-    bgImg = "/japan.jpg",
+    img = "/japan.jpg",
     travelCode,
     encryptCode,
   } = Tourdata;
@@ -118,7 +118,7 @@ export default function TourCard({ Tourdata }: TourCardProps) {
 
   return (
     <Container>
-      <Card to={`/Tour/${encryptCode}`} state={{ from: "/" }} $bgImg={bgImg}>
+      <Card to={`/Tour/${encryptCode}`} state={{ from: "/" }} $bgImg={img}>
         <div>
           <h2>{name}</h2>
           <TitleWrap>

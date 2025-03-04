@@ -15,13 +15,23 @@ interface TravelPlan {
     endDate: string;
     expense: number;
     profiles: string[];
-    bgImg?: string;
+    img: string;
   };
   formattedBudget: string[];
   index: number;
 }
 const TrvelWrap = styled.div`
+  width: 50%;
+  margin: 0 auto;
   position: relative;
+
+  @media (max-width: 767px) {
+    width: auto;
+  }
+  @media (min-width: 1024px) {
+    max-width: 450px;
+    width: 45%;
+  }
   .travelButton {
     position: absolute;
     z-index: 1;
@@ -42,6 +52,7 @@ const TrvelWrap = styled.div`
 const Travel = styled(Link)<{ $bgImg?: string }>`
   width: 85vw;
   /* background-color: #0077cc; */
+  height: 300px;
   background: ${(props) =>
     props.$bgImg
       ? `linear-gradient(
@@ -61,17 +72,19 @@ const Travel = styled(Link)<{ $bgImg?: string }>`
   justify-content: space-between;
   align-items: flex-end;
   color: white;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
+  /* 
   @media (min-width: 768px) and (max-width: 1023px) {
     width: 85vw;
   }
 
-  @media (min-width: 1024px) and (max-width: 1439px) {
-    width: 74vw;
-  }
 
   @media (min-width: 1440px) {
     width: 53vw;
-  }
+  } */
 `;
 
 const Title = styled.h2`
@@ -80,6 +93,11 @@ const Title = styled.h2`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  @media (min-width: 1024px) {
+    font-size: 24px;
+    line-height: 30px;
+  }
 `;
 
 const Duration = styled.span`
@@ -88,12 +106,16 @@ const Duration = styled.span`
   color: white;
   line-height: 1.5;
   margin: 5px 0 20px;
+
+  @media (min-width: 1024px) {
+    font-size: 15px;
+  }
 `;
 
 const Expense = styled.strong`
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 500;
-  margin-top: 10px;
+  margin: 10px 0;
 `;
 
 const Location = styled.div``;
@@ -111,7 +133,7 @@ export default function TourCardList({
     <TrvelWrap>
       <Travel
         to={`/Tour/${travel.encryptCode}`}
-        $bgImg={travel.bgImg ? travel.bgImg : "/japan.jpg"}
+        $bgImg={travel.img ? travel.img : "/japan.jpg"}
         state={{ from: "/mypage" }}
       >
         <div
@@ -120,14 +142,14 @@ export default function TourCardList({
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            justifyContent: "space-around",
+            justifyContent: "flex-end",
           }}
         >
           <Title>{travel.title}</Title>
           <Duration>
             {travel.startDate} - {travel.endDate}
           </Duration>
-
+          <Expense>{formattedBudget[index]}₩</Expense>
           {/* 백엔드 수정 후 user 추가 */}
           <SmallUserBox $size={"S"} />
 

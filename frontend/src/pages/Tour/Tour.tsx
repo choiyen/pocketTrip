@@ -15,6 +15,7 @@ import AccountModal from "./AccountModal";
 import CryptoJS, { enc } from "crypto-js";
 import { Stomp, Message, Client } from "@stomp/stompjs";
 import { socketService } from "./socketService";
+import styled from "styled-components";
 
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -60,27 +61,7 @@ interface PaymentState {
 }
 type selectedUserType = { name: string; email: string };
 
-// const data = [
-//   {
-//     id: "1",
-//     travelCode: "sdsdds",
-//     title: "일본여행지갑", // 여행지갑 이름
-//     location: "일본", // 여행지 이름
-//     expense: 2000000, // 현재 누적 금액
-//     ImgArr: [
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//       "./ProfileImage.png",
-//     ], // 참여인원들 프로필 이미지 주소
-//     startDate: "2025-01-18", // 여행 시작일
-//     endDate: "2025-02-20", // 여행 종료일
-//     bgImg: "./japan.jpg",
-//   }
-// ];
+const Wrapper = styled.div``;
 
 export default function Tour() {
   const SOCKET_URL = process.env.REACT_APP_API_BASE_URL;
@@ -425,7 +406,7 @@ export default function Tour() {
     }
   };
   return (
-    <div>
+    <Wrapper>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
       {TourData && <TourInfo Tourdata={TourData} />}
       {TourData && (
@@ -446,6 +427,6 @@ export default function Tour() {
           subscribeToNewLogs={subscribeToNewLogs}
         />
       )}
-    </div>
+    </Wrapper>
   );
 }

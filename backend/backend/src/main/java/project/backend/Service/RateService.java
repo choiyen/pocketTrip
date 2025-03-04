@@ -95,7 +95,6 @@ public class RateService
 //            SslContext context = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 //            HttpClient httpClient = HttpClient.create().secure(provider -> provider.sslContext(context));
             String formattedDate = getFormattedDate(dayOfWeek, currentTime, calendar, formatter);
-            System.out.println(formattedDate);
             String url1 = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=" + apiKey + "&searchdate=" + formattedDate + "&data=AP01";
             String responce2 = "";
             RestTemplate restTemplate = new RestTemplate();

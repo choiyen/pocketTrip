@@ -276,7 +276,7 @@ export default function Header({
             <svg>
               <text>{+date < 10 ? "0" + date : date}</text>
             </svg>
-            <div>
+            <div style={{ marginLeft: "10px" }}>
               <span className="month">{month}</span>
               <span className="year">{year}</span>
             </div>

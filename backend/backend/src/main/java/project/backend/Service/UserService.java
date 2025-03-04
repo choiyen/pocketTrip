@@ -59,7 +59,6 @@ public class UserService {
         if(originalUser == null) {
             log.warn("User with email {} does not exist", email);
         }
-        System.out.println(originalUser);
         return originalUser;
     }
 
@@ -79,6 +78,12 @@ public class UserService {
         return bool;
     }
     // 수정하기
+    public UserEntity selectUser(String email)
+    {
+        return userRepository.findByEmail(email);
+    }
+
+
     public UserEntity updateUser(String email, UserEntity userEntity) {
 
         UserEntity originalUser = userRepository.findByEmail(email);

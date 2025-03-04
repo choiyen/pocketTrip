@@ -21,7 +21,7 @@ interface TravelPlan {
   endDate: string;
   expense: number;
   profiles: string[];
-  bgImg?: string;
+  img: string;
 }
 
 export default function MyPage() {
@@ -34,7 +34,6 @@ export default function MyPage() {
 
   const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
   const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
-
   // 암호화
   const encrypt = (data: string) => {
     const encrypted = CryptoJS.AES.encrypt(
@@ -103,61 +102,6 @@ export default function MyPage() {
     getUserData(token as string);
     getTravelData(token as string); // 여행 정보 요청
   }, []);
-
-  // const travelList: TravelPlan[] = [
-  //   {
-  //     id: "1",
-  //     travelCode: "sdsdds",
-  //     name: "일본여행지갑",
-  //     startDate: "2025-01-18",
-  //     endDate: "2025-02-20",
-  //     expense: 2000000,
-  //     ImgArr: [
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //     ], // 참여인원들 프로필 이미지 주소
-  //     bgImg: "/japan.jpg",
-  //   },
-  //   {
-  //     id: "2",
-  //     travelCode: "ddddddd",
-  //     name: "미국 여행의 방",
-  //     startDate: "2024-10-20",
-  //     endDate: "2024-10-25",
-  //     expense: 1000000,
-  //     ImgArr: [
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //     ], // 참여인원들 프로필 이미지 주소
-  //   },
-  //   {
-  //     id: "3",
-  //     travelCode: "sdfsdfdfdfdf",
-  //     name: "프랑스 여행의 방",
-  //     startDate: "2024-05-02",
-  //     endDate: "2024-05-10",
-  //     expense: 2500000,
-  //     ImgArr: [
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //       "./ProfileImage.png",
-  //     ], // 참여인원들 프로필 이미지 주소
-  //   },
-  // ];
 
   const formattedBudget: string[] = [];
   TourDataArr.map((item, index) => {
@@ -273,15 +217,15 @@ const Profile = styled.div`
 
 const TravelListContainer = styled.div`
   width: 100%;
-  height: 60vh;
+  /* height: 60vh; */
   // background: black;
-  overflow: scroll;
-  @media (min-width: 768px) and (max-width: 1023px) {
+  /* overflow: scroll; */
+  /* @media (min-width: 768px) and (max-width: 1023px) {
     height: 70vh;
   }
   @media (min-width: 1024px) {
     height: 50vh;
-  }
+  } */
 `;
 
 const NoTravelList = styled.div`
@@ -335,19 +279,36 @@ const NoTravelList = styled.div`
 `;
 
 const TravelList = styled.div`
+  @media (min-width: 1024px) {
+    width: 60%;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
 const AddTravel = styled.div`
-  width: 85vw;
-  height: 100px;
+  margin: 0 auto;
+  width: 50%;
+  height: 300px;
   background-color: #dfdfdf;
   border-radius: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+
+  @media (max-width: 767px) {
+    width: 85vw;
+  }
+  @media (min-width: 1024px) {
+    max-width: 450px;
+    width: 45%;
+  }
 
   & div {
     background-color: #6e6e6e66;
@@ -358,13 +319,6 @@ const AddTravel = styled.div`
     font-size: 25px;
     text-align: center;
     line-height: 30px;
-  }
-  @media (min-width: 768px) and (max-width: 1023px) {
-    width: 85vw;
-  }
-
-  @media (min-width: 1024px) and (max-width: 1439px) {
-    width: 74vw;
   }
 
   @media (min-width: 1440px) {

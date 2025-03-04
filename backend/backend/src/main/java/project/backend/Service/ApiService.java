@@ -36,6 +36,7 @@ public class ApiService<T> {
         try {
             if(type.equals("GET"))
             {
+
                 return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
             }
             else if(type.equals("POST"))
