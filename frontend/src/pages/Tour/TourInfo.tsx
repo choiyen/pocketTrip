@@ -36,15 +36,20 @@ const TourWrap = styled.div`
   @media (min-width: 1440px) {
     padding: 20px 350px;
   }
-
-  h2 {
+  .TourTitle {
+    font-size: 35px;
+    font-weight: 900;
+    color: #051e31;
+    margin: 0 auto 30px;
+  }
+  p {
     font-size: 16px;
     color: #919191;
     margin-bottom: 10px;
   }
-  h3 {
-    font-size: 40px;
-    font-weight: bold;
+  h2 {
+    font-size: 30px;
+    font-weight: 500;
     color: #051e31;
     margin-bottom: 20px;
   }
@@ -64,6 +69,17 @@ const TourWrap = styled.div`
     filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.1));
   }
 `;
+
+const Wrapper = styled.div`
+  @media (min-width: 768px) {
+    width: 60%;
+    margin: 0 auto;
+  }
+  @media (min-width: 1024px) {
+    width: 70%;
+    margin: 0 auto;
+  }
+`;
 export default function TourInfo({ Tourdata }: TourCardProps) {
   // 참여유저의 프로필 이미지를 모두 가져오면 알아서 ui가 조정된다.
   const startDate = new Date(Tourdata.startDate);
@@ -81,15 +97,18 @@ export default function TourInfo({ Tourdata }: TourCardProps) {
       : 0;
   return (
     <TourWrap>
-      <h2>여행지</h2>
-      <h3>{Tourdata.location}</h3>
-      <TourDateUi
-        $precent={progress ? progress.toFixed(2) + "%" : "10%"}
-        startDate={Tourdata.startDate}
-        endDate={Tourdata.endDate}
-        $bgColor="black"
-        $backGraphColor="#E9E9E9"
-      />
+      <h1 className="TourTitle">{Tourdata.title}</h1>
+      <Wrapper>
+        <p>여행지</p>
+        <h2>{Tourdata.location}</h2>
+        <TourDateUi
+          $precent={progress ? progress.toFixed(2) + "%" : "10%"}
+          startDate={Tourdata.startDate}
+          endDate={Tourdata.endDate}
+          $bgColor="black"
+          $backGraphColor="#E9E9E9"
+        />
+      </Wrapper>
     </TourWrap>
   );
 }

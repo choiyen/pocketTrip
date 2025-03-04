@@ -17,7 +17,7 @@ interface logsProps {
 const ButtonsWrap = styled.div`
   display: flex;
   justify-content: space-around;
-  max-width: 700px;
+  max-width: 500px;
   margin: 30px auto;
 `;
 const Buttons = styled.button<{ $selected: boolean }>`
@@ -25,14 +25,20 @@ const Buttons = styled.button<{ $selected: boolean }>`
   background-color: ${(props) => (props.$selected ? "#051e31" : "transparent")};
   color: ${(props) => (props.$selected ? "white" : "#051e31")};
   border: 2px solid #051e31;
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: bold;
   font-family: inherit;
   padding: 5px;
+
+  @media (min-width: 768px) {
+    width: 120px;
+    line-height: 2;
+  }
 `;
 const ListWrap = styled.div`
   overflow: scroll;
+  scrollbar-width: none;
 `;
 const LogList = styled.ul`
   .LogItem:last-child {
@@ -61,7 +67,7 @@ export default function Usehistory({ logs }: logsProps) {
   }, [tabState, logs]);
 
   return (
-    <div>
+    <div style={{ padding: "0 20px" }}>
       <ButtonsWrap>
         {["종합", "카드", "현금"].map((tab, index) => (
           <Buttons

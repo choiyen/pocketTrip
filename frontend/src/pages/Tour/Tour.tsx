@@ -15,6 +15,7 @@ import AccountModal from "./AccountModal";
 import CryptoJS, { enc } from "crypto-js";
 import { Stomp, Message, Client } from "@stomp/stompjs";
 import { socketService } from "./socketService";
+import styled from "styled-components";
 
 export interface MoneyLogProps {
   LogState: "plus" | "minus";
@@ -59,6 +60,8 @@ interface PaymentState {
   paymentType: string | null;
 }
 type selectedUserType = { name: string; email: string };
+
+const Wrapper = styled.div``;
 
 export default function Tour() {
   const SOCKET_URL = process.env.REACT_APP_API_BASE_URL;
@@ -403,7 +406,7 @@ export default function Tour() {
     }
   };
   return (
-    <div>
+    <Wrapper>
       <Header $bgColor={"white"} encrypted={encrypted} fromPage={fromPage} />
       {TourData && <TourInfo Tourdata={TourData} />}
       {TourData && (
@@ -424,6 +427,6 @@ export default function Tour() {
           subscribeToNewLogs={subscribeToNewLogs}
         />
       )}
-    </div>
+    </Wrapper>
   );
 }
