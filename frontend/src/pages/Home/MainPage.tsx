@@ -16,6 +16,7 @@ import { setTravelData } from "../../slices/SaveTourDataSlice";
 import CryptoJS from "crypto-js";
 import { saveUser } from "../../slices/userDataSlice";
 import { socketService } from "../Tour/socketService";
+import { useLocation } from "react-router-dom";
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "default-secret-key";
 const IV = CryptoJS.enc.Utf8.parse("1234567890123456"); // 16바이트 IV
 
@@ -104,6 +105,7 @@ export default function MainPage() {
   const [nextTourData, setNextTourData] = useState<TravelPlan>();
   const [InputCodeVisible, setInputCodeVisible] = useState(false);
   const [userDatas, setUserDatas] = useState<User>();
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -115,7 +117,7 @@ export default function MainPage() {
     dispatch(ChangeCurrentPage("home"));
     getTravelData(token as string); // 여행 정보 요청
     getUserProfile(token as string); // 유저 정보 요청
-  }, []);
+  }, [location.pathname]);
 
   // 위에서 필요한 정보 요청이 끝나면 이후에 필요한 여행을 선택한다.
   useEffect(() => {

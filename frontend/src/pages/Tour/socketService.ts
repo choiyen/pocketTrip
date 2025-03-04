@@ -47,7 +47,9 @@ class SocketService {
       reconnectDelay: 5000,
     });
 
-    this.client.onConnect = () => {};
+    this.client.onConnect = () => {
+      console.warn("콘솔 연결 성공");
+    };
 
     this.client.onStompError = (frame) => {
       console.error("❌ WebSocket 오류:", frame);

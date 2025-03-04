@@ -44,7 +44,7 @@ function App() {
   const token = localStorage.getItem("accessToken");
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return console.error("❌ 토큰이 없습니다.");
+    if (!token) return;
 
     socketService.connect(token);
 
@@ -87,13 +87,10 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Login/Register" element={<Register />} />
           <Route path="/Login/Find" element={<Find />} />
-          <Route
-            path="/"
-            element={<RequireAuth>{token && <MainPage />}</RequireAuth>}
-          />
+          <Route path="/" element={<RequireAuth>{<MainPage />}</RequireAuth>} />
           <Route
             path="/mypage"
-            element={<RequireAuth>{token && <MyPage />}</RequireAuth>}
+            element={<RequireAuth>{<MyPage />}</RequireAuth>}
           />
           <Route
             path="/Where1"

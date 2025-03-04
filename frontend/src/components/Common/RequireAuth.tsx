@@ -8,7 +8,6 @@ export default function RequireAuth({ children }: any) {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
     if (!token) {
       console.warn("토큰 없음 -> 로그인 페이지 이동");
       navigate("/login", { replace: true });
@@ -20,8 +19,8 @@ export default function RequireAuth({ children }: any) {
       const currentTime = Date.now() / 1000;
       if (decoded.exp < currentTime) {
         console.warn("토큰 만료됨 -> 로그인 페이지 이동");
-        localStorage.removeItem("accessToken");
         navigate("/login", { replace: true });
+        localStorage.removeItem("accessToken");
       } else {
         setIsAuthenticated(true);
       }
