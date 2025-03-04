@@ -1,15 +1,12 @@
+import { hideAlert } from "../../slices/AlertControlSlice";
+import { AppDispatch, RootState } from "@/store";
 import React, { JSX } from "react";
 import { HiOutlineCheckCircle } from "react-icons/hi";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { HiOutlineXCircle } from "react-icons/hi";
 import { IoMdClose } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-
-interface AlertProps {
-  alertState?: "success" | "info" | "error";
-  message: string;
-  setIsAlertVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
 const AlertWrap = styled.div`
   display: flex;
@@ -68,20 +65,19 @@ const StateIcon: { [key: string]: JSX.Element } = {
   info: <HiOutlineExclamationCircle color="#ccbc00" />,
   error: <HiOutlineXCircle color="#cc0000" />,
 };
-export default function Alert({
-  alertState = "success",
-  message,
-  setIsAlertVisible,
-}: AlertProps) {
+export default function Alert() {
+  const dispatch: AppDispatch = useDispatch();
+  const alertType = useSelector((state: RootState) => state.AlertControl.type);
+  const message = useSelector((state: RootState) => state.AlertControl.message);
   return (
     <AlertWrap>
-      <IconWrap>{StateIcon[alertState]}</IconWrap>
+      <IconWrap>{StateIcon[alertType]}</IconWrap>
       <TextWrap>
-        <h2>{alertState}</h2>
+        <h2>{alertType}</h2>
         <p>{message}</p>
       </TextWrap>
 
-      <CloseButton onClick={() => setIsAlertVisible(false)}>
+      <CloseButton onClick={() => dispatch(hideAlert())}>
         <IoMdClose />
       </CloseButton>
     </AlertWrap>

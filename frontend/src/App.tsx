@@ -7,8 +7,8 @@ import MyPage from "./pages/Mypage/MyPage";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Find from "./pages/Find/Find";
-import { useSelector } from "react-redux";
-import { RootState } from "./store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./store";
 import AlertBox from "./components/Common/AlertBox";
 import Where1 from "./pages/Where/Where1";
 import Where2 from "./pages/Where/Where2";
@@ -24,19 +24,27 @@ import MoneyChart from "./pages/MoneyChart/MoneyChart";
 import RequireAuth from "./components/Common/RequireAuth";
 import { socketService } from "./pages/Tour/socketService";
 import Alert from "./components/Common/Alert";
+import { hideAlert } from "./slices/AlertControlSlice";
 
 function App() {
   // 알림창 관련 로직
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState<"success" | "error" | "info">(
-    "success"
+  // 리덕스로 알림창 상태 관리
+  const dispatch: AppDispatch = useDispatch();
+  const alertState = useSelector(
+    (state: RootState) => state.AlertControl.alertState
   );
+  const isVisible = useSelector(
+    (state: RootState) => state.AlertControl.isVisible
+  );
+  // const [alertMessage, setAlertMessage] = useState("");
+  // const [alertType, setAlertType] = useState<"success" | "error" | "info">(
+  //   "success"
+  // );
 
   const token = localStorage.getItem("accessToken");
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return console.error("❌ 토큰이 없습니다.");
+    if (!token) return;
 
     socketService.connect(token);
 
@@ -45,24 +53,16 @@ function App() {
     };
   }, []);
 
+  // 2초 후 다시 알림창을 끈다.
   useEffect(() => {
-    if (isAlertVisible) {
+    if (isVisible) {
       const timer = setTimeout(() => {
-        setIsAlertVisible(false);
+        dispatch(hideAlert());
+        console.log("알림 닫힘");
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isAlertVisible]);
-
-  const handleAction = () => {
-    setAlertMessage("작업이 성공적으로 완료되었습니다.");
-    setAlertType("success");
-    setIsAlertVisible(true);
-  };
-
-  const alertState = useSelector(
-    (state: RootState) => state.AlertControl.alertState
-  );
+  }, [isVisible]);
 
   // travelData 상태 정의
   const [travelData, setTravelData] = useState({
@@ -87,13 +87,10 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Login/Register" element={<Register />} />
           <Route path="/Login/Find" element={<Find />} />
-          <Route
-            path="/"
-            element={<RequireAuth>{token && <MainPage />}</RequireAuth>}
-          />
+          <Route path="/" element={<RequireAuth>{<MainPage />}</RequireAuth>} />
           <Route
             path="/mypage"
-            element={<RequireAuth>{token && <MyPage />}</RequireAuth>}
+            element={<RequireAuth>{<MyPage />}</RequireAuth>}
           />
           <Route
             path="/Where1"
@@ -182,13 +179,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       {alertState && <AlertBox />}
-      {isAlertVisible && (
-        <Alert
-          alertState={alertType}
-          message={alertMessage}
-          setIsAlertVisible={setIsAlertVisible}
-        />
-      )}
+      {isVisible && <Alert />}
     </div>
   );
 }
