@@ -20,8 +20,6 @@ interface LoginResponse {
 }
 
 const LoginPage: React.FC = () => {
-  // const [email, setEmailAddr] = useState<string>(""); // emailAddr의 타입을 string으로 지정
-  // const [password, setPassword] = useState<string>(""); // password의 타입을 string으로 지정
   const [formData, setFormData] = useState({
     email: "test@",
     password: `${process.env.REACT_APP_PASSWORD}`, // 개발용
