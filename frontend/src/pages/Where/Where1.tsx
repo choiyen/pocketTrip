@@ -42,8 +42,8 @@ const Where1: React.FC<Where1Props> = ({ updateTravelData }) => {
       </svg>
       <div className="where-title1">어디로 여행 가시나요?</div>
       <div className="button-container1">
-        <Button size="S" name="국내" $bgColor="blue" onClick={goToWhere3} />
-        <Button size="S" name="해외" $bgColor="blue" onClick={goToWhere2} />
+        <Button size="M" name="국내" $bgColor="blue" onClick={goToWhere3} />
+        <Button size="M" name="해외" $bgColor="blue" onClick={goToWhere2} />
       </div>
     </div>
   );
