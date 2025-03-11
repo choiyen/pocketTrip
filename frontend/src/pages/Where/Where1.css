@@ -20,6 +20,7 @@
   font-weight: bold;
   @media (min-width: 768px) {
     font-size: 30px;
+    margin-bottom: 10%;
   }
 }
 
