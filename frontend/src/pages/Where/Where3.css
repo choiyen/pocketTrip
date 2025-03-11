@@ -19,6 +19,10 @@
   margin-bottom: 20%;
   font-weight: bold;
   line-height: 1.5;
+  @media (min-width: 768px) {
+    margin-bottom: 5%;
+    font-size: 30px;
+  }
 }
 
 .datepicker-container {

@@ -56,7 +56,7 @@ const Where4: React.FC<Where4Props> = ({ travelData, updateTravelData }) => {
       </div>
       <input
         type="text"
-        className="input"
+        className="inputValue"
         value={title}
         onChange={(e) => setTitle(e.target.value)} // 이름 입력 추적
       />
