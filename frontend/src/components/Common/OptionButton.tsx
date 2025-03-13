@@ -9,7 +9,7 @@ import {
   ChangeModalState,
   ChangeMovingModal,
 } from "../../slices/ModalControlSlice";
-import { ChangeAlertState } from "../../slices/AlertControlSlice";
+import { ChangeAlertState, travelCodes } from "../../slices/AlertControlSlice";
 import { setEditType } from "../../slices/editSlice";
 
 interface OptionButtonProps {
