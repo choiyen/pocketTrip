@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { FcFullTrash } from "react-icons/fc";
 import Button from "./Button";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { ChangeAlertState } from "../../slices/AlertControlSlice";
+import axios from "axios";
 
 const BoxWrap = styled.div`
   position: fixed;
@@ -40,6 +41,26 @@ const BoxWrap = styled.div`
 
 export default function AlertBox() {
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // const DeleteFunc = async () => {
+  //   try {
+  //     const token = localStorage.getItem("accessToken");
+  //     const response = await axios.delete(
+  //       `${process.env.REACT_APP_API_BASE_URL}/plan/delete/${travelCode}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     navigate("/mypage");
+  //   } catch (error) {
+  //     console.error("여행 삭제 실패");
+  //   }
+  // };
+
   const CloseAlert = () => {
     dispatch(ChangeAlertState());
   };
@@ -53,7 +74,10 @@ export default function AlertBox() {
         size="L"
         name="취소"
         $bgColor="transparent"
-        onClick={() => CloseAlert()}
+        onClick={() => {
+          CloseAlert();
+          // DeleteFunc();
+        }}
       />
     </BoxWrap>
   );
